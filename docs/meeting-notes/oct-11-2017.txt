@@ -1,0 +1,12 @@
+October 11, 2017
+
+Ideas
+-get rid of mini map
+-2 finger drag to pan the map
+
+Individual Goals to be done as practice
+- Detect different touches on menu. Every button press should have a sound.
+- 1. Single tap single the player button, it takes you to another screen where
+     a single tile is displayed and music plays
+- 2. Two finger tap the multi player button, it takes you to a blank screen. You swipe from left to right, and it takes you back to the main menu
+- Feel free to play around, this is practice!
