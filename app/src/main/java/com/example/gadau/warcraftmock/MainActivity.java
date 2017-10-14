@@ -15,8 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //TODO: Make a constant or preference to determine playback
-        mediaPlayer = MediaPlayer.create(this, R.raw.menu);
-        mediaPlayer1 = MediaPlayer.create(this, R.raw.tick);
+        mediaPlayer = MediaPlayer.create(this, R.raw.music_menu);
+        mediaPlayer1 = MediaPlayer.create(this, R.raw.misc_tick);
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
     }

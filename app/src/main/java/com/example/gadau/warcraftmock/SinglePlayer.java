@@ -11,7 +11,7 @@ public class SinglePlayer extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_player);
-        mediaPlayer = MediaPlayer.create(this, R.raw.game1);
+        mediaPlayer = MediaPlayer.create(this, R.raw.music_game1);
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
     }
