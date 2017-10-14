@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.multiPlayerBtn:
                 intent = new Intent(this, MultiPlayer.class);
                 break;
+            case R.id.optionsBtn:
+                intent = new Intent(this, Options.class);
+                break;
             default:
                 return;
         }

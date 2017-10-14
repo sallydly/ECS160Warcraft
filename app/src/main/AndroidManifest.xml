@@ -22,7 +22,8 @@
             android:name=".MainActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".SinglePlayer" />
-        <activity android:name=".MultiPlayer"></activity>
+        <activity android:name=".MultiPlayer" />
+        <activity android:name=".Options"></activity>
     </application>
 
 </manifest>

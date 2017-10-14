@@ -26,7 +26,7 @@ public class MultiPlayer extends AppCompatActivity {
                 x1 = motionEvent.getX();
                 y1 = motionEvent.getY();
                 break;
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_MOVE:
                 x2 = motionEvent.getX();
                 y2 = motionEvent.getY();
                 deltaX = x2 - x1;
@@ -34,7 +34,6 @@ public class MultiPlayer extends AppCompatActivity {
 
                 if (Math.abs(deltaX) > MIN_DISTANCE && Math.abs(deltaY) < MIN_DISTANCE / 2) {
                     if (x2 > x1) {
-                        Toast.makeText(this, "swipe from left to right", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
