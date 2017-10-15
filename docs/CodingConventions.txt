@@ -1,1 +1,21 @@
+Coding Conventions for Android
+
+Indentation: 4 spaces
+Whitespaces, not tabs
+Newlines
+
+Single line comments go BEFORE line
+Multiline comments are single-star aligned (Android Studio default)
+    /*
+     * Comment block
+     */
+     
+Variables:   camelCase
+Classes:     PascalCase
+Constants:   SCREAMING_SNAKE_CASE
+Resouce ids: snake_case
+
+
+
+
 
