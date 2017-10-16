@@ -7,18 +7,18 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    MediaPlayer mediaPlayer;
-    MediaPlayer mediaPlayer1;
+    MediaPlayer musicPlayer;
+    MediaPlayer buttonSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //TODO: Make a constant or preference to determine playback
-        mediaPlayer = MediaPlayer.create(this, R.raw.music_menu);
-        mediaPlayer1 = MediaPlayer.create(this, R.raw.misc_tick);
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);
+        musicPlayer = MediaPlayer.create(this, R.raw.music_menu);
+        buttonSound = MediaPlayer.create(this, R.raw.misc_tick);
+        musicPlayer.start();
+        musicPlayer.setLooping(true);
     }
 
     public void onBtnClick(View view) {
@@ -38,21 +38,27 @@ public class MainActivity extends AppCompatActivity {
                 return;
         }
 
-        mediaPlayer1.start();
-        mediaPlayer1.setLooping(false);
+        buttonSound.start();
+        buttonSound.setLooping(false);
         startActivity(intent);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mediaPlayer.pause();
+        musicPlayer.pause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mediaPlayer.start();
+        musicPlayer.start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicPlayer.stop();
     }
 
     //TODO: Set Buttons

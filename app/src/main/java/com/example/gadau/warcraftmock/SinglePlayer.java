@@ -5,26 +5,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class SinglePlayer extends AppCompatActivity {
-    MediaPlayer mediaPlayer;
+    MediaPlayer musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_player);
-        mediaPlayer = MediaPlayer.create(this, R.raw.music_game1);
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);
+        musicPlayer = MediaPlayer.create(this, R.raw.music_game1);
+        musicPlayer.start();
+        musicPlayer.setLooping(true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mediaPlayer.pause();
+        musicPlayer.pause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mediaPlayer.start();
+        musicPlayer.start();
     }
 }

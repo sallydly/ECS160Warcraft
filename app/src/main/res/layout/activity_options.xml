@@ -15,6 +15,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="32dp"
         android:textColor="@color/yellow"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +28,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="@color/yellow"
+
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintHorizontal_bias="0.307"
@@ -42,6 +44,7 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="@color/yellow"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

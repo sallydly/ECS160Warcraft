@@ -17,23 +17,35 @@ public class MultiPlayer extends AppCompatActivity {
         setContentView(R.layout.activity_multi_player);
     }
 
+    /*
+     * Currently overriden to finish activity upon a left to right swipe
+     */
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         float deltaX, deltaY;
 
+        //This block has different cases for what the finger is doing (touching screen, moving, etc)
         switch(motionEvent.getAction()) {
+            //ACTION_DOWN happens when finger first makes contact
             case MotionEvent.ACTION_DOWN:
+                //Get initial coords of finger
                 x1 = motionEvent.getX();
                 y1 = motionEvent.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
+                //Constantly get coords of finger
                 x2 = motionEvent.getX();
                 y2 = motionEvent.getY();
+
+                //Calculate distance moved from ACTION_DOWN
                 deltaX = x2 - x1;
                 deltaY = y2 - y1;
 
+                //If finger has moved far enough and not too diagonally
                 if (Math.abs(deltaX) > MIN_DISTANCE && Math.abs(deltaY) < MIN_DISTANCE / 2) {
+                    //If finger is to the right of initial x1
                     if (x2 > x1) {
+                        //finish activity
                         finish();
                     }
                 }

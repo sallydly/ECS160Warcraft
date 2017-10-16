@@ -17,6 +17,10 @@ public class Options extends AppCompatActivity {
     }
 
 
+    /*
+     * Overridden to display MotionEvent values
+     * e.g. x coordinate from motionEvent.getX()
+     */
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         float deltaX, deltaY;
