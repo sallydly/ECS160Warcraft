@@ -22,21 +22,21 @@
             android:text="@string/app_name" />
 
         <Button
-            android:id="@+id/singlePlayerBtn"
+            android:id="@+id/singlePlayerButton"
             style="@style/MainMenuButton"
-            android:onClick="onBtnClick"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_single" />
 
         <Button
-            android:id="@+id/multiPlayerBtn"
+            android:id="@+id/multiPlayerButton"
             style="@style/MainMenuButton"
-            android:onClick="onBtnClick"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_multi" />
 
         <Button
-            android:id="@+id/optionsBtn"
+            android:id="@+id/optionsButton"
             style="@style/MainMenuButton"
-            android:onClick="onBtnClick"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_options" />
     </LinearLayout>
 

@@ -1,15 +1,12 @@
 package com.example.gadau.warcraftmock;
 
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 public class MultiPlayer extends AppCompatActivity {
-    float x1, x2, y1, y2;
-    static final float MIN_DISTANCE = 150;
+    private double x1, x2, y1, y2;
+    private static final double MIN_DISTANCE = 150;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,27 +14,31 @@ public class MultiPlayer extends AppCompatActivity {
         setContentView(R.layout.activity_multi_player);
     }
 
-    /*
-     * Currently overriden to finish activity upon a left to right swipe
+    /**
+     * Finishes activity upon a left to right swipe
+     *
+     * @param motionEvent : Records input details from the touch screen
+     * @return : Returns true if you have consumed the event, false if you haven't.
      */
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        float deltaX, deltaY;
+        double deltaX, deltaY;
+        final int MOTION_EVENT_ACTION = motionEvent.getAction();
 
         //This block has different cases for what the finger is doing (touching screen, moving, etc)
-        switch(motionEvent.getAction()) {
+        switch(MOTION_EVENT_ACTION) {
             //ACTION_DOWN happens when finger first makes contact
             case MotionEvent.ACTION_DOWN:
-                //Get initial coords of finger
+                //Get initial coordinate of finger
                 x1 = motionEvent.getX();
                 y1 = motionEvent.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                //Constantly get coords of finger
+                //Constantly get coordinates of finger
                 x2 = motionEvent.getX();
                 y2 = motionEvent.getY();
 
-                //Calculate distance moved from ACTION_DOWN
+                //Calculate distance moved from Initial Position
                 deltaX = x2 - x1;
                 deltaY = y2 - y1;
 
@@ -52,6 +53,5 @@ public class MultiPlayer extends AppCompatActivity {
                 break;
         }
         return super.onTouchEvent(motionEvent);
-
     }
 }
