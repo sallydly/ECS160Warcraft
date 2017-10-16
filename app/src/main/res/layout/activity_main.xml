@@ -5,27 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
+    android:keepScreenOn="false"
     tools:context="com.example.gadau.warcraftmock.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
         <TextView
             style="@style/TitleScreenName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"/>
+            android:text="@string/app_name" />
+
         <Button
+            android:id="@+id/singlePlayerButton"
             style="@style/MainMenuButton"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_single" />
+
         <Button
+            android:id="@+id/multiPlayerButton"
             style="@style/MainMenuButton"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_multi" />
+
         <Button
+            android:id="@+id/optionsButton"
             style="@style/MainMenuButton"
+            android:onClick="onButtonClick"
             android:text="@string/main_menu_options" />
     </LinearLayout>
 
@@ -34,6 +45,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="12dp"
-        android:textColor="@color/yellow"
-        android:text="@string/sample_version_name"/>
+        android:text="@string/sample_version_name"
+        android:textColor="@color/yellow" />
 </RelativeLayout>
