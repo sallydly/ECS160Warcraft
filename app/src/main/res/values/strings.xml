@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WarCraftMock</string>
+    <string name="app_name">War Craft II</string>
     <string name="main_menu_single">Single Player Game</string>
     <string name="main_menu_multi">Multi Player Game</string>
     <string name="main_menu_options">Options</string>
