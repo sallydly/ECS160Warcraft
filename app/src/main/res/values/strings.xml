@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">War Craft II</string>
-    <string name="main_menu_single">Single Player Game</string>
-    <string name="main_menu_multi">Multi Player Game</string>
-    <string name="main_menu_options">Options</string>
-    <string name="main_menu_exit">Exit Game</string>
-    <string name="sample_version_name">Build 1.2.3.0</string>
-    <string name="multi_player_swipe">Swipe from left to right</string>
-</resources>
