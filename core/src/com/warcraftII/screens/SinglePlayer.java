@@ -1,7 +1,9 @@
 package com.warcraftII.screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.warcraftII.Warcraft;
 
@@ -9,11 +11,11 @@ import com.warcraftII.Warcraft;
  * Created by Kevin on 10/20/2017.
  */
 
-public class PlayScreen implements Screen {
+public class SinglePlayer implements Screen {
     private Warcraft game;
     private Texture texture;
 
-    public PlayScreen(Warcraft game) {
+    public SinglePlayer(Warcraft game) {
         this.game = game;
         this.texture = new Texture("badlogic.jpg");
     }
@@ -25,7 +27,11 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.batch.begin();
+        game.batch.draw(texture, 0, 0);
+        game.batch.end();
     }
 
     @Override
