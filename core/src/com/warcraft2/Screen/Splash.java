@@ -1,4 +1,4 @@
-package com.warcraft2;
+package com.warcraft2.Screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /**
  * Created by hqmai on 10/20/17.
@@ -22,6 +21,9 @@ public class Splash implements Screen {
     private float duration;
     private float currentDuration;
 
+    /**
+     * @param g contains game parameters passed in from the caller using setScreen()
+     */
     public Splash(Game g) {
         game = g;
     }
@@ -43,7 +45,6 @@ public class Splash implements Screen {
          */
         splash.setPosition(0, -Gdx.graphics.getHeight());
         splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()*2);
-
     }
 
     @Override
@@ -56,7 +57,7 @@ public class Splash implements Screen {
         batch.end();
         currentDuration = currentDuration + delta;
         if(currentDuration > duration) {
-            game.setScreen(new MainMenu());
+            game.setScreen(new com.warcraft2.Screen.MainMenu());
         }
     }
 
@@ -80,6 +81,10 @@ public class Splash implements Screen {
 
     }
 
+    /*
+     *  It's a good idea to dispose objects that are disposable, since those are tend to be
+     *  large objects and they will slow down the game
+     */
     @Override
     public void dispose() {
         batch.dispose();
