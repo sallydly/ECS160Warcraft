@@ -2,6 +2,7 @@ package com.warcraftII.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -24,6 +25,7 @@ public class MainMenu implements Screen {
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
+    private Music music;
 
     public MainMenu(Warcraft game) {
         this.game = game;
@@ -33,13 +35,15 @@ public class MainMenu implements Screen {
         ScreenViewport port = new ScreenViewport();
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         this.stage = new Stage(port, game.batch);
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
+        this.music.setLooping(true);
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
         Table menuTable = createMenuTable();
-
+        music.play();
         stage.addActor(menuTable);
     }
 
@@ -103,12 +107,12 @@ public class MainMenu implements Screen {
 
     @Override
     public void pause() {
-
+        music.pause();
     }
 
     @Override
     public void resume() {
-
+        music.play();
     }
 
     @Override
@@ -120,5 +124,6 @@ public class MainMenu implements Screen {
     public void dispose() {
         skin.dispose();
         atlas.dispose();
+        music.dispose();
     }
 }
