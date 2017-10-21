@@ -1,6 +1,5 @@
 package com.warcraftII.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -31,7 +30,9 @@ public class MainMenu implements Screen {
         this.texture = new Texture("warcraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
-        this.stage = new Stage(new ScreenViewport(), game.batch);
+        ScreenViewport port = new ScreenViewport();
+        port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        this.stage = new Stage(port, game.batch);
     }
 
     @Override
