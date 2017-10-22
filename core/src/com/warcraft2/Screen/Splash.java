@@ -57,7 +57,7 @@ public class Splash implements Screen {
         batch.end();
         currentDuration = currentDuration + delta;
         if(currentDuration > duration) {
-            game.setScreen(new com.warcraft2.Screen.MainMenu());
+            game.setScreen(new MainMenu());
         }
     }
 
@@ -82,7 +82,7 @@ public class Splash implements Screen {
     }
 
     /*
-     *  It's a good idea to dispose objects that are disposable, since those are tend to be
+     *  SELF NOTE: It's a good idea to dispose objects that are disposable, since those tend to be
      *  large objects and they will slow down the game
      */
     @Override
