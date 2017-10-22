@@ -2,10 +2,6 @@ package com.warcraft2;
 
 import java.util.Vector;
 
-/**
- * Created by kevin on 10/21/17.
- */
-
 public class TerrainMap {
 
     enum ETerrainTileType {
