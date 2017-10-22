@@ -42,6 +42,10 @@ public class SinglePlayer implements Screen {
 
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
 
+        tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
+        tile.setScale(5);
+        tile.setPosition(300, 300);
+
         backButton = new TextButton("Back", skin);
 
         backButton.addListener(new ClickListener() {
@@ -60,6 +64,19 @@ public class SinglePlayer implements Screen {
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -68,7 +85,10 @@ public class SinglePlayer implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        tile.draw(batch);
+
+
+
+
         batch.end();
 
         stage.act(delta);
@@ -98,7 +118,6 @@ public class SinglePlayer implements Screen {
     @Override
     public void dispose() {
         terrain.dispose();
-
         stage.dispose();
         skin.dispose();
     }
