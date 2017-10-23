@@ -4,14 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Scanner;
 
 /**
  * Created by hqmai on 10/22/17.
@@ -21,7 +13,6 @@ public class MapParser {
 
     private String name;
     private int height, width;
-    private char [][]tileCodes;
     private Sprite [][]spriteMap;
 
     public MapParser(FileHandle file) {
@@ -37,12 +28,9 @@ public class MapParser {
 
         TextureAtlas terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         spriteMap = new Sprite[height][width];
-        tileCodes = new char[height][width];
         for(int i = 0; i < height ; i++) {
-            //tileCodes[i] = new char[width];
             for (int j = 0; j < width; j++) {
                 //  map presentation starts on line 6
-                tileCodes[i][j] = fileAsLines[i + 5].charAt(j);
                 switch(fileAsLines[i + 5].charAt(j)) {
                     case 'w': //shallow water
                         spriteMap[i][j] = new Sprite(terrain.findRegion("shallow-water-F-0"));
@@ -73,15 +61,6 @@ public class MapParser {
                 spriteMap[i][j].setPosition(j*32, i*32);
             }
         }
-
-
-
-
-
-
-
-
-
     }
 
     public String getName() {
