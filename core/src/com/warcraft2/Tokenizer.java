@@ -43,6 +43,11 @@ public class Tokenizer {
 
     }
 
+    // call Tokenize with default delimiters = ""
+    public static Vector<String> Tokenize(String data) {
+        return Tokenize(data, "");
+    }
+
     public static Vector<String> Tokenize(String data, String delimiters){
             String Delimiters;
             String TempTokenString;

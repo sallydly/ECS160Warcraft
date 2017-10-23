@@ -1,8 +1,8 @@
 package com.warcraft2.terrain;
 
+import com.warcraft2.Tokenizer;
 import com.warcraft2.data_source.CommentSkipLineDataSource;
 import com.warcraft2.data_source.DataSource;
-import com.warcraft2.Tokenizer;
 
 import java.io.IOException;
 import java.util.List;
@@ -141,7 +141,6 @@ public class TerrainMap {
             if(tempString.isEmpty()) {
                 return returnStatus;
             }
-            //TODO: Figure out how nitta calls the function with two parameters
             tokens = Tokenizer.Tokenize(tempString);
             if (2 != tokens.size()) {
                 return returnStatus;
