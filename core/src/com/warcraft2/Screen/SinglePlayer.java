@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.warcraft2.Warcraft;
 import com.warcraft2.parser.MapParser;
 
 /**
@@ -27,7 +28,7 @@ import com.warcraft2.parser.MapParser;
  */
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
-
+    private Warcraft game;
     private TextureAtlas terrain;
     private SpriteBatch batch;
     private Sprite tile;
@@ -40,6 +41,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private MapParser map;
 
     private OrthographicCamera camera;
+
+    SinglePlayer(Warcraft game) {
+        this.game = game;
+    }
 
     @Override
     public void show() {
@@ -63,7 +68,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)(Gdx.app.getApplicationListener())).setScreen(new MainMenu());
+                game.setScreen(new MainMenu(game));
             }
         });
 
