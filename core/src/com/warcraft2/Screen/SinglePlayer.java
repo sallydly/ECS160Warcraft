@@ -3,6 +3,7 @@ package com.warcraft2.Screen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,6 +33,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextureAtlas terrain;
     private SpriteBatch batch;
     private Sprite tile;
+    private Music music;
 
     private Stage stage;
     private Skin skin;
@@ -44,6 +46,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     SinglePlayer(Warcraft game) {
         this.game = game;
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
 
     @Override
@@ -146,6 +149,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+        music.play();
         return false;
     }
 
