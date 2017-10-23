@@ -2,6 +2,8 @@ package com.warcraft2;
 
 import java.util.Vector;
 
+import static com.warcraft2.Tokenizer.Tokenize;
+
 public class TerrainMap {
 
     enum ETerrainTileType {
@@ -36,6 +38,7 @@ public class TerrainMap {
 
     protected Vector<Vector<ETerrainTileType>> DTerrainMap;
     protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
+    String DMapName;
 
     /**
      * Given a map coordiante, determines the ETileType based on its ETerrainTileType
@@ -114,6 +117,128 @@ public class TerrainMap {
             // Error?
             type = ETileType.LightGrass;
             index = 0xF;
+        }
+    }
+
+    Boolean LoadMap(DataSource source) {
+        CommentSkipLineDataSource LineSource (source, '#');
+        String TempString;
+        Vector<String> Tokens;
+        Integer MapWidth, MapHeight;
+        Boolean ReturnStatus = false;
+
+        DTerrainMap.clear();
+
+        if (!LineSource.Read(DMapName)) {
+            return ReturnStatus;
+        }
+        if (!LineSource.Read(TempString)) {
+            return ReturnStatus;
+        }
+        Tokenize(Tokens, TempString);
+        if (2 != Tokens.size()) {
+            return ReturnStatus;
+        }
+        try {
+            Vector<String> StringMap;
+            MapWidth = Integer.valueOf(Tokens.get(0));
+            MapHeight = Integer.valueOf(Tokens.get(1));
+
+            if ((8 > MapWidth) || (8 > MapHeight)) {
+                return ReturnStatus;
+            }
+            while (StringMap.size() < MapHeight + 1) {
+                if (!LineSource.Read(TempString)) {
+                    return ReturnStatus;
+                }
+                StringMap.push_back(TempString);
+                if (MapWidth + 1 > StringMap.back().length()) {
+                    return ReturnStatus;
+                }
+            }
+            if (MapHeight + 1 > StringMap.size()) {
+                return ReturnStatus;
+            }
+            DTerrainMap.resize(MapHeight + 1);
+            for (int Index = 0; Index < DTerrainMap.size(); Index++) {
+                DTerrainMap[Index].resize(MapWidth + 1);
+                for (int Inner = 0; Inner < MapWidth + 1; Inner++) {
+                    switch (StringMap[Index][Inner]) {
+                        case 'G':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::DarkGrass;
+                            break;
+                        case 'g':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::LightGrass;
+                            break;
+                        case 'D':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::DarkDirt;
+                            break;
+                        case 'd':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::LightDirt;
+                            break;
+                        case 'R':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::Rock;
+                            break;
+                        case 'r':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::RockPartial;
+                            break;
+                        case 'F':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::Forest;
+                            break;
+                        case 'f':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::ForestPartial;
+                            break;
+                        case 'W':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::DeepWater;
+                            break;
+                        case 'w':
+                            DTerrainMap[Index][Inner] = ETerrainTileType::ShallowWater;
+                            break;
+                        default:    goto LoadMapExit;
+                            break;
+                    }
+                    if (Inner) {
+                        if (!DAllowedAdjacent[to_underlying(DTerrainMap[Index][Inner])][to_underlying(DTerrainMap[Index][Inner - 1])]) {
+                            return ReturnStatus;
+                        }
+                    }
+                    if (Index) {
+                        if (!DAllowedAdjacent[to_underlying(DTerrainMap[Index][Inner])][to_underlying(DTerrainMap[Index - 1][Inner])]) {
+                            return ReturnStatus;
+                        }
+                    }
+                }
+
+            }
+            StringMap.clear();
+            while (StringMap.size() < MapHeight + 1) {
+                if (!LineSource.Read(TempString)) {
+                    return ReturnStatus;
+                }
+                StringMap.push_back(TempString);
+                if (MapWidth + 1 > StringMap.back().length()) {
+                    return ReturnStatus;
+                }
+            }
+            if (MapHeight + 1 > StringMap.size()) {
+                return ReturnStatus;
+            }
+            DPartials.resize(MapHeight + 1);
+            for (int Index = 0; Index < DTerrainMap.size(); Index++) {
+                DPartials[Index].resize(MapWidth + 1);
+                for (int Inner = 0; Inner < MapWidth + 1; Inner++) {
+                    if (('0' <= StringMap[Index][Inner]) && ('9' >= StringMap[Index][Inner])) {
+                        DPartials[Index][Inner] = StringMap[Index][Inner] - '0';
+                    } else if (('A' <= StringMap[Index][Inner]) && ('F' >= StringMap[Index][Inner])) {
+                        DPartials[Index][Inner] = StringMap[Index][Inner] - 'A' + 0x0A;
+                    } else {
+                        return ReturnStatus;
+                    }
+                }
+            }
+            ReturnStatus = true;
+        } catch (Exception E) {
+
         }
     }
 }
