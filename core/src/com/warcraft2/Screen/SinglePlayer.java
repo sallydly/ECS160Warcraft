@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.warcraft2.parser.MapParser;
 
 /**
  * Created by hqmai on 10/21/17.
@@ -31,6 +32,8 @@ public class SinglePlayer implements Screen {
     private Table table;
     private TextButton backButton;
 
+    private MapParser map;
+
     @Override
     public void show() {
 
@@ -46,7 +49,9 @@ public class SinglePlayer implements Screen {
         tile.setScale(5);
         tile.setPosition(300, 300);
 
-        backButton = new TextButton("Back", skin);
+        //TODO: this line is for testing purpose, delete it later
+        backButton = new TextButton((new MapParser(Gdx.files.internal("map/bay.map"))).getName(), skin);
+        //backButton = new TextButton("Back", skin);
 
         backButton.addListener(new ClickListener() {
             @Override
@@ -60,10 +65,15 @@ public class SinglePlayer implements Screen {
         table.add(backButton);
         table.align(Align.bottomLeft);
 
+
+
         stage = new Stage();
-        stage.addActor(table);
+        //stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+
+        map = new MapParser(Gdx.files.internal("map/bay.map"));
+
 
 
 
@@ -85,6 +95,12 @@ public class SinglePlayer implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
+
+        for(int i = 0; i < map.getHeight(); i++) {
+            for(int j = 0; j < map.getHeight(); j++) {
+                map.spriteAt(i, j).draw(batch);
+            }
+        }
 
 
 
