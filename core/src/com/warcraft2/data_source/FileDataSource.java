@@ -1,6 +1,8 @@
-package com.warcraft2;
+package com.warcraft2.data_source;
 
 // Java packages
+
+import com.warcraft2.data_source.DataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +22,8 @@ public class FileDataSource implements DataSource
             DFileStream = new FileInputStream(DFileHandle);
     }
 
-    public String Read(int bytesToRead) throws IOException {
+    @Override
+    public String read(int bytesToRead) throws IOException {
             String InString = "";
             byte[] InBytes = new byte[bytesToRead];
             int BytesRead = DFileStream.read(InBytes);
