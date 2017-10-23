@@ -4,10 +4,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,7 +26,7 @@ import com.warcraft2.parser.MapParser;
  * Created by hqmai on 10/21/17.
  */
 
-public class SinglePlayer implements Screen {
+public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private TextureAtlas terrain;
     private SpriteBatch batch;
@@ -33,6 +38,8 @@ public class SinglePlayer implements Screen {
     private TextButton backButton;
 
     private MapParser map;
+
+    private OrthographicCamera camera;
 
     @Override
     public void show() {
@@ -72,8 +79,10 @@ public class SinglePlayer implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new MapParser(Gdx.files.internal("map/hedges.map"));
-
+        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
+        Gdx.input.setInputProcessor(new GestureDetector(this));
     }
 
     @Override
@@ -82,20 +91,19 @@ public class SinglePlayer implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-
+        camera.update();
+        map.render(camera);
+        /*
         for(int i = 0; i < map.getHeight(); i++) {
             for(int j = 0; j < map.getHeight(); j++) {
                 map.spriteAt(i, j).draw(batch);
             }
-        }
-
-
-
-
+        }*/
         batch.end();
 
+        /*
         stage.act(delta);
-        stage.draw();
+        stage.draw();*/
     }
 
     @Override
@@ -123,5 +131,53 @@ public class SinglePlayer implements Screen {
         terrain.dispose();
         stage.dispose();
         skin.dispose();
+        map.dispose();
+    }
+
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        camera.translate(-deltaX,deltaY);
+        camera.update();
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        return false;
+    }
+
+    @Override
+    public void pinchStop() {
+
     }
 }
