@@ -72,20 +72,7 @@ public class SinglePlayer implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
-        map = new MapParser(Gdx.files.internal("map/bay.map"));
-
-
-
-
-
-
-
-
-
-
-
-
-
+        map = new MapParser(Gdx.files.internal("map/hedges.map"));
 
     }
 
