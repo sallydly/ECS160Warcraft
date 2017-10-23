@@ -80,8 +80,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         table.add(backButton);
         table.align(Align.bottomLeft);
 
-
-
         stage = new Stage();
         //stage.addActor(table);
 
@@ -108,6 +106,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }*/
         batch.end();
+
 
         /*
         stage.act(delta);
