@@ -125,7 +125,7 @@ public class TerrainMap {
     boolean LoadMap(DataSource source) {
         CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
         String tempString;
-        Vector<String> tokens;
+        Vector<String> tokens = new Vector<String>();
         int mapWidth, mapHeight;
         boolean returnStatus = false;
 
@@ -207,16 +207,15 @@ public class TerrainMap {
                             break;
                         default:
                             return returnStatus;
-                            break;
                     }
                     if (j >= 1) {
                         //TODO: Implement to_underlying function
-                        if (!DAllowedAdjacent[to_underlying(dTerrainMap.get(i).get(j))][to_underlying(dTerrainMap.get(i).get(j-1))]) {
+                        if (!DAllowedAdjacent[dTerrainMap.get(i).get(j).ordinal()][dTerrainMap.get(i).get(j-1).ordinal()]) {
                             return returnStatus;
                         }
                     }
                     if (i >= 1) {
-                        if (!DAllowedAdjacent[to_underlying(dTerrainMap.get(i).get(j))][to_underlying(dTerrainMap.get(i-1).get(j)]) {
+                        if (!DAllowedAdjacent[dTerrainMap.get(i).get(j).ordinal()][dTerrainMap.get(i-1).get(j).ordinal()]) {
                             return returnStatus;
                         }
                     }
