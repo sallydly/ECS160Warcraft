@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.warcraft2" >
+    package="com.warcraftII" >
 
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="20" />
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="20" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.warcraft2.AndroidLauncher"
+            android:name="com.warcraftII.AndroidLauncher"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
