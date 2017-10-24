@@ -25,12 +25,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextureAtlas terrain;
     private SpriteBatch batch;
     private Sprite tile;
-    private Music music;
+    private Music readySound;
 
     private Stage stage;
     private Skin skin;
     private Table table;
-    private TextButton backButton;
 
     private MapParser map;
 
@@ -38,7 +37,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
-        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
+        //Implemented just to achieve hard goal. Not needed
+        this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
 
     @Override
@@ -56,20 +56,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         tile.setScale(5);
         tile.setPosition(300, 300);
 
-        //TODO: this line is for testing purpose, delete it later
-        backButton = new TextButton((new MapParser(Gdx.files.internal("map/bay.map"))).getName(), skin);
-        //backButton = new TextButton("Back", skin);
-
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MainMenu(game));
-            }
-        });
-
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.add(backButton);
         table.align(Align.bottomLeft);
 
         stage = new Stage();
@@ -140,7 +128,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        music.play();
+        readySound.play();
         return false;
     }
 
