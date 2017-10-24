@@ -1,4 +1,4 @@
-package com.warcraft2.parser;
+package com.warcraftII.parser;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -14,10 +14,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 import java.util.StringTokenizer;
-
-/**
- * Created by hqmai on 10/22/17.
- */
 
 public class MapParser {
 

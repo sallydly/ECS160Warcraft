@@ -1,16 +1,13 @@
-package com.warcraft2.Screen;
+package com.warcraftII.screens;
 
 import com.badlogic.gdx.Screen;
-import com.warcraft2.Warcraft;
+import com.warcraftII.Warcraft;
 
-/**
- * Created by Kevin on 10/20/2017.
- */
 
-public class Options implements Screen {
+public class MultiPlayer implements Screen {
     private Warcraft game;
 
-    public Options(Warcraft game) {
+    public MultiPlayer(Warcraft game) {
         this.game = game;
     }
 

@@ -1,18 +1,14 @@
-package com.warcraft2.Screen;
+package com.warcraftII.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,12 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.warcraft2.Warcraft;
-import com.warcraft2.parser.MapParser;
-
-/**
- * Created by hqmai on 10/21/17.
- */
+import com.warcraftII.Warcraft;
+import com.warcraftII.parser.MapParser;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Warcraft game;
@@ -44,7 +36,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private OrthographicCamera camera;
 
-    SinglePlayer(Warcraft game) {
+    SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }

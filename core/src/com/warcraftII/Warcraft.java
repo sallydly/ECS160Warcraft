@@ -1,8 +1,8 @@
-package com.warcraft2;
+package com.warcraftII;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.warcraft2.Screen.Splash;
+import com.warcraftII.screens.Splash;
 
 //  Game class also implements ApplicationListener
 public class Warcraft extends Game {

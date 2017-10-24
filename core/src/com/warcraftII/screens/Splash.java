@@ -1,4 +1,4 @@
-package com.warcraft2.Screen;
+package com.warcraftII.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -6,15 +6,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.warcraft2.Warcraft;
-
-/**
- * Created by hqmai on 10/20/17.
- */
 
 public class Splash implements Screen {
 
-    private Warcraft game;
+    private com.warcraftII.Warcraft game;
     private SpriteBatch batch;
     private Sprite splash;
     private Texture texture;
@@ -24,7 +19,7 @@ public class Splash implements Screen {
     /**
      * @param g contains game parameters passed in from the caller using setScreen()
      */
-    public Splash(Warcraft g) {
+    public Splash(com.warcraftII.Warcraft g) {
         game = g;
         batch = g.batch;
     }
