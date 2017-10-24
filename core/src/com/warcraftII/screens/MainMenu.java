@@ -46,8 +46,8 @@ public class MainMenu implements Screen {
         Table menuTable = new Table();
         menuTable.setFillParent(true);
 
-        TextButton singlePlayerButton = new TextButton("Play Single-Player", skin);
-        TextButton multiPlayerButton = new TextButton("Play Multi-Player", skin);
+        TextButton singlePlayerButton = new TextButton("Single Player Game", skin);
+        TextButton multiPlayerButton = new TextButton("Multi Player Game", skin);
         TextButton optionsButton = new TextButton("Options", skin);
 
         singlePlayerButton.getLabel().setFontScale(2, 2);
