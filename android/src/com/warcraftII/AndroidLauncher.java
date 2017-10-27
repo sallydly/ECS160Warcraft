@@ -1,10 +1,10 @@
-package com.warcraft2;
+package com.warcraftII;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.warcraft2.MainActivity;
+import com.warcraftII.MainActivity;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

@@ -1,20 +1,21 @@
-package com.warcraft2.terrain;
+package com.warcraftII.terrain;
 
 /**
  * Created by Kevin on 10/23/2017.
  */
 
-public enum TileType {
+public enum TerrainTileType {
     None, // = 0 (Java enum starts indexing at 0)
     DarkGrass,
     LightGrass,
     DarkDirt,
     LightDirt,
     Rock,
-    Rubble,
+    RockPartial,
     Forest,
-    Stump,
+    ForestPartial,
     DeepWater,
     ShallowWater,
     Max
 }
+

@@ -1,8 +1,8 @@
-package com.warcraft2.data_source;
+package com.warcraftII.data_source;
 
 // Java packages
 
-import com.warcraft2.data_source.DataSource;
+import com.warcraftII.data_source.DataSource;
 
 import java.io.File;
 import java.io.FileInputStream;

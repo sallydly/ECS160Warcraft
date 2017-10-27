@@ -1,6 +1,6 @@
-package com.warcraft2;
+package com.warcraftII;
 
-import com.warcraft2.data_source.DataSource;
+import com.warcraftII.data_source.DataSource;
 
 import java.io.IOException;
 import java.util.Vector;

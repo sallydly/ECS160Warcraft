@@ -1,4 +1,4 @@
-package com.warcraft2;
+package com.warcraftII;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
