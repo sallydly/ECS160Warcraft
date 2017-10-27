@@ -1,4 +1,4 @@
-package com.warcraft2.data_source;
+package com.warcraftII.data_source;
 
 import java.io.IOException;
 

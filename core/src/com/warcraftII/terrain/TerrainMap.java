@@ -1,8 +1,8 @@
-package com.warcraft2.terrain;
+package com.warcraftII.terrain;
 
-import com.warcraft2.Tokenizer;
-import com.warcraft2.data_source.CommentSkipLineDataSource;
-import com.warcraft2.data_source.DataSource;
+import com.warcraftII.Tokenizer;
+import com.warcraftII.data_source.CommentSkipLineDataSource;
+import com.warcraftII.data_source.DataSource;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +23,7 @@ public class TerrainMap {
         {true,  false, false, false, true,  false, false, false, false, true,  true },
     };
     protected List<List<TileType>> dMap;
-    protected List<List<TerrainTileType>> dTerrainMap;
+    protected List<List<com.warcraftII.terrain.TerrainTileType>> dTerrainMap;
     protected List<List<Byte>> dPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
     protected List<List<Integer>> dMapIndices;
     protected boolean dRendered;
@@ -54,65 +54,65 @@ public class TerrainMap {
      * @param[in] index The index that will be returned
      */
     protected void CalculateTileTypeAndIndex(int x, int y, TileType type, int index) {
-        TerrainTileType UL = dTerrainMap.get(y).get(x);
-        TerrainTileType UR = dTerrainMap.get(y).get(x + 1);
-        TerrainTileType LL = dTerrainMap.get(y + 1).get(x);
-        TerrainTileType LR = dTerrainMap.get(y + 1).get(x + 1);
+        com.warcraftII.terrain.TerrainTileType UL = dTerrainMap.get(y).get(x);
+        com.warcraftII.terrain.TerrainTileType UR = dTerrainMap.get(y).get(x + 1);
+        com.warcraftII.terrain.TerrainTileType LL = dTerrainMap.get(y + 1).get(x);
+        com.warcraftII.terrain.TerrainTileType LR = dTerrainMap.get(y + 1).get(x + 1);
         int TypeIndex = ((dPartials.get(y).get(x) & 0x8) >> 3) | ((dPartials.get(y).get(x + 1) & 0x4) >> 1) | ((dPartials.get(y + 1).get(x) & 0x2) << 1) | ((dPartials.get(y + 1).get(x + 1) & 0x1) << 3);
 
         // TODO: all == may need to be refactored to .equals
-        if ((TerrainTileType.DarkGrass == UL) || (TerrainTileType.DarkGrass == UR) || (TerrainTileType.DarkGrass == LL) || (TerrainTileType.DarkGrass == LR)) {
-            TypeIndex &= (TerrainTileType.DarkGrass == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.DarkGrass == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.DarkGrass == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.DarkGrass == LR) ? 0xF : 0x7;
+        if ((com.warcraftII.terrain.TerrainTileType.DarkGrass == UL) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == UR) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == LL) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == LR) ? 0xF : 0x7;
             type = TileType.DarkGrass;
             index = TypeIndex;
-        } else if ((TerrainTileType.DarkDirt == UL) || (TerrainTileType.DarkDirt == UR) || (TerrainTileType.DarkDirt == LL) || (TerrainTileType.DarkDirt == LR)) {
-            TypeIndex &= (TerrainTileType.DarkDirt == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.DarkDirt == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.DarkDirt == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.DarkDirt == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.DarkDirt == UL) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == UR) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == LL) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == LR) ? 0xF : 0x7;
             type = TileType.DarkDirt;
             index = TypeIndex;
-        } else if ((TerrainTileType.DeepWater == UL) || (TerrainTileType.DeepWater == UR) || (TerrainTileType.DeepWater == LL) || (TerrainTileType.DeepWater == LR)) {
-            TypeIndex &= (TerrainTileType.DeepWater == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.DeepWater == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.DeepWater == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.DeepWater == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.DeepWater == UL) || (com.warcraftII.terrain.TerrainTileType.DeepWater == UR) || (com.warcraftII.terrain.TerrainTileType.DeepWater == LL) || (com.warcraftII.terrain.TerrainTileType.DeepWater == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == LR) ? 0xF : 0x7;
             type = TileType.DeepWater;
             index = TypeIndex;
-        } else if ((TerrainTileType.ShallowWater == UL) || (TerrainTileType.ShallowWater == UR) || (TerrainTileType.ShallowWater == LL) || (TerrainTileType.ShallowWater == LR)) {
-            TypeIndex &= (TerrainTileType.ShallowWater == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.ShallowWater == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.ShallowWater == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.ShallowWater == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.ShallowWater == UL) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == UR) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == LL) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == LR) ? 0xF : 0x7;
             type = TileType.ShallowWater;
             index = TypeIndex;
-        } else if ((TerrainTileType.Rock == UL) || (TerrainTileType.Rock == UR) || (TerrainTileType.Rock == LL) || (TerrainTileType.Rock == LR)) {
-            TypeIndex &= (TerrainTileType.Rock == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.Rock == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.Rock == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.Rock == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.Rock == UL) || (com.warcraftII.terrain.TerrainTileType.Rock == UR) || (com.warcraftII.terrain.TerrainTileType.Rock == LL) || (com.warcraftII.terrain.TerrainTileType.Rock == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == LR) ? 0xF : 0x7;
             type = TypeIndex != 0 ? TileType.Rock : TileType.Rubble;
             index = TypeIndex;
-        } else if ((TerrainTileType.Forest == UL) || (TerrainTileType.Forest == UR) || (TerrainTileType.Forest == LL) || (TerrainTileType.Forest == LR)) {
-            TypeIndex &= (TerrainTileType.Forest == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.Forest == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.Forest == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.Forest == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.Forest == UL) || (com.warcraftII.terrain.TerrainTileType.Forest == UR) || (com.warcraftII.terrain.TerrainTileType.Forest == LL) || (com.warcraftII.terrain.TerrainTileType.Forest == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == LR) ? 0xF : 0x7;
             if (TypeIndex != 0) {
                 type = TileType.Forest;
                 index = TypeIndex;
             } else {
                 type = TileType.Stump;
-                index = ((TerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((TerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((TerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((TerrainTileType.Forest == LR) ? 0x8 : 0x0);
+                index = ((com.warcraftII.terrain.TerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == LR) ? 0x8 : 0x0);
             }
-        } else if ((TerrainTileType.LightDirt == UL) || (TerrainTileType.LightDirt == UR) || (TerrainTileType.LightDirt == LL) || (TerrainTileType.LightDirt == LR)) {
-            TypeIndex &= (TerrainTileType.LightDirt == UL) ? 0xF : 0xE;
-            TypeIndex &= (TerrainTileType.LightDirt == UR) ? 0xF : 0xD;
-            TypeIndex &= (TerrainTileType.LightDirt == LL) ? 0xF : 0xB;
-            TypeIndex &= (TerrainTileType.LightDirt == LR) ? 0xF : 0x7;
+        } else if ((com.warcraftII.terrain.TerrainTileType.LightDirt == UL) || (com.warcraftII.terrain.TerrainTileType.LightDirt == UR) || (com.warcraftII.terrain.TerrainTileType.LightDirt == LL) || (com.warcraftII.terrain.TerrainTileType.LightDirt == LR)) {
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == UL) ? 0xF : 0xE;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == UR) ? 0xF : 0xD;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == LL) ? 0xF : 0xB;
+            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == LR) ? 0xF : 0x7;
             type = TileType.LightDirt;
             index = TypeIndex;
         } else {
@@ -176,34 +176,34 @@ public class TerrainMap {
                 for (int j = 0; j < mapWidth + 1; j++) {
                     switch (StringMap.get(i).charAt(j)) {
                         case 'G':
-                            dTerrainMap.get(i).set(j, TerrainTileType.DarkGrass);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DarkGrass);
                             break;
                         case 'g':
-                            dTerrainMap.get(i).set(j, TerrainTileType.LightGrass);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.LightGrass);
                             break;
                         case 'D':
-                            dTerrainMap.get(i).set(j, TerrainTileType.DarkDirt);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DarkDirt);
                             break;
                         case 'd':
-                            dTerrainMap.get(i).set(j, TerrainTileType.LightDirt);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.LightDirt);
                             break;
                         case 'R':
-                            dTerrainMap.get(i).set(j, TerrainTileType.Rock);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.Rock);
                             break;
                         case 'r':
-                            dTerrainMap.get(i).set(j, TerrainTileType.RockPartial);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.RockPartial);
                             break;
                         case 'F':
-                            dTerrainMap.get(i).set(j, TerrainTileType.Forest);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.Forest);
                             break;
                         case 'f':
-                            dTerrainMap.get(i).set(j, TerrainTileType.ForestPartial);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.ForestPartial);
                             break;
                         case 'W':
-                            dTerrainMap.get(i).set(j, TerrainTileType.DeepWater);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DeepWater);
                             break;
                         case 'w':
-                            dTerrainMap.get(i).set(j, TerrainTileType.ShallowWater);
+                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.ShallowWater);
                             break;
                         default:
                             return returnStatus;

@@ -1,6 +1,7 @@
 
-package com.warcraft2.data_source;
+package com.warcraftII.data_source;
 
+import com.warcraftII.data_source.DataSource;
 import java.io.IOException;
 
 public class CommentSkipLineDataSource extends LineDataSource
