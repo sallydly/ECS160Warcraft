@@ -2,235 +2,300 @@ package com.warcraftII.position;
 
 import com.warcraftII.GameDataTypes.*;
 
+import java.util.ListIterator;
 import java.util.Vector;
 
 /**
- * CAUTION: This doesnt work as of 10/27/17
- * I'm in the middle of porting. Name refactoring will be done once it is all ported
- *
  * Created by ajc on 10/27/17.
- * Porting from position.cpp
- */
-
-/*
- * TODO: Refactor names for all the following
- * HalfTileWidth()
- * HalfTileHeight()
+ * Ported from position.cpp
  */
 
 public class Position {
 
-    protected:
-        int DX;
-        int DY;
+    protected int DX;
+    protected int DY;
 
-        static int DTileWidth;
-        static int DTileHeight;
-        static int DHalfTileWidth;
-        static int DHalfTileHeight;
+    protected static int DTileWidth;
+    protected static int DTileHeight;
+    protected static int DHalfTileWidth;
+    protected static int DHalfTileHeight;
 
-        //TODO match these vectors to the ones in position.cpp
-        static Vector<Vector<EDirection>> DOctant;
-        static Vector< Vector < EDirection > > DTileDirections;
+    /*
+     * Should call initVectors once a Position object is instantiated
+     */
+    static {
+        initVectors();
+    }
 
-        Position(int x, int y) {
-            DX = x;
-            DY = y;
+    protected static Vector< Vector < EDirection > > DOctant;
+    protected static Vector< Vector < EDirection > > DTileDirections;
+
+    /*
+     * Fills the direction vectors in DOctant and DTileDirections
+     * There is no initializer list construct for vectors
+     */
+    static protected void initVectors() {
+
+        Vector<EDirection> temp1 = new Vector<EDirection>(1);
+        Vector<EDirection> temp2 = new Vector<EDirection>(3);
+        Vector<EDirection> temp3 = new Vector<EDirection>(3);
+        Vector<EDirection> temp4 = new Vector<EDirection>(3);
+
+        //Initialize DOctant
+        temp1.add(EDirection.Max);
+        DOctant.add(temp1);
+
+        //Create the inner vectors for DTileDirections
+        //temp2 is the first inner vector
+        temp2.add(EDirection.NorthWest);
+        temp2.add(EDirection.North);
+        temp2.add(EDirection.NorthEast);
+
+        //temp3 is the second inner vector
+        temp3.add(EDirection.West);
+        temp3.add(EDirection.Max);
+        temp3.add(EDirection.East);
+
+        //temp4 is the third inner vector
+        temp4.add(EDirection.SouthWest);
+        temp4.add(EDirection.South);
+        temp4.add(EDirection.SouthEast);
+
+        DTileDirections.add(temp2);
+        DTileDirections.add(temp3);
+        DTileDirections.add(temp4);
+    }
+
+    protected Position() {
+        DX = 0;
+        DY = 0;
+    }
+    protected Position(int x, int y) {
+        DX = x;
+        DY = y;
+    }
+
+    protected Position(Position pos) {
+        DX = pos.DX;
+        DY = pos.DY;
+    }
+
+    //Position &operator=(Position pos);
+
+    protected void set(int x, int y) {
+        DX = x;
+        DY = y;
+    }
+
+    protected void set(Position pos) {
+        DX = pos.DX;
+        DY = pos.DY;
+    }
+
+
+    /*
+     * Replaces overloaded == from C++
+     * Negate with ! to get != functionality
+     */
+    protected boolean equals(Position pos) {
+        return (DX == pos.DX) && (DY == pos.DY);
+    }
+
+    /*
+     * Not sure what this does / how it gets directionTo yet...
+     * A.J. Collins 10/27
+     */
+    protected EDirection directionTo(Position pos){
+        Position deltaPosition = new Position((pos.DX - DX), (pos.DY - DY));
+        int divX = deltaPosition.DX / halfTileWidth(); //How does this avoid divide by zero?
+        int divY = deltaPosition.DY / halfTileHeight();
+        int div;
+
+        //makes sure they're positive
+        divX = 0 > divX ? -divX : divX;
+        divY = 0 > divY ? -divY : divY;
+
+        //Sets div to the greater of divx and divy
+        div = divX > divY ? divX : divY;
+
+        if(div != 0){
+            deltaPosition.DX /= div;
+            deltaPosition.DY /= div;
         }
+        deltaPosition.DX += halfTileWidth();
+        deltaPosition.DY += halfTileHeight();
+        if(0 > deltaPosition.DX){
+            deltaPosition.DX = 0;
+        }
+        if(0 > deltaPosition.DY){
+            deltaPosition.DY = 0;
+        }
+        if(tileWidth() <= deltaPosition.DX){
+            deltaPosition.DX = tileWidth() - 1;
+        }
+        if(tileHeight() <= deltaPosition.DY){
+            deltaPosition.DY = tileHeight() - 1;
+        }
+        return deltaPosition.tileOctant();
+    }
 
-        Position(Position pos);
+    protected EDirection tileOctant() {
+        return DOctant.get(DY % DTileHeight).get(DX % DTileWidth);
+    }
 
-        //Position &operator=(Position pos);
+    /*
+     * Gets the distance squared between two Positions
+     */
+    protected int distanceSquared(Position pos) {
+        int deltaX = pos.DX - DX;
+        int deltaY = pos.DY - DY;
 
-        bool equals(Position pos);
+        return deltaX * deltaX + deltaY * deltaY;
+    }
+
+    /*
+     * @param Position
+     * @return long
+     *
+     * A fast way to calculate the integer square root
+     * A.J. Collins
+     */
+    protected long distance(Position pos) {
+
+        long distanceSquared, result, one;
+
+        distanceSquared = distanceSquared(pos);
+        result = 0;
 
         /*
-         * Not sure what this does / how it gets diretction to yet...
-         * A.J. Collins 10/27
+         * The following block sets one as the highest power of 4
+         * that is also <= distanceSquared
          */
-        EDirection DirectionTo(Position pos){
-            Position DeltaPosition(pos.DX - DX, pos.DY - DY);
-            int DivX = DeltaPosition.DX / HalfTileWidth(); //How does this avoid divide by zero?
-            int DivY = DeltaPosition.DY / HalfTileHeight();
-            int Div;
-
-            //makes sure they're positive
-            DivX = 0 > DivX ? -DivX : DivX;
-            DivY = 0 > DivY ? -DivY : DivY;
-
-            //Sets div to the greater of divx and divy
-            Div = DivX > DivY ? DivX : DivY;
-
-            if(Div){
-                DeltaPosition.DX /= Div;
-                DeltaPosition.DY /= Div;
-            }
-            DeltaPosition.DX += HalfTileWidth();
-            DeltaPosition.DY += HalfTileHeight();
-            if(0 > DeltaPosition.DX){
-                DeltaPosition.DX = 0;
-            }
-            if(0 > DeltaPosition.DY){
-                DeltaPosition.DY = 0;
-            }
-            if(TileWidth() <= DeltaPosition.DX){
-                DeltaPosition.DX = TileWidth() - 1;
-            }
-            if(TileHeight() <= DeltaPosition.DY){
-                DeltaPosition.DY = TileHeight() - 1;
-            }
-            return DeltaPosition.TileOctant();
+        one = 1 << 30; //equivalent to 1073741824 in decimal
+        while(one > distanceSquared){
+            one >>= 2;
         }
 
-        EDirection TileOctant();
-
-        /*
-         * Gets the distance squared between two positions
-         */
-        int DistanceSquared(Position pos) {
-            int deltaX = pos.DX - DX;
-            int deltaY = pos.DY - DY;
-
-            return deltaX * deltaX + deltaY * deltaY;
-        }
-
-        /*
-         * @param Position
-         * @return long
-         *
-         * A fast way to calculate the integer square root
-         * A.J. Collins
-         */
-        int Distance(Position pos) {
-
-            long distanceSquared, result, one;
-
-            distanceSquared = DistanceSquared(pos);
-            result = 0;
-
-            /*
-             * The following block sets one as the highest power of 4
-             * that is also <= distanceSquared
-             */
-            one = 1 << 30; //equivalent to 1073741824 in decimal
-            while(one > distanceSquared){
-                one >>= 2;
+        while(0 != one){
+            if(distanceSquared >= result + one){
+                distanceSquared -= result + one;
+                result += one << 1;  // <-- faster than 2 * one
             }
-
-            while(0 != one){
-                if(distanceSquared >= result + one){
-                    distanceSquared -= result + one;
-                    result += one << 1;  // <-- faster than 2 * one
-                }
-                result >>= 1;
-                one >>= 2;
-            }
-            return result;
+            result >>= 1;
+            one >>= 2;
         }
+        return result;
+    }
 
-    public:
-    int X() {
+    public int X() {
         return DX;
-    };
+    }
 
-    int setX(int x){
+    public int X(int x){
         return DX = x;
-    };
+    }
 
-    int IncrementX(int x){
+    public int incrementX(int x){
         DX += x;
         return DX;
-    };
+    }
 
-    int DecrementX(int x){
+    public int decrementX(int x){
         DX -= x;
         return DX;
-    };
+    }
 
-    int Y(){
+    public int Y(){
         return DY;
-    };
+    }
 
-    int setY(int y){
+    public int Y(int y){
         return DY = y;
-    };
+    }
 
-    int IncrementY(int y){
+    public int incrementY(int y){
         DY += y;
         return DY;
-    };
+    }
 
-    int DecrementY(int y){
+    public int decrementY(int y){
         DY -= y;
         return DY;
-    };
+    }
 
-    static void SetTileDimensions(int width, int height){
+    /*
+     * FIXME. Having trouble resizing all vectors in DOctant
+     */
+    public static void setTileDimensions(int width, int height){
         if((0 < width) && (0 < height)) {
             DTileWidth = width;
             DTileHeight = height;
             DHalfTileWidth = width / 2;
             DHalfTileHeight = height / 2;
 
-            DOctant.resize(DTileHeight);
+            DOctant.setSize(DTileHeight);
 
-            //iterate through the vector
-            for(auto &Row : DOctant){
-                Row.resize(DTileWidth);
-            }
+            //iterate through the vector, resize each inner row
+            ListIterator itr = DOctant.listIterator();
+            DOctant.get(0).setSize(DTileWidth);
+            //FIXME
+            //Need to resize every vector in DOctant
+//            while(itr.hasNext()) {
+//                (itr.next()).setSize(DTileWidth);
+//            }
 
             for(int Y = 0; Y < DTileHeight; Y++){
                 for(int X = 0; X < DTileWidth; X++){
-                    int XDistance = X - DHalfTileWidth;
-                    int YDistance = Y - DHalfTileHeight;
-                    bool NegativeX = XDistance < 0;
-                    bool NegativeY = YDistance > 0; // Top of screen is 0
-                    double SinSquared;
+                    int xDistance = X - DHalfTileWidth;
+                    int yDistance = Y - DHalfTileHeight;
+                    boolean negativeX = xDistance < 0;
+                    boolean negativeY = yDistance > 0; // Top of screen is 0
+                    double sinSquared;
 
-                    XDistance *= XDistance;
-                    YDistance *= YDistance;
+                    xDistance *= xDistance;
+                    yDistance *= yDistance;
 
-                    if(0 == (XDistance + YDistance)){
-                        DOctant[Y][X] = EDirection::Max;
+                    if(0 == (xDistance + yDistance)){
+                        DOctant.get(Y).set(X, EDirection.Max);
                         continue;
                     }
-                    SinSquared = (double)YDistance / (XDistance + YDistance);
+                    sinSquared = (double)yDistance / (xDistance + yDistance);
 
-                    if(0.1464466094 > SinSquared){
+                    if(0.1464466094 > sinSquared){
                         // East or West
-                        if(NegativeX){
-                            DOctant[Y][X] = EDirection::West; // West
+                        if(negativeX){
+                            DOctant.get(Y).set(X, EDirection.West); // West
                         }
                         else{
-                            DOctant[Y][X] = EDirection::East; // East
+                            DOctant.get(Y).set(X, EDirection.East); // East
                         }
                     }
-                    else if(0.85355339059 > SinSquared){
+                    else if(0.85355339059 > sinSquared){
                         // NE, SE, SW, NW
-                        if(NegativeY){
-                            if(NegativeX){
-                                DOctant[Y][X] = EDirection::SouthWest; // SW
+                        if(negativeY){
+                            if(negativeX){
+                                DOctant.get(Y).set(X, EDirection.SouthWest); // SW
                             }
                             else{
-                                DOctant[Y][X] = EDirection::SouthEast; // SE
+                                DOctant.get(Y).set(X, EDirection.SouthEast); // SE
                             }
                         }
                         else{
-                            if(NegativeX){
-                                DOctant[Y][X] = EDirection::NorthWest; // NW
+                            if(negativeX){
+                                DOctant.get(Y).set(X, EDirection.NorthWest); // NW
                             }
                             else{
-                                DOctant[Y][X] = EDirection::NorthEast; // NE
+                                DOctant.get(Y).set(X, EDirection.NorthEast); // NE
                             }
                         }
                     }
                     else{
                         // North or South
-                        if(NegativeY){
-                            DOctant[Y][X] = EDirection::South; // South
+                        if(negativeY){
+                            DOctant.get(Y).set(X, EDirection.South); // South
                         }
                         else{
-                            DOctant[Y][X] = EDirection::North; // North
+                            DOctant.get(Y).set(X, EDirection.North); // North
                         }
                     }
                 }
@@ -238,20 +303,20 @@ public class Position {
         }
     }
 
-    static int TileWidth(){
+    public static int tileWidth(){
         return DTileWidth;
-    };
+    }
 
-    static int TileHeight(){
+    public static int tileHeight(){
         return DTileHeight;
-    };
+    }
 
-    static int HalfTileWidth(){
+    public static int halfTileWidth(){
         return DHalfTileWidth;
-    };
+    }
 
-    static int HalfTileHeight(){
+    public static int halfTileHeight(){
         return DHalfTileHeight;
-    };
+    }
 
 }
