@@ -22,6 +22,14 @@ public class FileDataSource implements DataSource
             DFileStream = new FileInputStream(DFileHandle);
     }
 
+    //Constructor from java.io.File object, instead of string
+    public FileDataSource(File file) throws IOException {
+        //TODO: Implement CPath.  For now, we just fill in the actual filename
+        //DFullPath = CPath::CurrentPath().Simplify(filename).ToString();
+        DFileHandle = file;
+        DFileStream = new FileInputStream(DFileHandle);
+    }
+
     @Override
     public String read(int bytesToRead) throws IOException {
             String InString = "";

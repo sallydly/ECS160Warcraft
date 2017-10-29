@@ -3,124 +3,174 @@ package com.warcraftII.terrain;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
+import com.warcraftII.terrain.TileTypes.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Vector;
 
 public class TerrainMap {
     protected static boolean[][] DAllowedAdjacent = {
-        {true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true },
-        {true,  true,  true,  false, false, false, false, false, false, false, false},
-        {true,  true,  true,  false, true,  false, false, true,  true,  false, false},
-        {true,  false, false, true,  true,  false, false, false, false, false, false},
-        {true,  false, true,  true,  true,  true,  true,  false, false, false, true },
-        {true,  false, false, false, true,  true,  true,  false, false, false, false},
-        {true,  false, false, false, true,  true,  true,  false, false, false, false},
-        {true,  false, true,  false, false, false, false, true,  true,  false, false},
-        {true,  false, true,  false, false, false, false, true,  true,  false, false},
-        {true,  false, false, false, false, false, false, false, false, true,  true },
-        {true,  false, false, false, true,  false, false, false, false, true,  true },
+            {true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true },
+            {true,  true,  true,  false, false, false, false, false, false, false, false},
+            {true,  true,  true,  false, true,  false, false, true,  true,  false, false},
+            {true,  false, false, true,  true,  false, false, false, false, false, false},
+            {true,  false, true,  true,  true,  true,  true,  false, false, false, true },
+            {true,  false, false, false, true,  true,  true,  false, false, false, false},
+            {true,  false, false, false, true,  true,  true,  false, false, false, false},
+            {true,  false, true,  false, false, false, false, true,  true,  false, false},
+            {true,  false, true,  false, false, false, false, true,  true,  false, false},
+            {true,  false, false, false, false, false, false, false, false, true,  true },
+            {true,  false, false, false, true,  false, false, false, false, true,  true },
     };
-    protected List<List<TileType>> dMap;
-    protected List<List<com.warcraftII.terrain.TerrainTileType>> dTerrainMap;
-    protected List<List<Byte>> dPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
-    protected List<List<Integer>> dMapIndices;
-    protected boolean dRendered;
-    String dMapName;
+    protected Vector<Vector<ETileType>> DMap;
+    protected Vector<Vector<ETerrainTileType>> DTerrainMap;
+    protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
+    protected Vector<Vector<Integer>> DMapIndices;
+    protected boolean DRendered;
+    String DMapName;
 
     TerrainMap() {
-        this.dRendered = false;
+        this.DRendered = false;
     }
 
     TerrainMap(final TerrainMap map) {
-        this.dTerrainMap = map.dTerrainMap;
-        this.dPartials = map.dPartials;
-        this.dMapName = map.dMapName;
-        this.dMap = map.dMap;
-        this.dMapIndices = map.dMapIndices;
-        this.dRendered = map.dRendered;
+        this.DTerrainMap = map.DTerrainMap;
+        this.DPartials = map.DPartials;
+        this.DMapName = map.DMapName;
+        this.DMap = map.DMap;
+        this.DMapIndices = map.DMapIndices;
+        this.DRendered = map.DRendered;
+    }
+
+    /*  The important get() functions of TerrainMap: */
+    ETileType TileType(int xindex, int yindex) {
+        if((-1 > xindex)||(-1 > yindex)){
+            return ETileType.None;
+        }
+        if(DMap.size() <= yindex+1){
+            return ETileType.None;
+        }
+        if(DMap.get(yindex+1).size() <= xindex+1){
+            return ETileType.None;
+        }
+        return DMap.get(yindex+1).get(xindex+1);
+    }
+
+    //TODO: Uncomment when CTilePosition is avaialable
+    /*
+    ETileType TileType(const CTilePosition &pos) const{
+        return TileType(pos.X(), pos.Y());
+    }
+    */
+
+    int TileTypeIndex(int xindex, int yindex) {
+        if((-1 > xindex)||(-1 > yindex)){
+            return -1;
+        }
+        if(DMapIndices.size() <= yindex+1){
+            return -1;
+        }
+        if(DMapIndices.get(yindex+1).size() <= xindex+1){
+            return -1;
+        }
+        return DMapIndices.get(yindex+1).get(xindex+1);
+    }
+
+    //TODO: Uncomment when CTilePosition is avaialable
+    /*
+    int TileTypeIndex(const CTilePosition &pos) const{
+        return TileTypeIndex(pos.X(), pos.Y());
+    }
+    */
+
+    ETerrainTileType TerrainTileType(int xindex, int yindex){
+        if((0 > xindex)||(0 > yindex)){
+            return ETerrainTileType.None;
+        }
+        if(DTerrainMap.size() <= yindex){
+            return ETerrainTileType.None;
+        }
+        if(DTerrainMap.get(yindex).size() <= xindex){
+            return ETerrainTileType.None;
+        }
+        return DTerrainMap.get(yindex).get(xindex);
+    }
+
+    //TODO: Uncomment when CTilePosition is avaialable
+    /*
+    ETerrainTileType TerrainTileType(const CTilePosition &pos) const{
+        return TerrainTileType(pos.X(), pos.Y());
+    }
+    */
+
+    byte TilePartial(int xindex, int yindex) {
+        if((0 > xindex)||(0 > yindex)){
+            return -1;
+        }
+        if(DPartials.size() <= yindex){
+            return -1;
+        }
+        if(DPartials.get(yindex).size() <= xindex){
+            return -1;
+        }
+        return DPartials.get(yindex).get(xindex);
+    }
+
+    //TODO: Uncomment when CTilePosition is avaialable
+    /*
+    uint8_t TilePartial(const CTilePosition &pos) const{
+        return TilePartial(pos.X(), pos.Y());
+    }
+    */
+
+
+    /*  The get() functions of TerrainMap for map metadata: */
+    /**
+     * Returns string containing the name of the map
+     *
+     * @param[in] Nothing
+     *
+     * @return string map name
+     *
+     */
+
+    String MapName(){
+        return DMapName;
     }
 
     /**
-     * Given a map coordiante, determines the ETileType based on its TerrainTileType
-     * and calculates the index of that tile.
+     * Returns the width of the map
      *
-     * @return Nothing, but the two parameters type and index are passed
-     * in as a reference and are updated in the function
-     * @param[in] x The x coordinate
-     * @param[in] y The y coordinate
-     * @param[in] type The ETileType that will be returned
-     * @param[in] index The index that will be returned
+     * @note the map is represented by a vector of vectors of TileTypes
+     *
+     * @param[in] Nothing
+     *
+     * @return int width of the map
+     *
      */
-    protected void CalculateTileTypeAndIndex(int x, int y, TileType type, int index) {
-        com.warcraftII.terrain.TerrainTileType UL = dTerrainMap.get(y).get(x);
-        com.warcraftII.terrain.TerrainTileType UR = dTerrainMap.get(y).get(x + 1);
-        com.warcraftII.terrain.TerrainTileType LL = dTerrainMap.get(y + 1).get(x);
-        com.warcraftII.terrain.TerrainTileType LR = dTerrainMap.get(y + 1).get(x + 1);
-        int TypeIndex = ((dPartials.get(y).get(x) & 0x8) >> 3) | ((dPartials.get(y).get(x + 1) & 0x4) >> 1) | ((dPartials.get(y + 1).get(x) & 0x2) << 1) | ((dPartials.get(y + 1).get(x + 1) & 0x1) << 3);
 
-        // TODO: all == may need to be refactored to .equals
-        if ((com.warcraftII.terrain.TerrainTileType.DarkGrass == UL) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == UR) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == LL) || (com.warcraftII.terrain.TerrainTileType.DarkGrass == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkGrass == LR) ? 0xF : 0x7;
-            type = TileType.DarkGrass;
-            index = TypeIndex;
-        } else if ((com.warcraftII.terrain.TerrainTileType.DarkDirt == UL) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == UR) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == LL) || (com.warcraftII.terrain.TerrainTileType.DarkDirt == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DarkDirt == LR) ? 0xF : 0x7;
-            type = TileType.DarkDirt;
-            index = TypeIndex;
-        } else if ((com.warcraftII.terrain.TerrainTileType.DeepWater == UL) || (com.warcraftII.terrain.TerrainTileType.DeepWater == UR) || (com.warcraftII.terrain.TerrainTileType.DeepWater == LL) || (com.warcraftII.terrain.TerrainTileType.DeepWater == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.DeepWater == LR) ? 0xF : 0x7;
-            type = TileType.DeepWater;
-            index = TypeIndex;
-        } else if ((com.warcraftII.terrain.TerrainTileType.ShallowWater == UL) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == UR) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == LL) || (com.warcraftII.terrain.TerrainTileType.ShallowWater == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.ShallowWater == LR) ? 0xF : 0x7;
-            type = TileType.ShallowWater;
-            index = TypeIndex;
-        } else if ((com.warcraftII.terrain.TerrainTileType.Rock == UL) || (com.warcraftII.terrain.TerrainTileType.Rock == UR) || (com.warcraftII.terrain.TerrainTileType.Rock == LL) || (com.warcraftII.terrain.TerrainTileType.Rock == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Rock == LR) ? 0xF : 0x7;
-            type = TypeIndex != 0 ? TileType.Rock : TileType.Rubble;
-            index = TypeIndex;
-        } else if ((com.warcraftII.terrain.TerrainTileType.Forest == UL) || (com.warcraftII.terrain.TerrainTileType.Forest == UR) || (com.warcraftII.terrain.TerrainTileType.Forest == LL) || (com.warcraftII.terrain.TerrainTileType.Forest == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.Forest == LR) ? 0xF : 0x7;
-            if (TypeIndex != 0) {
-                type = TileType.Forest;
-                index = TypeIndex;
-            } else {
-                type = TileType.Stump;
-                index = ((com.warcraftII.terrain.TerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((com.warcraftII.terrain.TerrainTileType.Forest == LR) ? 0x8 : 0x0);
-            }
-        } else if ((com.warcraftII.terrain.TerrainTileType.LightDirt == UL) || (com.warcraftII.terrain.TerrainTileType.LightDirt == UR) || (com.warcraftII.terrain.TerrainTileType.LightDirt == LL) || (com.warcraftII.terrain.TerrainTileType.LightDirt == LR)) {
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == UL) ? 0xF : 0xE;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == UR) ? 0xF : 0xD;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == LL) ? 0xF : 0xB;
-            TypeIndex &= (com.warcraftII.terrain.TerrainTileType.LightDirt == LR) ? 0xF : 0x7;
-            type = TileType.LightDirt;
-            index = TypeIndex;
-        } else {
-            // Error?
-            type = TileType.LightGrass;
-            index = 0xF;
+    int Width() {
+        if(DTerrainMap.size() > 0){
+            return DTerrainMap.get(0).size()-1;
         }
+        return 0;
     }
+
+    /**
+     * Returns the height of the map
+     *
+     * @note the map is represented by a vector of vectors of TileTypes
+     *
+     * @param[in] Nothing
+     *
+     * @return in height of the map
+     *
+     */
+
+    int Height() {
+        return DTerrainMap.size()-1;
+    }
+
 
     boolean LoadMap(DataSource source) {
         CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
@@ -129,11 +179,11 @@ public class TerrainMap {
         int mapWidth, mapHeight;
         boolean returnStatus = false;
 
-        dTerrainMap.clear();
+        DTerrainMap.clear();
 
         try {
-            dMapName = lineSource.read();
-            if(dMapName.isEmpty()) {
+            DMapName = lineSource.read();
+            if(DMapName.isEmpty()) {
                 return returnStatus;
             }
 
@@ -170,52 +220,52 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
-            dTerrainMap = dTerrainMap.subList(0, mapHeight + 1);
-            for (int i = 0; i < dTerrainMap.size(); i++) {
-                dTerrainMap.set(i, dTerrainMap.get(i).subList(0, mapWidth + 1));
+            DTerrainMap.setSize(mapHeight + 1);
+            for (int i = 0; i < DTerrainMap.size(); i++) {
+                DTerrainMap.get(i).setSize(mapWidth + 1);
                 for (int j = 0; j < mapWidth + 1; j++) {
                     switch (StringMap.get(i).charAt(j)) {
                         case 'G':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DarkGrass);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkGrass);
                             break;
                         case 'g':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.LightGrass);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.LightGrass);
                             break;
                         case 'D':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DarkDirt);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkDirt);
                             break;
                         case 'd':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.LightDirt);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.LightDirt);
                             break;
                         case 'R':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.Rock);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.Rock);
                             break;
                         case 'r':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.RockPartial);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.RockPartial);
                             break;
                         case 'F':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.Forest);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.Forest);
                             break;
                         case 'f':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.ForestPartial);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.ForestPartial);
                             break;
                         case 'W':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.DeepWater);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.DeepWater);
                             break;
                         case 'w':
-                            dTerrainMap.get(i).set(j, com.warcraftII.terrain.TerrainTileType.ShallowWater);
+                            DTerrainMap.get(i).set(j, ETerrainTileType.ShallowWater);
                             break;
                         default:
                             return returnStatus;
                     }
                     if (j >= 1) {
                         //TODO: Implement to_underlying function
-                        if (!DAllowedAdjacent[dTerrainMap.get(i).get(j).ordinal()][dTerrainMap.get(i).get(j-1).ordinal()]) {
+                        if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i).get(j-1).ordinal()]) {
                             return returnStatus;
                         }
                     }
                     if (i >= 1) {
-                        if (!DAllowedAdjacent[dTerrainMap.get(i).get(j).ordinal()][dTerrainMap.get(i-1).get(j).ordinal()]) {
+                        if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i-1).get(j).ordinal()]) {
                             return returnStatus;
                         }
                     }
@@ -235,14 +285,14 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
-            dPartials = dPartials.subList(0, mapHeight + 1);
-            for (int i = 0; i < dTerrainMap.size(); i++) {
-                dPartials.set(i, dPartials.get(i).subList(0, mapWidth + 1));
+            DPartials.setSize(mapHeight + 1);
+            for (int i = 0; i < DTerrainMap.size(); i++) {
+                DPartials.get(i).setSize(mapWidth + 1);
                 for (int j = 0; j < mapWidth + 1; j++) {
                     if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
-                        dPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
+                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
                     } else if (('A' <= StringMap.get(i).charAt(j)) && ('F' >= StringMap.get(i).charAt(j))) {
-                        dPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
+                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
                     } else {
                         return returnStatus;
                     }
@@ -254,4 +304,152 @@ public class TerrainMap {
         }
         return returnStatus;
     }
+    /**
+     * Constructs the ETileType 2D vector map (DMap) based on the
+     * TerrainMap and adds a rock tile border around the map
+     *
+     * @param[in] Nothing
+     *
+     * @return Nothing
+     *
+     */
+
+    void RenderTerrain(){
+        DMap.setSize(DTerrainMap.size()+1);
+        DMapIndices.setSize(DTerrainMap.size()+1);
+        for(int YPos = 0; YPos < DMap.size(); YPos++){
+            if((0 == YPos)||(DMap.size() - 1 == YPos)){
+                for(int XPos = 0; XPos < DTerrainMap.get(0).size() + 1; XPos++){
+                    SetTileTypeAndIndex(XPos,YPos,ETileType.Rock,0xF);
+                }
+            }
+            else{
+                for(int XPos = 0; XPos < DTerrainMap.get(YPos-1).size() + 1; XPos++){
+                    if((0 == XPos)||(DTerrainMap.get(YPos-1).size() == XPos)){
+                        SetTileTypeAndIndex(XPos,YPos,ETileType.Rock,0xF);
+                    }
+                    else{
+                        SetTileTypeAndIndex(XPos-1, YPos-1);
+                    }
+                }
+            }
+        }
+        DRendered = true;
+    }
+
+    /**
+     *
+     * Changed from CalculateTileTypeAndIndex...to SetTileTypeAndIndex
+     * Given a map coordinate, determines the ETileType based on its TerrainTileType
+     * and calculates the index of that tile.
+     *
+     * Changes DMap and DMapIndices at the x and y coordinates.
+     *
+     * @return Nothing
+     * @param[in] x The x coordinate
+     * @param[in] y The y coordinate
+     *
+     */
+    protected void SetTileTypeAndIndex(int x, int y) {
+        ETileType Type;
+        int Index;
+
+        ETerrainTileType UL = DTerrainMap.get(y).get(x);
+        ETerrainTileType UR = DTerrainMap.get(y).get(x + 1);
+        ETerrainTileType LL = DTerrainMap.get(y + 1).get(x);
+        ETerrainTileType LR = DTerrainMap.get(y + 1).get(x + 1);
+        int TypeIndex = ((DPartials.get(y).get(x) & 0x8) >> 3) | ((DPartials.get(y).get(x + 1) & 0x4) >> 1) | ((DPartials.get(y + 1).get(x) & 0x2) << 1) | ((DPartials.get(y + 1).get(x + 1) & 0x1) << 3);
+
+        if ((ETerrainTileType.DarkGrass == UL) || (ETerrainTileType.DarkGrass == UR) || (ETerrainTileType.DarkGrass == LL) || (ETerrainTileType.DarkGrass == LR)) {
+            TypeIndex &= (ETerrainTileType.DarkGrass == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.DarkGrass == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.DarkGrass == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.DarkGrass == LR) ? 0xF : 0x7;
+            Type = ETileType.DarkGrass;
+            Index = TypeIndex;
+        } else if ((ETerrainTileType.DarkDirt == UL) || (ETerrainTileType.DarkDirt == UR) || (ETerrainTileType.DarkDirt == LL) || (ETerrainTileType.DarkDirt == LR)) {
+            TypeIndex &= (ETerrainTileType.DarkDirt == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.DarkDirt == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.DarkDirt == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.DarkDirt == LR) ? 0xF : 0x7;
+            Type = ETileType.DarkDirt;
+            Index = TypeIndex;
+        } else if ((ETerrainTileType.DeepWater == UL) || (ETerrainTileType.DeepWater == UR) || (ETerrainTileType.DeepWater == LL) || (ETerrainTileType.DeepWater == LR)) {
+            TypeIndex &= (ETerrainTileType.DeepWater == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.DeepWater == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.DeepWater == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.DeepWater == LR) ? 0xF : 0x7;
+            Type = ETileType.DeepWater;
+            Index = TypeIndex;
+        } else if ((ETerrainTileType.ShallowWater == UL) || (ETerrainTileType.ShallowWater == UR) || (ETerrainTileType.ShallowWater == LL) || (ETerrainTileType.ShallowWater == LR)) {
+            TypeIndex &= (ETerrainTileType.ShallowWater == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.ShallowWater == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.ShallowWater == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.ShallowWater == LR) ? 0xF : 0x7;
+            Type = ETileType.ShallowWater;
+            Index = TypeIndex;
+        } else if ((ETerrainTileType.Rock == UL) || (ETerrainTileType.Rock == UR) || (ETerrainTileType.Rock == LL) || (ETerrainTileType.Rock == LR)) {
+            TypeIndex &= (ETerrainTileType.Rock == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.Rock == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.Rock == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.Rock == LR) ? 0xF : 0x7;
+            Type = TypeIndex != 0 ? ETileType.Rock : ETileType.Rubble;
+            Index = TypeIndex;
+        } else if ((ETerrainTileType.Forest == UL) || (ETerrainTileType.Forest == UR) || (ETerrainTileType.Forest == LL) || (ETerrainTileType.Forest == LR)) {
+            TypeIndex &= (ETerrainTileType.Forest == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.Forest == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.Forest == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.Forest == LR) ? 0xF : 0x7;
+            if (TypeIndex != 0) {
+                Type = ETileType.Forest;
+                Index = TypeIndex;
+            } else {
+                Type = ETileType.Stump;
+                Index = ((ETerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((ETerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((ETerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((ETerrainTileType.Forest == LR) ? 0x8 : 0x0);
+            }
+        } else if ((ETerrainTileType.LightDirt == UL) || (ETerrainTileType.LightDirt == UR) || (ETerrainTileType.LightDirt == LL) || (ETerrainTileType.LightDirt == LR)) {
+            TypeIndex &= (ETerrainTileType.LightDirt == UL) ? 0xF : 0xE;
+            TypeIndex &= (ETerrainTileType.LightDirt == UR) ? 0xF : 0xD;
+            TypeIndex &= (ETerrainTileType.LightDirt == LL) ? 0xF : 0xB;
+            TypeIndex &= (ETerrainTileType.LightDirt == LR) ? 0xF : 0x7;
+            Type = ETileType.LightDirt;
+            Index = TypeIndex;
+        } else {
+            Type = ETileType.LightGrass;
+            Index = 0xF;
+        }
+
+        DMap.get(y+1).add(Type);
+        DMapIndices.get(y+1).add(Index);
+
+/*  The y+1 is to compensate for its use in RenderMap()
+        ETileType Type;
+        int Index;
+        CalculateTileTypeAndIndex(XPos-1, YPos-1, Type, Index);
+        DMap[YPos].push_back(Type);
+        DMapIndices[YPos].push_back(Index);
+*/
+    }
+
+
+    /**
+     *
+     * Changed from CalculateTileTypeAndIndex...to SetTileTypeAndIndex
+     * Given a map coordinate, an ETileType, and an integer index,
+     *
+     * Changes DMap and DMapIndices at the x and y coordinates
+     * to the given ETileType and index
+     *
+     * @return Nothing
+     * @param[in] x The x coordinate
+     * @param[in] y The y coordinate
+     * @param[in] tile The ETileType
+     * @param[in] index The new index
+     *
+     */
+    protected void SetTileTypeAndIndex(int x, int y, ETileType type, int index) {
+        DMap.get(y).add(type);
+        DMapIndices.get(y).add(index);
+    }
+
 }
