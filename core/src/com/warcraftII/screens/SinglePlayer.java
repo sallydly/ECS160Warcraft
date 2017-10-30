@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -34,6 +35,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private MapParser map;
 
     private OrthographicCamera camera;
+
+    float initialScale = 1; //initial scale for zoom
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -156,7 +159,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
+        float ratio = initialDistance / distance;
+        camera.zoom = initialScale * ratio;
+        return true;
     }
 
     @Override
