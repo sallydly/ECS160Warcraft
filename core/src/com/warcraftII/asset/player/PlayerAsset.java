@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import javax.xml.crypto.Data;
 
+import static com.warcraftII.GameDataTypes.to_underlying;
+
 abstract class ActivatedPlayerCapability {
     protected PlayerAsset actor;
     protected PlayerData playerData;
