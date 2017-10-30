@@ -1,0 +1,230 @@
+
+stationary_assets.png
+size: 2048,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+barracks-construct-0
+  rotate: false
+  xy: 2, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blacksmith-construct-0
+  rotate: false
+  xy: 2, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+barracks-construct-1
+  rotate: false
+  xy: 132, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+barracks-inactive
+  rotate: false
+  xy: 262, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+barracks-place
+  rotate: false
+  xy: 392, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blacksmith-construct-1
+  rotate: false
+  xy: 522, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blacksmith-inactive
+  rotate: false
+  xy: 652, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blacksmith-place
+  rotate: false
+  xy: 782, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+cannontower-construct-0
+  rotate: false
+  xy: 912, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+cannontower-inactive
+  rotate: false
+  xy: 1042, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+castle-construct-0
+  rotate: false
+  xy: 1172, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+castle-inactive
+  rotate: false
+  xy: 1302, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+farm-construct-0
+  rotate: false
+  xy: 1432, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+farm-construct-1
+  rotate: false
+  xy: 1562, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+farm-inactive
+  rotate: false
+  xy: 1692, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+farm-place
+  rotate: false
+  xy: 1822, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+goldmine-active
+  rotate: false
+  xy: 2, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+goldmine-inactive
+  rotate: false
+  xy: 132, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+keep-construct-0
+  rotate: false
+  xy: 262, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+keep-inactive
+  rotate: false
+  xy: 392, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+lumbermill-construct-0
+  rotate: false
+  xy: 522, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+lumbermill-construct-1
+  rotate: false
+  xy: 652, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+lumbermill-inactive
+  rotate: false
+  xy: 782, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+lumbermill-place
+  rotate: false
+  xy: 912, 132
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+scouttower-construct-0
+  rotate: false
+  xy: 1042, 132
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+scouttower-construct-1
+  rotate: false
+  xy: 1172, 132
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+scouttower-inactive
+  rotate: false
+  xy: 1302, 132
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+scouttower-place
+  rotate: false
+  xy: 1432, 132
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+townhall-construct-0
+  rotate: false
+  xy: 1562, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+townhall-construct-1
+  rotate: false
+  xy: 1692, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+townhall-inactive
+  rotate: false
+  xy: 1822, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+townhall-place
+  rotate: false
+  xy: 2, 262
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
