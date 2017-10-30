@@ -3,6 +3,7 @@ package com.warcraftII.terrain;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
+import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain.TileTypes.*;
 
 import java.io.IOException;
@@ -56,12 +57,11 @@ public class TerrainMap {
         return DMap.get(yindex+1).get(xindex+1);
     }
 
-    //TODO: Uncomment when CTilePosition is avaialable
-    /*
-    public ETileType TileType(const CTilePosition &pos) const{
+
+    public ETileType TileType(TilePosition pos) {
         return TileType(pos.X(), pos.Y());
     }
-    */
+
 
     public int TileTypeIndex(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
@@ -76,12 +76,11 @@ public class TerrainMap {
         return DMapIndices.get(yindex+1).get(xindex+1);
     }
 
-    //TODO: Uncomment when CTilePosition is avaialable
-    /*
-    public int TileTypeIndex(const CTilePosition &pos) const{
+
+    public int TileTypeIndex(TilePosition pos) {
         return TileTypeIndex(pos.X(), pos.Y());
     }
-    */
+
 
     public ETerrainTileType TerrainTileType(int xindex, int yindex){
         if((0 > xindex)||(0 > yindex)){
@@ -96,12 +95,10 @@ public class TerrainMap {
         return DTerrainMap.get(yindex).get(xindex);
     }
 
-    //TODO: Uncomment when CTilePosition is avaialable
-    /*
-    public ETerrainTileType TerrainTileType(const CTilePosition &pos) const{
+
+    public ETerrainTileType TerrainTileType(TilePosition pos) {
         return TerrainTileType(pos.X(), pos.Y());
     }
-    */
 
     public byte TilePartial(int xindex, int yindex) {
         if((0 > xindex)||(0 > yindex)){
@@ -116,13 +113,9 @@ public class TerrainMap {
         return DPartials.get(yindex).get(xindex);
     }
 
-    //TODO: Uncomment when CTilePosition is avaialable
-    /*
-    public byte TilePartial(const CTilePosition &pos) const{
+    public byte TilePartial(TilePosition pos) {
         return TilePartial(pos.X(), pos.Y());
     }
-    */
-
 
     /*  The get() functions of TerrainMap for map metadata: */
     /**

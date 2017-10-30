@@ -225,9 +225,6 @@ public class Position {
         return DY;
     }
 
-    /*
-     * FIXME. Having trouble resizing all vectors in DOctant
-     */
     public static void setTileDimensions(int width, int height){
         if((0 < width) && (0 < height)) {
             DTileWidth = width;
