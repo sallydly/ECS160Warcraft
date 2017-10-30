@@ -10,12 +10,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.warcraftII.Warcraft;
 import com.warcraftII.parser.MapParser;
@@ -66,7 +63,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.input.setInputProcessor(stage);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        map = new MapParser(Gdx.files.internal("map/hedges.map"));
+        map = new MapParser(Gdx.files.internal("gameMap/hedges.gameMap"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
     }
@@ -80,9 +77,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         camera.update();
         map.render(camera);
         /*
-        for(int i = 0; i < map.getHeight(); i++) {
-            for(int j = 0; j < map.getHeight(); j++) {
-                map.spriteAt(i, j).draw(batch);
+        for(int i = 0; i < gameMap.getHeight(); i++) {
+            for(int j = 0; j < gameMap.getHeight(); j++) {
+                gameMap.spriteAt(i, j).draw(batch);
             }
         }*/
         batch.end();

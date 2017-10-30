@@ -124,13 +124,13 @@ public class TerrainMap {
     */
 
 
-    /*  The get() functions of TerrainMap for map metadata: */
+    /*  The get() functions of TerrainMap for gameMap metadata: */
     /**
-     * Returns string containing the name of the map
+     * Returns string containing the name of the gameMap
      *
      * @param[in] Nothing
      *
-     * @return string map name
+     * @return string gameMap name
      *
      */
 
@@ -139,13 +139,13 @@ public class TerrainMap {
     }
 
     /**
-     * Returns the width of the map
+     * Returns the width of the gameMap
      *
-     * @note the map is represented by a vector of vectors of TileTypes
+     * @note the gameMap is represented by a vector of vectors of TileTypes
      *
      * @param[in] Nothing
      *
-     * @return int width of the map
+     * @return int width of the gameMap
      *
      */
 
@@ -157,13 +157,13 @@ public class TerrainMap {
     }
 
     /**
-     * Returns the height of the map
+     * Returns the height of the gameMap
      *
-     * @note the map is represented by a vector of vectors of TileTypes
+     * @note the gameMap is represented by a vector of vectors of TileTypes
      *
      * @param[in] Nothing
      *
-     * @return in height of the map
+     * @return in height of the gameMap
      *
      */
 
@@ -305,8 +305,8 @@ public class TerrainMap {
         return returnStatus;
     }
     /**
-     * Constructs the ETileType 2D vector map (DMap) based on the
-     * TerrainMap and adds a rock tile border around the map
+     * Constructs the ETileType 2D vector gameMap (DMap) based on the
+     * TerrainMap and adds a rock tile border around the gameMap
      *
      * @param[in] Nothing
      *
@@ -340,7 +340,7 @@ public class TerrainMap {
     /**
      *
      * Changed from CalculateTileTypeAndIndex...to SetTileTypeAndIndex
-     * Given a map coordinate, determines the ETileType based on its TerrainTileType
+     * Given a gameMap coordinate, determines the ETileType based on its TerrainTileType
      * and calculates the index of that tile.
      *
      * Changes DMap and DMapIndices at the x and y coordinates.
@@ -435,7 +435,7 @@ public class TerrainMap {
     /**
      *
      * Changed from CalculateTileTypeAndIndex...to SetTileTypeAndIndex
-     * Given a map coordinate, an ETileType, and an integer index,
+     * Given a gameMap coordinate, an ETileType, and an integer index,
      *
      * Changes DMap and DMapIndices at the x and y coordinates
      * to the given ETileType and index
