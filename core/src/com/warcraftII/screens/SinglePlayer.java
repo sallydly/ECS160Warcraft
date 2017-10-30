@@ -1,5 +1,6 @@
 package com.warcraftII.screens;
 
+import java.util.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -36,7 +37,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Stage stage;
     private Skin skin;
     private Table table;
-
+    private Vector<Sprite> peasant_vector;
     private MapParser map;
 
     private OrthographicCamera camera;
@@ -54,6 +55,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void show() {
+        peasant_vector = new Vector<Sprite>(50);
         movement_flag = 0;
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
 
@@ -80,6 +82,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
         peasant = new Sprite(texture);
         peasant.setPosition(67*32,3*32);
+        peasant_vector.addElement(peasant);
+        peasant = new Sprite(texture);
+        peasant.setPosition(9*32,4*32);
+        peasant_vector.addElement(peasant);
+        peasant = new Sprite(texture);
+        peasant.setPosition(121*32,40*32);
+        peasant_vector.addElement(peasant);
+        peasant = new Sprite(texture);
+        peasant.setPosition(47*32,68*32);
+        peasant_vector.addElement(peasant);
+        peasant = new Sprite(texture);
+        peasant.setPosition(91*32,123*32);
+        peasant_vector.addElement(peasant);
+        peasant = new Sprite(texture);
+        peasant.setPosition(5*32,123*32);
+        peasant_vector.addElement(peasant);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new MapParser(Gdx.files.internal("map/hedges.map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
@@ -103,7 +121,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-        peasant.draw(sb);
+        //peasant.draw(sb);
+        int counter = 0;
+        int new_peasant = 0;
+        while(counter < peasant_vector.size()){
+            Sprite temp_peasant = peasant_vector.elementAt(counter);
+            temp_peasant.draw(sb);
+            counter+=1;
+        }
         sb.end();
         if (peasant.getX() != currentxmove && movement_flag == 1) {
             if (peasant.getX() < currentxmove)
@@ -177,12 +202,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = camera.unproject(clickCoordinates);
-        if (peasant.getX() <= position.x && peasant.getX() + peasant.getWidth() >= position.x && peasant.getY() <= position.y && peasant.getY() + peasant.getWidth() >= position.y) {
-            //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
-            // TODO Play Peasant Sound here
-            // PEASANT SELECTED ==
+        int counter = 0;
+        int new_peasant = 0;
+        while(counter < peasant_vector.size()){
+            Sprite temp_peasant = peasant_vector.elementAt(counter);
+            if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
+                //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
+                // TODO Play Peasant Sound here
+                // PEASANT SELECTED ==
+                peasant = temp_peasant;
+                new_peasant = 1;
+            }
+            counter+=1;
         }
-        else {
+        if (new_peasant == 0) {
             //movement(peasant, position);
             currentxmove = position.x;
             currentymove = position.y;
