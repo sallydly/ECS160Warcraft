@@ -168,8 +168,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         int mapTop = map.getHeight() * tileHeight;
 
         // The camera dimensions, halved
-        float cameraHalfWidth = camera.viewportWidth * .5f;
-        float cameraHalfHeight = camera.viewportHeight * .5f;
+        float cameraHalfWidth = camera.viewportWidth * camera.zoom * .5f;
+        float cameraHalfHeight = camera.viewportHeight * camera.zoom * .5f;
 
         // calculate positions of boundaries of camera
         float cameraLeft = camera.position.x - cameraHalfWidth;
