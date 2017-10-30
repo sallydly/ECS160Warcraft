@@ -10,17 +10,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.warcraftII.Warcraft;
 import com.warcraftII.parser.MapParser;
 
-public class SinglePlayer implements Screen, GestureDetector.GestureListener{
+public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private Warcraft game;
     private TextureAtlas terrain;
     private SpriteBatch batch;
@@ -35,10 +32,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private OrthographicCamera camera;
 
+    float prevScale = 1; //initial scale for zoom
+    private double prevDistance = 0;
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+
+        return false;
     }
 
     @Override
@@ -73,7 +79,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.7f, 0, 0.9f, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
@@ -142,11 +148,72 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         return false;
     }
 
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        camera.translate(-deltaX,deltaY);
+    public boolean pan2Finger(float x, float y, float deltaX, float deltaY) {
+        deltaX *= 0.1;
+        deltaY *= 0.1;        // move camera based on distance of pointer drag
+        camera.translate(-deltaX, deltaY);
+
+        // height and width of each map tile in pixels
+        int tileHeight = 32;
+        int tileWidth = 32;
+
+        // code adapted from https://gamedev.stackexchange.com/questions/74926/libgdx-keep-camera-within-bounds-of-tiledmap
+        // The left boundary of the map (x)
+        int mapLeft = 0;
+        // The right boundary of the map (x + width)
+        int mapRight = map.getWidth() * tileWidth;
+        // The bottom boundary of the map (y)
+        int mapBottom = 0;
+        // The top boundary of the map (y + height)
+        int mapTop = map.getHeight() * tileHeight;
+
+        // The camera dimensions, halved
+        float cameraHalfWidth = camera.viewportWidth * camera.zoom * .5f;
+        float cameraHalfHeight = camera.viewportHeight * camera.zoom * .5f;
+
+        // calculate positions of boundaries of camera
+        float cameraLeft = camera.position.x - cameraHalfWidth;
+        float cameraRight = camera.position.x + cameraHalfWidth;
+        float cameraBottom = camera.position.y - cameraHalfHeight;
+        float cameraTop = camera.position.y + cameraHalfHeight;
+
+        // Horizontal axis
+        // if map width is smaller than viewport width
+        if (map.getWidth() * 32 < camera.viewportWidth) {
+            // position camera at center of map horizontally
+            camera.position.x = mapRight / 2;
+        }
+        // else if left boundary of camera is outside of map's left boundary
+        else if (cameraLeft <= mapLeft) {
+            // align camera and map's left edge
+            camera.position.x = mapLeft + cameraHalfWidth;
+        }
+        // else if right boundary of camera is outside of map's right boundary
+        else if (cameraRight >= mapRight) {
+            // align camera and map's right edge
+            camera.position.x = mapRight - cameraHalfWidth;
+        }
+
+        // Vertical axis
+        // if map height is smaller than viewport height
+        if (map.getHeight() * 32 < camera.viewportHeight) {
+            // position camera at center of map vertically
+            camera.position.y = mapTop / 2;
+        }
+        // else if bottom boundary of camera is outside of map's bottom boundary
+        else if (cameraBottom <= mapBottom) {
+            // align camera and map's bottom edge
+            camera.position.y = mapBottom + cameraHalfHeight;
+        }
+        // else if top boundary of camera is outside of map's top boundary
+        else if (cameraTop >= mapTop) {
+            // align camera and map's top edge
+            camera.position.y = mapTop - cameraHalfHeight;
+        }
+
         camera.update();
-        return false;
+
+        return true;
     }
 
     @Override
@@ -156,11 +223,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
+        if(Math.abs(distance) <= 1) return false;
+        if(initialDistance != prevDistance) {
+            prevDistance = initialDistance;
+            prevScale = camera.zoom;
+        }
+        float ratio = initialDistance / distance;
+        camera.zoom = prevScale * ratio;
+        return true;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        pan2Finger(initialPointer1.x, initialPointer1.y, pointer1.x - initialPointer1.x, pointer1.y-initialPointer1.y);
         return false;
     }
 
