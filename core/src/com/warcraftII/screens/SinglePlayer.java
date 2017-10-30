@@ -32,7 +32,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     private OrthographicCamera camera;
 
-    float initialScale = 1; //initial scale for zoom
+    float prevScale = 1; //initial scale for zoom
+    private double prevDistance = 0;
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -216,8 +217,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        if(initialDistance != prevDistance) {
+            prevDistance = initialDistance;
+            prevScale = camera.zoom;
+        }
         float ratio = initialDistance / distance;
-        camera.zoom = initialScale * ratio;
+        camera.zoom = prevScale * ratio;
         return true;
     }
 
