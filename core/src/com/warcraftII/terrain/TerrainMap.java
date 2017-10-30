@@ -27,13 +27,13 @@ public class TerrainMap {
     protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
     protected Vector<Vector<Integer>> DMapIndices;
     protected boolean DRendered;
-    String DMapName;
+    protected String DMapName;
 
-    TerrainMap() {
+    public TerrainMap() {
         this.DRendered = false;
     }
 
-    TerrainMap(final TerrainMap map) {
+    public TerrainMap(final TerrainMap map) {
         this.DTerrainMap = map.DTerrainMap;
         this.DPartials = map.DPartials;
         this.DMapName = map.DMapName;
@@ -43,7 +43,7 @@ public class TerrainMap {
     }
 
     /*  The important get() functions of TerrainMap: */
-    ETileType TileType(int xindex, int yindex) {
+    public ETileType TileType(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
             return ETileType.None;
         }
@@ -58,12 +58,12 @@ public class TerrainMap {
 
     //TODO: Uncomment when CTilePosition is avaialable
     /*
-    ETileType TileType(const CTilePosition &pos) const{
+    public ETileType TileType(const CTilePosition &pos) const{
         return TileType(pos.X(), pos.Y());
     }
     */
 
-    int TileTypeIndex(int xindex, int yindex) {
+    public int TileTypeIndex(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
             return -1;
         }
@@ -78,12 +78,12 @@ public class TerrainMap {
 
     //TODO: Uncomment when CTilePosition is avaialable
     /*
-    int TileTypeIndex(const CTilePosition &pos) const{
+    public int TileTypeIndex(const CTilePosition &pos) const{
         return TileTypeIndex(pos.X(), pos.Y());
     }
     */
 
-    ETerrainTileType TerrainTileType(int xindex, int yindex){
+    public ETerrainTileType TerrainTileType(int xindex, int yindex){
         if((0 > xindex)||(0 > yindex)){
             return ETerrainTileType.None;
         }
@@ -98,12 +98,12 @@ public class TerrainMap {
 
     //TODO: Uncomment when CTilePosition is avaialable
     /*
-    ETerrainTileType TerrainTileType(const CTilePosition &pos) const{
+    public ETerrainTileType TerrainTileType(const CTilePosition &pos) const{
         return TerrainTileType(pos.X(), pos.Y());
     }
     */
 
-    byte TilePartial(int xindex, int yindex) {
+    public byte TilePartial(int xindex, int yindex) {
         if((0 > xindex)||(0 > yindex)){
             return -1;
         }
@@ -118,7 +118,7 @@ public class TerrainMap {
 
     //TODO: Uncomment when CTilePosition is avaialable
     /*
-    uint8_t TilePartial(const CTilePosition &pos) const{
+    public byte TilePartial(const CTilePosition &pos) const{
         return TilePartial(pos.X(), pos.Y());
     }
     */
@@ -134,7 +134,7 @@ public class TerrainMap {
      *
      */
 
-    String MapName(){
+    public String MapName(){
         return DMapName;
     }
 
@@ -149,7 +149,7 @@ public class TerrainMap {
      *
      */
 
-    int Width() {
+    public int Width() {
         if(DTerrainMap.size() > 0){
             return DTerrainMap.get(0).size()-1;
         }
@@ -167,12 +167,57 @@ public class TerrainMap {
      *
      */
 
-    int Height() {
+    public int Height() {
         return DTerrainMap.size()-1;
     }
 
 
-    boolean LoadMap(DataSource source) {
+    /**
+     * Checks if a tile type can be traversed
+     *
+     * @param[in] type The ETileType you want to check
+     *
+     * @return true if the type can be traversed
+     *
+     */
+
+    public boolean IsTraversable(ETileType type){
+        switch(type){
+            case None:
+            case DarkGrass:
+            case LightGrass:
+            case DarkDirt:
+            case LightDirt:
+            case Rubble:
+            case Stump:      return true;
+            default:                    return false;
+        }
+    }
+
+    /**
+     * Checks if a tile type is the correct type to have an object
+     * placed on it
+     *
+     * @param[in] type The ETileType you want to check
+     *
+     * @return true if the type can be placed on
+     *
+     */
+
+    public boolean CanPlaceOn(ETileType type){
+        switch(type){
+            case DarkGrass:
+            case LightGrass:
+            case DarkDirt:
+            case LightDirt:
+            case Rubble:
+            case Stump:      return true;
+            default:                    return false;
+        }
+    }
+
+
+    public boolean LoadMap(DataSource source) {
         CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
         String tempString;
         Vector<String> tokens = new Vector<String>();
@@ -314,7 +359,7 @@ public class TerrainMap {
      *
      */
 
-    void RenderTerrain(){
+    public void RenderTerrain(){
         DMap.setSize(DTerrainMap.size()+1);
         DMapIndices.setSize(DTerrainMap.size()+1);
         for(int YPos = 0; YPos < DMap.size(); YPos++){
