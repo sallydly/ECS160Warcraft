@@ -215,6 +215,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here
                 // PEASANT SELECTED ==
+                readySound.play();
+
                 peasant = temp_peasant;
                 new_peasant = 1;
             }
@@ -233,7 +235,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        readySound.play();
+        //
+        // readySound.play();
         return false;
     }
 
