@@ -42,6 +42,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     }
 
     @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+
+        return false;
+    }
+
+    @Override
     public void show() {
 
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
@@ -142,9 +148,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         return false;
     }
 
-    @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // move camera based on distance of pointer drag
+    public boolean pan2Finger(float x, float y, float deltaX, float deltaY) {
+        deltaX *= 0.1;
+        deltaY *= 0.1;        // move camera based on distance of pointer drag
         camera.translate(-deltaX, deltaY);
 
         // height and width of each map tile in pixels
@@ -217,6 +223,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        if(Math.abs(distance) <= 1) return false;
         if(initialDistance != prevDistance) {
             prevDistance = initialDistance;
             prevScale = camera.zoom;
@@ -228,6 +235,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        pan2Finger(initialPointer1.x, initialPointer1.y, pointer1.x - initialPointer1.x, pointer1.y-initialPointer1.y);
         return false;
     }
 
