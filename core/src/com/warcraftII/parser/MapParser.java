@@ -95,6 +95,26 @@ public class MapParser {
             }
             layers.add(tileLayerBase);
         }
+
+        TextureAtlas staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
+        TiledMapTileLayer assetLayer = new TiledMapTileLayer(width/2, height/2, 64,64); //needs to be changed to 32 later
+
+        //spriteMap = new Sprite[height][width];
+//            for (int i = 0; i < 5; i++) {
+
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        TextureRegion textureRegion = new TextureRegion();
+        textureRegion = staticAssets.findRegion("goldmine-inactive");
+        cell.setTile(new StaticTiledMapTile(textureRegion));
+        assetLayer.setCell(0, 0, cell);
+
+        textureRegion = staticAssets.findRegion("farm-place");
+        cell.setTile(new StaticTiledMapTile(textureRegion));
+        assetLayer.setCell(5, 6, cell);
+
+//            }
+        layers.add(assetLayer);
+
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
