@@ -5,6 +5,8 @@ import com.warcraftII.GameDataTypes.*;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import javax.print.Doc;
+
 /**
  * Created by ajc on 10/27/17.
  * Ported from position.cpp
@@ -236,13 +238,13 @@ public class Position {
             DOctant.setSize(DTileHeight);
 
             //iterate through the vector, resize each inner row
-            ListIterator itr = DOctant.listIterator();
-            DOctant.get(0).setSize(DTileWidth);
-            //FIXME
-            //Need to resize every vector in DOctant
-//            while(itr.hasNext()) {
-//                (itr.next()).setSize(DTileWidth);
-//            }
+            DOctant.setSize(DTileHeight);
+            for (int i = 0; i < DOctant.size(); i++) {
+                for (int j = 0; j < DOctant.get(i).size(); j++) {
+                    DOctant.get(j).setSize(DTileWidth);
+                }
+            }
+
 
             for(int Y = 0; Y < DTileHeight; Y++){
                 for(int X = 0; X < DTileWidth; X++){
