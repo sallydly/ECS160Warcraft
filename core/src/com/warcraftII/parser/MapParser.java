@@ -30,57 +30,48 @@ public class MapParser {
         String []fileAsLines;
         fileAsLines = fileAsString.split("\n");
 
-        //  name of the map is on second line of .map file
+        //  name of the gameMap is on second line of .gameMap file
         name = fileAsLines[1];
         StringTokenizer st = new StringTokenizer(fileAsLines[3]);
-        //  map's width and height are on 4th line of .map file
+        //  gameMap's width and height are on 4th line of .gameMap file
         width = Integer.valueOf(st.nextToken());
         height = Integer.valueOf(st.nextToken());
 
         TextureAtlas terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-        //spriteMap = new Sprite[height][width];
         tiledMap = new TiledMap();
-        //tiledMap.getProperties().put("width", width);
-        //tiledMap.getProperties().put("height", height);
+
         MapLayers layers = tiledMap.getLayers();
         for (int l = 0; l < 1; l++) {
             TiledMapTileLayer tileLayerBase = new TiledMapTileLayer(width, height, 32, 32);
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     TextureRegion textureRegion = new TextureRegion();
-                    //  map presentation starts on line 6
-                    switch (fileAsLines[i + 5].charAt(j)) {
+                    //  gameMap presentation starts on line 6
+                    final char TILE_TO_DISPLAY = fileAsLines[i + 5].charAt(j);
+                    switch (TILE_TO_DISPLAY) {
                         case 'w': //shallow water
                             textureRegion = terrain.findRegion("shallow-water-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("shallow-water-F-0"));
                             break;
                         case 'W': //deep water
                             textureRegion = terrain.findRegion("deep-water-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("deep-water-F-0"));
                             break;
                         case 'd': //light dirt
                             textureRegion = terrain.findRegion("light-dirt-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("light-dirt-F-0"));
                             break;
                         case 'D': //dark dirt
                             textureRegion = terrain.findRegion("dark-dirt-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("dark-dirt-F-0"));
                             break;
                         case 'g': //light grass
                             textureRegion = terrain.findRegion("light-grass-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("light-grass-F-0"));
                             break;
                         case 'G': //dart grass
                             textureRegion = terrain.findRegion("dark-grass-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("dark-grass-F-0"));
                             break;
                         case 'F': //forest
                             textureRegion = terrain.findRegion("forest-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("forest-F-0"));
                             break;
                         case 'R': //rock
                             textureRegion = terrain.findRegion("rock-F-0");
-                            //spriteMap[i][j] = new Sprite(terrain.findRegion("rock-F-0"));
                             break;
                         default:
                             textureRegion = terrain.findRegion("rock-F-0");
@@ -95,6 +86,26 @@ public class MapParser {
             }
             layers.add(tileLayerBase);
         }
+
+        TextureAtlas staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
+        TiledMapTileLayer assetLayer = new TiledMapTileLayer(width/2, height/2, 64,64); //needs to be changed to 32 later
+
+        //spriteMap = new Sprite[height][width];
+//            for (int i = 0; i < 5; i++) {
+
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        TextureRegion textureRegion = new TextureRegion();
+        textureRegion = staticAssets.findRegion("goldmine-inactive");
+        cell.setTile(new StaticTiledMapTile(textureRegion));
+        assetLayer.setCell(0, 0, cell);
+
+        textureRegion = staticAssets.findRegion("farm-place");
+        cell.setTile(new StaticTiledMapTile(textureRegion));
+        assetLayer.setCell(5, 6, cell);
+
+//            }
+        layers.add(assetLayer);
+
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 

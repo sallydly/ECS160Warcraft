@@ -13,16 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.warcraftII.Warcraft;
 
 public class MainMenu implements Screen {
-    private com.warcraftII.Warcraft game;
+    private Warcraft game;
     private Texture texture;
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
     private Music music;
 
-    public MainMenu(com.warcraftII.Warcraft game) {
+    public MainMenu(Warcraft game) {
         this.game = game;
         this.texture = new Texture("warcraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");

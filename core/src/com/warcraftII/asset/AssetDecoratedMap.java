@@ -1,5 +1,6 @@
 package com.warcraftII.asset;
 
+
 import com.warcraftII.terrain.TerrainMap;
 import com.warcraftII.terrain.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -910,6 +911,7 @@ public class AssetDecoratedMap extends TerrainMap {
         return TilePosition(-1, -1);
     }
 */
+
 
 
 }

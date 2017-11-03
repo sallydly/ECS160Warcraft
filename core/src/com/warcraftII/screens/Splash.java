@@ -6,32 +6,33 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.Warcraft;
 
 public class Splash implements Screen {
-
-    private com.warcraftII.Warcraft game;
+    private static final Logger log = new Logger("SplashScreen", 2);
+    private Warcraft game;
     private SpriteBatch batch;
     private Sprite splash;
     private Texture texture;
-    private float duration;
-    private float currentDuration;
+    //  set SCREEN_DURATION of splash screen
+    private final float SCREEN_DURATION = 2;
+    //  get time time when splash starts
+    private float currentDuration = 0;
 
     /**
-     * @param g contains game parameters passed in from the caller using setScreen()
+     * @param game contains game parameters passed in from the caller using setScreen()
      */
-    public Splash(com.warcraftII.Warcraft g) {
-        game = g;
-        batch = g.batch;
+    public Splash(Warcraft game) {
+        this.game = game;
+        this.batch = game.batch;
     }
 
     @Override
     public void show() {
         texture = new Texture("img/Splash.png");
         splash = new Sprite(texture);
-        //  get time time when splash starts
-        currentDuration = 0;
-        //  set duration of splash screen
-        duration = 2;
+
         /*
          *  Splash.png contain 2 images, so Gdx.graphics.getHeight()*2 is use to set the upper
          *  image (to set to lower image, use setPosition(0, 0) instead) to be the splash screen,
@@ -50,8 +51,8 @@ public class Splash implements Screen {
         //  make splash draw itself onto the screen
         splash.draw(batch);
         batch.end();
-        currentDuration = currentDuration + delta;
-        if(currentDuration > duration) {
+        currentDuration += delta;
+        if(currentDuration > SCREEN_DURATION) {
             game.setScreen(new MainMenu(game));
         }
     }
