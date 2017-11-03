@@ -1,6 +1,7 @@
 package com.warcraftII.asset;
 
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.position.TilePosition;
 
 /**
  *
@@ -13,7 +14,6 @@ import com.warcraftII.GameDataTypes.*;
 public class SAssetInitialization {
     String DType;
     EPlayerColor DColor;
-    // TODO: Uncomment when AJ finishes porting Position
-    // CTilePosition DTilePosition;
+    TilePosition DTilePosition;
 
 }
