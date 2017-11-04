@@ -213,13 +213,12 @@ public class TerrainMap {
     public boolean LoadMap(DataSource source) {
         CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
         String tempString;
-        Vector<String> tokens = new Vector<String>();
+        Vector<String> tokens;
         int mapWidth, mapHeight;
         boolean returnStatus = false;
 
         DTerrainMap.clear();
 
-        try {
             DMapName = lineSource.read();
             if(DMapName.isEmpty()) {
                 return returnStatus;
@@ -234,10 +233,6 @@ public class TerrainMap {
                 return returnStatus;
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             Vector<String> StringMap = new Vector<String>();
             mapWidth = Integer.valueOf(tokens.get(0));
             mapHeight = Integer.valueOf(tokens.get(1));
@@ -258,46 +253,49 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
+
             DTerrainMap.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                DTerrainMap.get(i).setSize(mapWidth + 1);
+                Vector<ETerrainTileType> TempRow = DTerrainMap.get(i);
+                TempRow.setSize(mapWidth + 1);
+
                 for (int j = 0; j < mapWidth + 1; j++) {
                     switch (StringMap.get(i).charAt(j)) {
                         case 'G':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkGrass);
+                            TempRow.set(j, ETerrainTileType.DarkGrass);
                             break;
                         case 'g':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.LightGrass);
+                            TempRow.set(j, ETerrainTileType.LightGrass);
                             break;
                         case 'D':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkDirt);
+                            TempRow.set(j, ETerrainTileType.DarkDirt);
                             break;
                         case 'd':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.LightDirt);
+                            TempRow.set(j, ETerrainTileType.LightDirt);
                             break;
                         case 'R':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.Rock);
+                            TempRow.set(j, ETerrainTileType.Rock);
                             break;
                         case 'r':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.RockPartial);
+                            TempRow.set(j, ETerrainTileType.RockPartial);
                             break;
                         case 'F':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.Forest);
+                            TempRow.set(j, ETerrainTileType.Forest);
                             break;
                         case 'f':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.ForestPartial);
+                            TempRow.set(j, ETerrainTileType.ForestPartial);
                             break;
                         case 'W':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DeepWater);
+                            TempRow.set(j, ETerrainTileType.DeepWater);
                             break;
                         case 'w':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.ShallowWater);
+                            TempRow.set(j, ETerrainTileType.ShallowWater);
                             break;
                         default:
                             return returnStatus;
                     }
+
                     if (j >= 1) {
-                        //TODO: Implement to_underlying function
                         if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i).get(j-1).ordinal()]) {
                             return returnStatus;
                         }
@@ -308,7 +306,10 @@ public class TerrainMap {
                         }
                     }
                 }
+                DTerrainMap.set(i,TempRow);
             }
+
+            // Now starts reading map partial bits.
             StringMap.clear();
             while (StringMap.size() < mapHeight + 1) {
                 tempString = lineSource.read();
@@ -323,23 +324,23 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
+
             DPartials.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                DPartials.get(i).setSize(mapWidth + 1);
+                Vector<Byte> TempPartialsRow = DPartials.get(i);
+                TempPartialsRow.setSize(mapWidth + 1);
                 for (int j = 0; j < mapWidth + 1; j++) {
                     if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
-                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
+                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
                     } else if (('A' <= StringMap.get(i).charAt(j)) && ('F' >= StringMap.get(i).charAt(j))) {
-                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
+                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
                     } else {
                         return returnStatus;
                     }
                 }
+                DPartials.set(i,TempPartialsRow);
             }
-            returnStatus = true;
-        } catch (Exception E) {
-
-        }
+        returnStatus = true;
         return returnStatus;
     }
     /**

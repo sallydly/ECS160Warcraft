@@ -30,11 +30,12 @@ public class MapRenderer {
     TerrainMap DMap;
     Vector<Vector<Vector<TextureRegion> > > DTileTextures;
 
-    public MapRenderer(FileHandle atlas, FileHandle terrainDatFile) {
+    public MapRenderer(TerrainMap map) {
+        DMap = map;
 
         // Resize DTileTextures with the terrain map
         DTileTextures.setSize(TileTypes.to_underlying(ETileType.Max));
-        for(int Index = 0; Index = DTileTextures.size(); Index++){
+        for(int Index = 0; Index < DTileTextures.size(); Index++){
             DTileTextures.get(Index).setSize(16);
         }
 
@@ -126,7 +127,7 @@ public class MapRenderer {
             }
         }
         for(int Index = 0; Index < 16; Index++){
-            DTileTextures.get(TileTypes.to_underlying(ETileType.Rubble)).get(Index).add(DTileTextures(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0));
+            DTileTextures.get(TileTypes.to_underlying(ETileType.Rubble)).get(Index).add(DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0));
         }
 
     } // end MapRenderer() constructor
@@ -141,7 +142,7 @@ public class MapRenderer {
      *
      * @return None
      */
-    TiledMapTileLayer DrawMap(){
+    public TiledMapTileLayer DrawMap(){
         // Initialize local variables and set TileWidth and TileHeight
 
         int Width = DMap.Width();
@@ -159,7 +160,7 @@ public class MapRenderer {
                 if((0 <= TileIndex)&&(16 > TileIndex)){
                     TextureRegion textureRegion = null;
                     int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
-                    if(AltTileCount){
+                    if(AltTileCount >0){
                         int AltIndex = (XIndex + YIndex) % AltTileCount;
 
                         textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
@@ -172,7 +173,7 @@ public class MapRenderer {
                 }
                 else{
 
-                    return;
+                    return tileLayerBase;
                 }
             }
         }

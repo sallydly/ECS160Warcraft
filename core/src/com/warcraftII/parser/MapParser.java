@@ -12,6 +12,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.warcraftII.data_source.FileDataSource;
+import com.warcraftII.terrain.TerrainMap;
+import com.warcraftII.terrain.MapRenderer;
 
 import java.util.StringTokenizer;
 
@@ -37,56 +40,25 @@ public class MapParser {
         width = Integer.valueOf(st.nextToken());
         height = Integer.valueOf(st.nextToken());
 
-        TextureAtlas terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         tiledMap = new TiledMap();
 
         MapLayers layers = tiledMap.getLayers();
-        for (int l = 0; l < 1; l++) {
-            TiledMapTileLayer tileLayerBase = new TiledMapTileLayer(width, height, 32, 32);
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    TextureRegion textureRegion = new TextureRegion();
-                    //  gameMap presentation starts on line 6
-                    final char TILE_TO_DISPLAY = fileAsLines[i + 5].charAt(j);
-                    switch (TILE_TO_DISPLAY) {
-                        case 'w': //shallow water
-                            textureRegion = terrain.findRegion("shallow-water-F-0");
-                            break;
-                        case 'W': //deep water
-                            textureRegion = terrain.findRegion("deep-water-F-0");
-                            break;
-                        case 'd': //light dirt
-                            textureRegion = terrain.findRegion("light-dirt-F-0");
-                            break;
-                        case 'D': //dark dirt
-                            textureRegion = terrain.findRegion("dark-dirt-F-0");
-                            break;
-                        case 'g': //light grass
-                            textureRegion = terrain.findRegion("light-grass-F-0");
-                            break;
-                        case 'G': //dart grass
-                            textureRegion = terrain.findRegion("dark-grass-F-0");
-                            break;
-                        case 'F': //forest
-                            textureRegion = terrain.findRegion("forest-F-0");
-                            break;
-                        case 'R': //rock
-                            textureRegion = terrain.findRegion("rock-F-0");
-                            break;
-                        default:
-                            textureRegion = terrain.findRegion("rock-F-0");
-                    }
 
-                    //Gdx.app.log("MapParser", "status " +(textureRegion != null));
-                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                    cell.setTile(new StaticTiledMapTile(textureRegion));
-                    tileLayerBase.setCell(i, j, cell);
-                    //spriteMap[i][j].setPosition(j*32, i*32);
-                }
-            }
-            layers.add(tileLayerBase);
-        }
 
+        /* This section reads in from the terrainmap,
+        feeds it to the map renderer, and adds a layer to the tilemap */
+
+        FileDataSource fds = new FileDataSource(file);
+        TerrainMap terrainmap = new TerrainMap(); // deal later
+        terrainmap.LoadMap(fds);
+        MapRenderer maprend = new MapRenderer(terrainmap);
+
+        TiledMapTileLayer tileLayerBase = maprend.DrawMap();
+
+        layers.add(tileLayerBase);
+
+
+        /* This was the hail-mary asset addition */
         TextureAtlas staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
         TiledMapTileLayer assetLayer = new TiledMapTileLayer(width/2, height/2, 64,64); //needs to be changed to 32 later
 

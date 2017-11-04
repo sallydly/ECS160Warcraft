@@ -63,7 +63,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.input.setInputProcessor(stage);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        map = new MapParser(Gdx.files.internal("gameMap/hedges.gameMap"));
+        map = new MapParser(Gdx.files.internal("map/hedges.map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
     }
