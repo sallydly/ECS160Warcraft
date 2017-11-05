@@ -37,7 +37,8 @@ public class Position {
      * There is no initializer list construct for vectors
      */
     static protected void initVectors() {
-
+        DOctant = new Vector<Vector<EDirection>>();
+        DTileDirections = new Vector<Vector<EDirection>>();
         Vector<EDirection> temp1 = new Vector<EDirection>(1);
         Vector<EDirection> temp2 = new Vector<EDirection>(3);
         Vector<EDirection> temp3 = new Vector<EDirection>(3);

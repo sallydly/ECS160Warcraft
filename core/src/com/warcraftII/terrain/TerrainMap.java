@@ -218,10 +218,14 @@ public class TerrainMap {
             default:                    return false;
         }
     }
-
-
     public boolean LoadMap(DataSource source) {
-        CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
+        CommentSkipLineDataSource LineSource = new CommentSkipLineDataSource(source, '#');
+        return LoadMap(LineSource);
+    }
+
+
+    public boolean LoadMap(CommentSkipLineDataSource lineSource) {
+        CommentSkipLineDataSource LineSource = lineSource;
         String tempString;
         Vector<String> tokens;
         int mapWidth, mapHeight;
@@ -230,12 +234,12 @@ public class TerrainMap {
         DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
-            DMapName = lineSource.read();
+            DMapName = LineSource.read();
             if(DMapName.isEmpty()) {
                 return returnStatus;
             }
 
-            tempString = lineSource.read();
+            tempString = LineSource.read();
             if(tempString.isEmpty()) {
                 return returnStatus;
             }
@@ -252,7 +256,7 @@ public class TerrainMap {
                 return returnStatus;
             }
             while (StringMap.size() < mapHeight + 1) {
-                tempString = lineSource.read();
+                tempString = LineSource.read();
                 if(tempString.isEmpty()) {
                     return returnStatus;
                 }
@@ -324,7 +328,7 @@ public class TerrainMap {
             // Now starts reading map partial bits.
             StringMap.clear();
             while (StringMap.size() < mapHeight + 1) {
-                tempString = lineSource.read();
+                tempString = LineSource.read();
                 if(tempString.isEmpty()) {
                     return returnStatus;
                 }

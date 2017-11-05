@@ -247,7 +247,7 @@ public class MapRenderer {
                         int Ypos = Height - 1 - YIndex;
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                         cell.setTile(new StaticTiledMapTile(textureRegion));
-                        tileLayerBase.setCell(Xpos, Ypos, cell);/
+                        tileLayerBase.setCell(Xpos, Ypos, cell);
                     }
                 }
                 else{

@@ -9,6 +9,7 @@ import com.warcraftII.GameDataTypes.*;
 public class TilePosition extends Position{
 
     public TilePosition() {
+        super();
     }
 
     public TilePosition(int x, int y) {

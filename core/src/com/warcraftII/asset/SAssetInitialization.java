@@ -16,4 +16,7 @@ public class SAssetInitialization {
     EPlayerColor DColor;
     TilePosition DTilePosition;
 
+    public SAssetInitialization(){
+        DTilePosition = new TilePosition();
+    }
 }

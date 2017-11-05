@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.warcraftII.Warcraft;
+import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.parser.MapParser;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
@@ -64,6 +65,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new MapParser(Gdx.files.internal("map/bay.map"));
+        AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
     }
