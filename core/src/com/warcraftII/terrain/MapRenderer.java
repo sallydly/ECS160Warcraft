@@ -34,100 +34,173 @@ public class MapRenderer {
         DMap = map;
 
         // Resize DTileTextures with the terrain map
+        DTileTextures = new Vector<Vector<Vector<TextureRegion> > >();
         DTileTextures.setSize(TileTypes.to_underlying(ETileType.Max));
         for(int Index = 0; Index < DTileTextures.size(); Index++){
-            DTileTextures.get(Index).setSize(16);
+            Vector<Vector<TextureRegion>> newVec = new Vector<Vector<TextureRegion>  >();
+            newVec.setSize(16);
+            DTileTextures.set(Index,newVec);
         }
 
         // Generate terrain for AltTileIndex
         for(int Index = 0; Index < 16; Index++){
             int AltTileIndex;
+            int TileTypeNum;
+            Vector<Vector<TextureRegion> > OuterVec;
+            Vector<TextureRegion> InnerVec;
             String indexStr = Integer.toHexString(Index).toUpperCase();
 
+
             AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.LightGrass);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("light-grass-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.LightGrass)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.DarkGrass);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("dark-grass-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.DarkGrass)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.LightDirt);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("light-dirt-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.LightDirt)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
-            while(true){
-                TextureRegion textureRegion = DTerrainTextures.findRegion("light-grass-" + indexStr + "-" + Integer.toString(AltTileIndex));
-                if(null == textureRegion){
-                    break;
-                }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.LightGrass)).get(Index).add(textureRegion);
-                AltTileIndex++;
-            }
-            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.DarkDirt);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("dark-dirt-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.LightGrass)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
-            while(true){
-                TextureRegion textureRegion = DTerrainTextures.findRegion("light-grass-" + indexStr + "-" + Integer.toString(AltTileIndex));
-                if(null == textureRegion){
-                    break;
-                }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.DarkDirt)).get(Index).add(textureRegion);
-                AltTileIndex++;
-            }
-            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Rock);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("rock-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Forest);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("forest-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.Forest)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
             AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.ShallowWater);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
+            while(true){
+                TextureRegion textureRegion = DTerrainTextures.findRegion("shallow-water-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.DeepWater);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
+            while(true){
+                TextureRegion textureRegion = DTerrainTextures.findRegion("deep-water-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
+
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Stump);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
             while(true){
                 TextureRegion textureRegion = DTerrainTextures.findRegion("stump-" + indexStr + "-" + Integer.toString(AltTileIndex));
                 if(null == textureRegion){
                     break;
                 }
-                DTileTextures.get(TileTypes.to_underlying(ETileType.Stump)).get(Index).add(textureRegion);
+                InnerVec.add(textureRegion);
                 AltTileIndex++;
             }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
         }
+
         for(int Index = 0; Index < 16; Index++){
-            DTileTextures.get(TileTypes.to_underlying(ETileType.Rubble)).get(Index).add(DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0));
+            Vector<Vector<TextureRegion> > OuterVec;
+            Vector<TextureRegion> InnerVec;
+
+            int AltTileIndex = 0;
+            int TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
+
+            TextureRegion textureRegion = DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0);
+            InnerVec.add(textureRegion);
+
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
         }
 
     } // end MapRenderer() constructor
@@ -144,6 +217,9 @@ public class MapRenderer {
      */
     public TiledMapTileLayer DrawMap(){
         // Initialize local variables and set TileWidth and TileHeight
+        if (!DMap.IsRendered()) {
+            DMap.RenderTerrain();
+        }
 
         int Width = DMap.Width();
         int Height = DMap.Height();
@@ -166,9 +242,12 @@ public class MapRenderer {
                         textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
                     }
                     if(null != textureRegion){
+                        // need to invert both y axis:
+                        int Xpos =  XIndex;
+                        int Ypos = Height - 1 - YIndex;
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                         cell.setTile(new StaticTiledMapTile(textureRegion));
-                        tileLayerBase.setCell(XIndex, YIndex, cell);
+                        tileLayerBase.setCell(Xpos, Ypos, cell);/
                     }
                 }
                 else{

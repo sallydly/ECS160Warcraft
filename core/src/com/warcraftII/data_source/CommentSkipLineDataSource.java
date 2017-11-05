@@ -21,7 +21,7 @@ public class CommentSkipLineDataSource extends LineDataSource
             String tempLine = DFileAsLines[DLineNum];
             DLineNum++;
 
-            if (tempLine.length() == 0 && tempLine.charAt(0) == DCommentChar) {
+            if (tempLine.length() == 0 || tempLine.charAt(0) == DCommentChar) {
                 continue;
             }
 
@@ -29,12 +29,12 @@ public class CommentSkipLineDataSource extends LineDataSource
                 return tempLine;
             }
 
-            int i = 1;
-            while (i < tempLine.length()) {
+            for (int i = 1; i < tempLine.length(); i++) {
                 if (tempLine.charAt(i) == DCommentChar) {
                     return tempLine.substring(0, i);
                 }
             }
+            return tempLine; //if no comment char found in string of length > 1
         }
     }
 

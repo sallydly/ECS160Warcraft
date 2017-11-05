@@ -18,7 +18,6 @@ public class LineDataSource {
 
     public String read(){
         //TODO: Create and throw custom exception for "no data read"
-
         String Line = DFileAsLines[DLineNum];
         DLineNum++;
         if (Line.length() > 0)

@@ -1,11 +1,14 @@
 package com.warcraftII.terrain;
 
+
+import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain.TileTypes.*;
 
+import com.badlogic.gdx.Gdx;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -43,7 +46,14 @@ public class TerrainMap {
         this.DRendered = map.DRendered;
     }
 
+
+
     /*  The important get() functions of TerrainMap: */
+    public boolean IsRendered(){
+        return DRendered;
+    }
+
+
     public ETileType TileType(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
             return ETileType.None;
@@ -217,6 +227,7 @@ public class TerrainMap {
         int mapWidth, mapHeight;
         boolean returnStatus = false;
 
+        DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
             DMapName = lineSource.read();
@@ -256,7 +267,7 @@ public class TerrainMap {
 
             DTerrainMap.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                Vector<ETerrainTileType> TempRow = DTerrainMap.get(i);
+                Vector<ETerrainTileType> TempRow = new Vector<ETerrainTileType>();
                 TempRow.setSize(mapWidth + 1);
 
                 for (int j = 0; j < mapWidth + 1; j++) {
@@ -294,7 +305,7 @@ public class TerrainMap {
                         default:
                             return returnStatus;
                     }
-
+                    /* Should not be given invalid maps?s
                     if (j >= 1) {
                         if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i).get(j-1).ordinal()]) {
                             return returnStatus;
@@ -305,6 +316,7 @@ public class TerrainMap {
                             return returnStatus;
                         }
                     }
+                    */
                 }
                 DTerrainMap.set(i,TempRow);
             }
@@ -325,9 +337,10 @@ public class TerrainMap {
                 return returnStatus;
             }
 
+            DPartials = new Vector<Vector<Byte>>();
             DPartials.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                Vector<Byte> TempPartialsRow = DPartials.get(i);
+                Vector<Byte> TempPartialsRow = new Vector<Byte>();
                 TempPartialsRow.setSize(mapWidth + 1);
                 for (int j = 0; j < mapWidth + 1; j++) {
                     if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
@@ -341,6 +354,7 @@ public class TerrainMap {
                 DPartials.set(i,TempPartialsRow);
             }
         returnStatus = true;
+        System.out.println(DTerrainMap.size());
         return returnStatus;
     }
     /**
@@ -354,8 +368,20 @@ public class TerrainMap {
      */
 
     public void RenderTerrain(){
+        DMap = new Vector<Vector<ETileType>>();
         DMap.setSize(DTerrainMap.size()+1);
+        DMapIndices = new Vector<Vector<Integer>>();
         DMapIndices.setSize(DTerrainMap.size()+1);
+
+        for (int i = 0; i < DMap.size(); i++){
+            Vector<ETileType> newVec1 = new Vector<ETileType>();
+            newVec1.setSize(DTerrainMap.get(0).size() + 1);
+            DMap.set(i,newVec1);
+            Vector<Integer> newVec2 = new Vector<Integer>();
+            newVec2.setSize(DTerrainMap.get(0).size()+ 1);
+            DMapIndices.set(i,newVec2);
+        }
+
         for(int YPos = 0; YPos < DMap.size(); YPos++){
             if((0 == YPos)||(DMap.size() - 1 == YPos)){
                 for(int XPos = 0; XPos < DTerrainMap.get(0).size() + 1; XPos++){
@@ -458,10 +484,16 @@ public class TerrainMap {
             Index = 0xF;
         }
 
-        DMap.get(y+1).add(Type);
-        DMapIndices.get(y+1).add(Index);
+        Vector<ETileType> changeVec1 = DMap.get(y+1);
+        changeVec1.set(x+1,Type);
+        DMap.set(y+1, changeVec1);
 
-/*  The y+1 is to compensate for its use in RenderMap()
+        Vector<Integer> changeVec2 = DMapIndices.get(y+1);
+        changeVec2.set(x+1, Integer.valueOf(Index));
+        DMapIndices.set(y+1, changeVec2);
+
+
+/*  The y+1 is to compensate for its use in RenderTerrain()
         ETileType Type;
         int Index;
         CalculateTileTypeAndIndex(XPos-1, YPos-1, Type, Index);
@@ -487,8 +519,14 @@ public class TerrainMap {
      *
      */
     protected void SetTileTypeAndIndex(int x, int y, ETileType type, int index) {
-        DMap.get(y).add(type);
-        DMapIndices.get(y).add(index);
+
+        Vector<ETileType> changeVec1 = DMap.get(y);
+        changeVec1.set(x,type);
+        DMap.set(y, changeVec1);
+
+        Vector<Integer> changeVec2 = DMapIndices.get(y);
+        changeVec2.set(x,Integer.valueOf(index));
+        DMapIndices.set(y, changeVec2);
     }
 
 }
