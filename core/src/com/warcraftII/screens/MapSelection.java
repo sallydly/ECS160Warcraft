@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -61,10 +62,15 @@ public class MapSelection implements Screen {
     }
 
     private Table createMenuTable() {
+        //Maps the .png filename to the image button
+        final Map<String, ImageButton> fileNameToImageButtonMap = new HashMap<String, ImageButton>();
+        final String BAY_GAME_NAME = "Three ways to cross";
+        final String MOUNTAINS_GAME_NAME = "One way in one way out";
+        final String HEDGES_GAME_NAME = "No way out of this maze";
+        final String NWHR2RN_GAME_NAME = "Nowhere to run, nowhere to hide";
+
         Table menuTable = new Table();
         menuTable.setFillParent(true);
-
-        final List<String> mapNames = new ArrayList<String>();
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
         Vector<TextButton> MapButtons = new Vector<TextButton>();
         Vector<ImageButton> imageButtons = new Vector<ImageButton>();
@@ -82,10 +88,10 @@ public class MapSelection implements Screen {
             TextureRegionDrawable drawable = new TextureRegionDrawable(myTextureRegion);
             ImageButton button = new ImageButton(drawable);
             imageButtons.add(button);
+            fileNameToImageButtonMap.put(String.valueOf(entry).split("/")[1], button);
         }
 
         for (final String MapName : AssetDecoratedMap.GetMapNames()) {
-            log.info(MapName);
             TextButton Button = new TextButton(MapName, skin);
             Button.getLabel().setFontScale(1, 1);
             Button.addListener(new ClickListener(){
@@ -95,41 +101,42 @@ public class MapSelection implements Screen {
                     game.setScreen(new SinglePlayer(game));
                 }
             });
-            mapNames.add(MapName);
+
+            if(MapName.trim().equals(BAY_GAME_NAME)) {
+                fileNameToImageButtonMap.get("bay.PNG").addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.DMapName = MapName;
+                        game.setScreen(new SinglePlayer(game));
+                    }
+                });
+            } else if (MapName.trim().equals(HEDGES_GAME_NAME)) {
+                fileNameToImageButtonMap.get("hedges.PNG").addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.DMapName = MapName;
+                        game.setScreen(new SinglePlayer(game));
+                    }
+                });
+            } else if (MapName.trim().equals(MOUNTAINS_GAME_NAME)) {
+                fileNameToImageButtonMap.get("mountain.PNG").addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.DMapName = MapName;
+                        game.setScreen(new SinglePlayer(game));
+                    }
+                });
+            } else if (MapName.trim().equals(NWHR2RN_GAME_NAME)) {
+                fileNameToImageButtonMap.get("nwhr2rn.PNG").addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        game.DMapName = MapName;
+                        game.setScreen(new SinglePlayer(game));
+                    }
+                });
+            }
             MapButtons.add(Button);
         }
-
-        imageButtons.get(0).addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.DMapName = mapNames.get(1);
-                game.setScreen(new SinglePlayer(game));
-            }
-        });
-
-        imageButtons.get(1).addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.DMapName = mapNames.get(3);
-                game.setScreen(new SinglePlayer(game));
-            }
-        });
-
-        imageButtons.get(2).addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.DMapName = mapNames.get(0);
-                game.setScreen(new SinglePlayer(game));
-            }
-        });
-
-        imageButtons.get(3).addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.DMapName = mapNames.get(2);
-                game.setScreen(new SinglePlayer(game));
-            }
-        });
 
         //TODO: Recheck after zoom
         menuTable.add(MapButtons.get(0)).expandX();
