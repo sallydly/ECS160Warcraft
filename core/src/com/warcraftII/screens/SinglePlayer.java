@@ -1,5 +1,6 @@
 package com.warcraftII.screens;
 
+import java.util.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -12,12 +13,16 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.parser.MapParser;
+import com.warcraftII.units.Unit;
+
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -26,16 +31,32 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private SpriteBatch batch;
     private Sprite tile;
     private Music readySound;
-
+    private SpriteBatch sb;
+    private Texture texture;
     private Stage stage;
     private Skin skin;
     private Table table;
-
+    private Vector<Sprite> peasant_vector;
     private MapParser map;
-
+    private Unit all_units;
     private OrthographicCamera camera;
+    // height and width of each map tile in pixels
+    // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
+    private int tileHeight = 32;
+    private int tileWidth = 32;
 
-    SinglePlayer(com.warcraftII.Warcraft game) {
+    private float prevZoom = 1;
+    // camera zoom levels to fit map height/width
+    private float heightZoomRatio;
+    private float widthZoomRatio;
+
+    float prevScale = 1; //initial scale for zoom
+
+    private double prevDistance = 0;
+    private float currentxmove;
+    private float currentymove;
+    private int movement_flag;
+   SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         this.batch = game.batch;
         //Implemented just to achieve hard goal. Not needed
@@ -43,8 +64,23 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     @Override
-    public void show() {
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // adjust pointer drag amount by camera zoom level
+        deltaX *= camera.zoom;
+        deltaY *= camera.zoom;
 
+        // move camera based on distance of pointer drag
+        camera.translate(-deltaX, deltaY);
+
+        // limit panning to edge of map
+        calculateCameraBounds();
+
+        return true;
+    }
+
+    @Override
+    public void show() {
+        all_units = new Unit();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
 
         stage = new Stage();
@@ -60,36 +96,47 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         table.align(Align.bottomLeft);
 
         stage = new Stage();
-        //stage.addActor(table);
-
         Gdx.input.setInputProcessor(stage);
+        sb = new SpriteBatch();
+        texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
+        all_units.AddUnit(67,3,texture);
+        all_units.AddUnit(9,4,texture);
+        all_units.AddUnit(121,40,texture);
+        all_units.AddUnit(47,68,texture);
+        all_units.AddUnit(67,3,texture);
+        all_units.AddUnit(91,123,texture);
 
+        all_units.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new MapParser(game.DMapName);
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
+
+        // calculate zoom levels to show entire map height/width
+        heightZoomRatio = map.getHeight() * tileHeight / camera.viewportHeight;
+        widthZoomRatio = map.getWidth() * tileWidth / camera.viewportWidth;
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.7f, 0, 0.9f, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
         camera.update();
         map.render(camera);
-        /*
-        for(int i = 0; i < gameMap.getHeight(); i++) {
-            for(int j = 0; j < gameMap.getHeight(); j++) {
-                gameMap.spriteAt(i, j).draw(batch);
-            }
-        }*/
+
         batch.end();
-
-
-        /*
-        stage.act(delta);
-        stage.draw();*/
+        sb.setProjectionMatrix(camera.combined);
+        sb.begin();
+        int counter = 0;
+        while(counter < all_units.unit_vector.size()){
+            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
+            temp_peasant.draw(sb);
+            counter+=1;
+        }
+        sb.end();
+        all_units.AllMovement();
     }
 
     @Override
@@ -122,12 +169,31 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
+        Vector3 clickCoordinates = new Vector3(x,y,0);
+        Vector3 position = camera.unproject(clickCoordinates);
+        int counter = 0;
+        int unit_selected = 0;
+        while(counter < all_units.unit_vector.size()){
+            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
+            if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
+                //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
+                // TODO Play Peasant Sound here
+                // PEASANT SELECTED ==
+                all_units.selected_unit_index = counter;
+                unit_selected = 1;
+            }
+            counter+=1;
+        }
+        if (unit_selected == 0) {
+            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentymove = position.y;
+            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentxmove = position.x;
+        }
+        return true;
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        readySound.play();
+        // readySound.play();
         return false;
     }
 
@@ -142,20 +208,101 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        camera.translate(-deltaX,deltaY);
-        camera.update();
-        return false;
-    }
-
-    @Override
     public boolean panStop(float x, float y, int pointer, int button) {
         return false;
     }
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
+        if (Math.abs(distance) <= 1) {
+            return false;
+        }
+        if (initialDistance != prevDistance) {
+            prevDistance = initialDistance;
+            prevZoom = camera.zoom;
+        }
+
+        float ratio = initialDistance / distance;
+        float newZoomLevel = prevZoom * ratio;
+        // change zoom level only if above minimum level
+        if (.5f <= newZoomLevel) {
+            camera.zoom = newZoomLevel;
+        }
+
+        // limit zoom to showing full map
+        calculateCameraBounds();
+
+        return true;
+    }
+
+    private void calculateCameraBounds() {
+        // code adapted from https://gamedev.stackexchange.com/questions/74926/libgdx-keep-camera-within-bounds-of-tiledmap
+        // The left boundary of the map (x)
+        int mapLeft = 0;
+        // The right boundary of the map (x + width)
+        int mapRight = map.getWidth() * tileWidth;
+        // The bottom boundary of the map (y)
+        int mapBottom = 0;
+        // The top boundary of the map (y + height)
+        int mapTop = map.getHeight() * tileHeight;
+
+        // The camera dimensions, halved
+        float cameraHalfWidth = camera.viewportWidth * camera.zoom * .5f;
+        float cameraHalfHeight = camera.viewportHeight * camera.zoom * .5f;
+
+        // calculate positions of boundaries of camera
+        float cameraLeft = camera.position.x - cameraHalfWidth;
+        float cameraRight = camera.position.x + cameraHalfWidth;
+        float cameraBottom = camera.position.y - cameraHalfHeight;
+        float cameraTop = camera.position.y + cameraHalfHeight;
+
+        // Horizontal axis
+        // if map width is smaller than viewport width
+        if (map.getWidth() * tileWidth / camera.zoom < camera.viewportWidth) {
+            // if can zoom out more to show entire map height
+            if (widthZoomRatio < heightZoomRatio) {
+                // position camera at center of map horizontally
+                camera.position.x = mapRight / 2;
+            } else {
+                // limit zoom to fit width of map
+                camera.zoom = widthZoomRatio;
+            }
+        }
+        // else if left boundary of camera is outside of map's left boundary
+        else if (cameraLeft <= mapLeft) {
+            // align camera and map's left edge
+            camera.position.x = mapLeft + cameraHalfWidth;
+        }
+        // else if right boundary of camera is outside of map's right boundary
+        else if (cameraRight >= mapRight) {
+            // align camera and map's right edge
+            camera.position.x = mapRight - cameraHalfWidth;
+        }
+
+        // Vertical axis
+        // if map height is smaller than viewport height
+        if (map.getHeight() * tileHeight / camera.zoom < camera.viewportHeight) {
+            // if can zoom out more to show entire map width
+            if (widthZoomRatio > heightZoomRatio) {
+                // position camera at center of map vertically
+                camera.position.y = mapTop / 2;
+            } else {
+                // limit zoom to fit height of map
+                camera.zoom = heightZoomRatio;
+            }
+        }
+        // else if bottom boundary of camera is outside of map's bottom boundary
+        else if (cameraBottom <= mapBottom) {
+            // align camera and map's bottom edge
+            camera.position.y = mapBottom + cameraHalfHeight;
+        }
+        // else if top boundary of camera is outside of map's top boundary
+        else if (cameraTop >= mapTop) {
+            // align camera and map's top edge
+            camera.position.y = mapTop - cameraHalfHeight;
+        }
+
+        camera.update();
     }
 
     @Override
