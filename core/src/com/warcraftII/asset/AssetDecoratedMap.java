@@ -14,6 +14,7 @@ import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 
@@ -172,7 +173,7 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
-    public int FindMapIndex(String name) {
+    public static int FindMapIndex(String name) {
         Integer found = DMapNameTranslation.get(name);
 
         if (found != null) {
@@ -181,6 +182,19 @@ public class AssetDecoratedMap extends TerrainMap {
             return -1;
 
         }
+    }
+
+    /**
+     * Given an index, return a pointer to the corresponding map in DAllMaps
+     *
+     * @param[in] index The index of the map in DAllMaps
+     *
+     * @return a pointer to a map or an empty pointer if index is out of bounds
+     *
+     */
+
+    public static Set<String> GetMapNames(int index){
+        DMapNameTranslation.keySet();
     }
 
 /**
@@ -192,7 +206,7 @@ public class AssetDecoratedMap extends TerrainMap {
  *
  */
 
-    public AssetDecoratedMap GetMap(int index){
+    public static AssetDecoratedMap GetMap(int index){
         if((0 > index)||(DAllMaps.size() <= index)){
             return new AssetDecoratedMap();
         }
