@@ -193,8 +193,8 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
-    public static Set<String> GetMapNames(int index){
-        DMapNameTranslation.keySet();
+    public static Set<String> GetMapNames(){
+         return DMapNameTranslation.keySet();
     }
 
 /**
