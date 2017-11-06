@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.data_source.FileDataSource;
 import com.warcraftII.terrain.TerrainMap;
 import com.warcraftII.terrain.MapRenderer;
@@ -28,18 +29,7 @@ public class MapParser {
     private OrthogonalTiledMapRenderer renderer;
     MapProperties properties;
 
-    public MapParser(FileHandle file) {
-        String fileAsString = file.readString();
-        String []fileAsLines;
-        fileAsLines = fileAsString.split("\n");
-
-        //  name of the gameMap is on second line of .gameMap file
-        name = fileAsLines[1];
-        StringTokenizer st = new StringTokenizer(fileAsLines[3]);
-        //  gameMap's width and height are on 4th line of .gameMap file
-        width = Integer.valueOf(st.nextToken());
-        height = Integer.valueOf(st.nextToken());
-
+    public MapParser(String mapName) {
         tiledMap = new TiledMap();
 
         MapLayers layers = tiledMap.getLayers();
@@ -48,10 +38,9 @@ public class MapParser {
         /* This section reads in from the terrainmap,
         feeds it to the map renderer, and adds a layer to the tilemap */
 
-        FileDataSource fds = new FileDataSource(file);
-        TerrainMap terrainmap = new TerrainMap(); // deal later
-        terrainmap.LoadMap(fds);
-        MapRenderer maprend = new MapRenderer(terrainmap);
+        int MapNum = AssetDecoratedMap.FindMapIndex(mapName);
+        AssetDecoratedMap map = AssetDecoratedMap.GetMap(MapNum);
+        MapRenderer maprend = new MapRenderer(map);
 
         TiledMapTileLayer tileLayerBase = maprend.DrawMap();
 
@@ -65,7 +54,7 @@ public class MapParser {
         //spriteMap = new Sprite[height][width];
 //            for (int i = 0; i < 5; i++) {
 
-        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        /*TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
         TextureRegion textureRegion = new TextureRegion();
         textureRegion = staticAssets.findRegion("goldmine-inactive");
         cell.setTile(new StaticTiledMapTile(textureRegion));
@@ -77,7 +66,7 @@ public class MapParser {
 
 //            }
         layers.add(assetLayer);
-
+*/
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 

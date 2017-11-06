@@ -4,11 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.screens.Splash;
+import com.warcraftII.asset.AssetDecoratedMap;
 
 //  Game class also implements ApplicationListener
 public class Warcraft extends Game {
     private static final Logger log = new Logger("WarcraftMain", 2);
 	public SpriteBatch batch;
+	public String DMapName;
+
 
 	@Override
 	public void create () {
