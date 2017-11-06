@@ -73,10 +73,10 @@ public class MapSelection implements Screen {
             MapButtons.add(Button);
         }
 
+        // TODO: Make this screen scrollable if there are too many maps
         for (TextButton Button : MapButtons) {
-
             menuTable.add(Button).fillX().uniformX();
-            menuTable.row().pad(100, 0, 100, 0);
+            menuTable.row().pad(50, 0, 50, 0);
         }
         return menuTable;
     }
