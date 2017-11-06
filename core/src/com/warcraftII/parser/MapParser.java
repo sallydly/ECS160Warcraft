@@ -43,9 +43,11 @@ public class MapParser {
         log.info(String.valueOf(MapNum));
         AssetDecoratedMap map = AssetDecoratedMap.GetMap(MapNum);
         MapRenderer mapRenderer = new MapRenderer(map);
-        StaticAssetParser staticAssetParser;
+        StaticAssetParser staticAssetParser = new StaticAssetParser();
 
-        switch (MapNum) {
+
+
+/*        switch (MapNum) {
             case(0):
                 staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "bay.map");
                 break;
@@ -60,12 +62,12 @@ public class MapParser {
             default:
                 staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "bay.map");
                 log.error("MapNum not found");
-        }
+        }*/
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
-
         layers.add(tileLayerBase);
-        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets();
+
+        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets(map);
         layers.add(staticAssetsLayer);
 
         renderer = new OrthogonalTiledMapRenderer(tiledMap);

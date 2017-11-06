@@ -556,8 +556,6 @@ public class AssetDecoratedMap extends TerrainMap {
 
         String TempString;
         Vector< String > Tokens;
-        SResourceInitialization TempResourceInit = new SResourceInitialization();
-        SAssetInitialization TempAssetInit = new SAssetInitialization();
 
         int ResourceCount, AssetCount, InitialLumber = 400;
         boolean ReturnStatus = false;
@@ -572,6 +570,8 @@ public class AssetDecoratedMap extends TerrainMap {
             ResourceCount = Integer.parseInt(TempString);
 
             for(int Index = 0; Index <= ResourceCount; Index++){
+                SResourceInitialization TempResourceInit = new SResourceInitialization();
+
                 TempString = LineSource.read();
                 Tokens = Tokenizer.Tokenize(TempString);
                 if(3 > Tokens.size()){
@@ -601,6 +601,8 @@ public class AssetDecoratedMap extends TerrainMap {
             TempString = LineSource.read().trim();
             AssetCount = Integer.parseInt(TempString);
             for(int Index = 0; Index < AssetCount; Index++){
+                SAssetInitialization TempAssetInit = new SAssetInitialization();
+
                 TempString = LineSource.read();
                 Tokens = Tokenizer.Tokenize(TempString);
                 if(4 > Tokens.size()){
@@ -612,6 +614,13 @@ public class AssetDecoratedMap extends TerrainMap {
                 TempAssetInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(1))];
                 TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2))));
                 TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3))));
+                System.out.println("name is");
+                System.out.println(TempAssetInit.DType);
+                System.out.println("x is");
+                System.out.println(TempAssetInit.DTilePosition.X());
+                System.out.println("y is");
+                System.out.println(TempAssetInit.DTilePosition.Y());
+
 
                 if((0 > TempAssetInit.DTilePosition.X())||(0 > TempAssetInit.DTilePosition.Y())){
                     //TODO: Create and throw custom exception

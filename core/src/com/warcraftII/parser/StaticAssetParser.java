@@ -2,7 +2,7 @@ package com.warcraftII.parser;
 
 /*
 * Adds stationary assets onto a new layer of map
-* Only demos placing random stationary assets onto map
+*
  */
 
 import com.badlogic.gdx.Gdx;
@@ -15,17 +15,21 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.asset.AssetDecoratedMap;
+import com.warcraftII.asset.SAssetInitialization;
+import com.warcraftII.position.TilePosition;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class StaticAssetParser {
-    private static final Logger log = new Logger("StaticAssetParser", 2);
+    //private static final Logger log = new Logger("StaticAssetParser", 2);
 
     private TextureAtlas staticAssets;
     private TiledMap tiledMap;
     private TiledMapTileLayer assetLayer;
     private String[] staticAssetsArray;
-    private final String mapName;
+    //private final String mapName;
     private static final String TOWNHALL = "TownHall";
     private static final String GOLDMINE = "GoldMine";
     private static final String PEASANT = "Peasant";
@@ -37,15 +41,19 @@ public class StaticAssetParser {
         this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
-        this.mapName = mapName;
+        //this.mapName = mapName;
         /*
         * Unsure if textures larger than 32x32 can be placed on layer easily
-        * May have to separate atlas into 32x32, 64x64, 128x128 pages and create separete layers for those
+        * May have to separate atlas into 32x32, 64x64, 128x128 pages and create separate layers for those
          */
 
     }
 
-    private void parseMap() {
+    public StaticAssetParser() {
+
+    }
+
+    /*private void parseMap() {
         FileHandle handle = Gdx.files.internal("map/" + mapName);
         String text = handle.readString();
         String[] fileArray = text.split("\\r?\\n");
@@ -60,9 +68,9 @@ public class StaticAssetParser {
         }
 
         this.staticAssetsArray = Arrays.copyOfRange(fileArray, assetIndexStart, index);
-    }
+    }*/
 
-    public TiledMapTileLayer addStaticAssets() {
+    /*public TiledMapTileLayer addStaticAssets() {
         parseMap();
 
         for(String staticAssetLine : staticAssetsArray) {
@@ -86,5 +94,44 @@ public class StaticAssetParser {
         }
 
         return assetLayer;
+    }*/
+
+    // takes in an AssetDecoratedMap instead
+    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map) {
+        List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
+        System.out.println("start render");
+
+        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
+        this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
+
+        for(SAssetInitialization AssetInit : AssetInitializationList) {
+            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+            TextureRegion textureRegion = new TextureRegion();
+
+            int XPos = AssetInit.DTilePosition.X();
+            //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
+            int YPos = map.Height() - AssetInit.DTilePosition.Y() - 3; // dont ask about the -3 haha
+
+            String AssetType = AssetInit.DType;
+
+
+            if (GOLDMINE.equals(AssetType)) {
+                textureRegion = staticAssets.findRegion("goldmine-inactive");
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+
+                assetLayer.setCell(XPos, YPos, cell);
+            } else if (PEASANT.equals(AssetType)) {
+                textureRegion = staticAssets.findRegion("scouttower-place");
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                assetLayer.setCell(XPos, YPos, cell);
+            } else if (TOWNHALL.equals(AssetType)) {
+                textureRegion = staticAssets.findRegion("townhall-inactive");
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                assetLayer.setCell(XPos, YPos, cell);
+            }
+        }
+
+        return assetLayer;
     }
 }
+

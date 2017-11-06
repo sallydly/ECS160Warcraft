@@ -215,8 +215,7 @@ public class Position {
         return DX;
     }
 
-    public int X(int x) {
-        return DX = x;
+    public int X(int x) { return DX = x;
     }
 
     public int incrementX(int x) {
