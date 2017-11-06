@@ -1,11 +1,14 @@
 package com.warcraftII.terrain;
 
+
+import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain.TileTypes.*;
 
+import com.badlogic.gdx.Gdx;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -43,7 +46,14 @@ public class TerrainMap {
         this.DRendered = map.DRendered;
     }
 
+
+
     /*  The important get() functions of TerrainMap: */
+    public boolean IsRendered(){
+        return DRendered;
+    }
+
+
     public ETileType TileType(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
             return ETileType.None;
@@ -208,24 +218,28 @@ public class TerrainMap {
             default:                    return false;
         }
     }
-
-
     public boolean LoadMap(DataSource source) {
-        CommentSkipLineDataSource lineSource = new CommentSkipLineDataSource(source, '#');
+        CommentSkipLineDataSource LineSource = new CommentSkipLineDataSource(source, '#');
+        return LoadMap(LineSource);
+    }
+
+
+    public boolean LoadMap(CommentSkipLineDataSource lineSource) {
+        CommentSkipLineDataSource LineSource = lineSource;
         String tempString;
-        Vector<String> tokens = new Vector<String>();
+        Vector<String> tokens;
         int mapWidth, mapHeight;
         boolean returnStatus = false;
 
+        DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
-        try {
-            DMapName = lineSource.read();
+            DMapName = LineSource.read();
             if(DMapName.isEmpty()) {
                 return returnStatus;
             }
 
-            tempString = lineSource.read();
+            tempString = LineSource.read();
             if(tempString.isEmpty()) {
                 return returnStatus;
             }
@@ -234,10 +248,6 @@ public class TerrainMap {
                 return returnStatus;
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             Vector<String> StringMap = new Vector<String>();
             mapWidth = Integer.valueOf(tokens.get(0));
             mapHeight = Integer.valueOf(tokens.get(1));
@@ -246,7 +256,7 @@ public class TerrainMap {
                 return returnStatus;
             }
             while (StringMap.size() < mapHeight + 1) {
-                tempString = lineSource.read();
+                tempString = LineSource.read();
                 if(tempString.isEmpty()) {
                     return returnStatus;
                 }
@@ -258,46 +268,49 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
+
             DTerrainMap.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                DTerrainMap.get(i).setSize(mapWidth + 1);
+                Vector<ETerrainTileType> TempRow = new Vector<ETerrainTileType>();
+                TempRow.setSize(mapWidth + 1);
+
                 for (int j = 0; j < mapWidth + 1; j++) {
                     switch (StringMap.get(i).charAt(j)) {
                         case 'G':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkGrass);
+                            TempRow.set(j, ETerrainTileType.DarkGrass);
                             break;
                         case 'g':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.LightGrass);
+                            TempRow.set(j, ETerrainTileType.LightGrass);
                             break;
                         case 'D':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DarkDirt);
+                            TempRow.set(j, ETerrainTileType.DarkDirt);
                             break;
                         case 'd':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.LightDirt);
+                            TempRow.set(j, ETerrainTileType.LightDirt);
                             break;
                         case 'R':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.Rock);
+                            TempRow.set(j, ETerrainTileType.Rock);
                             break;
                         case 'r':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.RockPartial);
+                            TempRow.set(j, ETerrainTileType.RockPartial);
                             break;
                         case 'F':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.Forest);
+                            TempRow.set(j, ETerrainTileType.Forest);
                             break;
                         case 'f':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.ForestPartial);
+                            TempRow.set(j, ETerrainTileType.ForestPartial);
                             break;
                         case 'W':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.DeepWater);
+                            TempRow.set(j, ETerrainTileType.DeepWater);
                             break;
                         case 'w':
-                            DTerrainMap.get(i).set(j, ETerrainTileType.ShallowWater);
+                            TempRow.set(j, ETerrainTileType.ShallowWater);
                             break;
                         default:
                             return returnStatus;
                     }
+                    /* Should not be given invalid maps?s
                     if (j >= 1) {
-                        //TODO: Implement to_underlying function
                         if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i).get(j-1).ordinal()]) {
                             return returnStatus;
                         }
@@ -307,11 +320,15 @@ public class TerrainMap {
                             return returnStatus;
                         }
                     }
+                    */
                 }
+                DTerrainMap.set(i,TempRow);
             }
+
+            // Now starts reading map partial bits.
             StringMap.clear();
             while (StringMap.size() < mapHeight + 1) {
-                tempString = lineSource.read();
+                tempString = LineSource.read();
                 if(tempString.isEmpty()) {
                     return returnStatus;
                 }
@@ -323,23 +340,25 @@ public class TerrainMap {
             if (mapHeight + 1 > StringMap.size()) {
                 return returnStatus;
             }
+
+            DPartials = new Vector<Vector<Byte>>();
             DPartials.setSize(mapHeight + 1);
             for (int i = 0; i < DTerrainMap.size(); i++) {
-                DPartials.get(i).setSize(mapWidth + 1);
+                Vector<Byte> TempPartialsRow = new Vector<Byte>();
+                TempPartialsRow.setSize(mapWidth + 1);
                 for (int j = 0; j < mapWidth + 1; j++) {
                     if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
-                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
+                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
                     } else if (('A' <= StringMap.get(i).charAt(j)) && ('F' >= StringMap.get(i).charAt(j))) {
-                        DPartials.get(i).set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
+                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
                     } else {
                         return returnStatus;
                     }
                 }
+                DPartials.set(i,TempPartialsRow);
             }
-            returnStatus = true;
-        } catch (Exception E) {
-
-        }
+        returnStatus = true;
+        System.out.println(DTerrainMap.size());
         return returnStatus;
     }
     /**
@@ -353,8 +372,20 @@ public class TerrainMap {
      */
 
     public void RenderTerrain(){
+        DMap = new Vector<Vector<ETileType>>();
         DMap.setSize(DTerrainMap.size()+1);
+        DMapIndices = new Vector<Vector<Integer>>();
         DMapIndices.setSize(DTerrainMap.size()+1);
+
+        for (int i = 0; i < DMap.size(); i++){
+            Vector<ETileType> newVec1 = new Vector<ETileType>();
+            newVec1.setSize(DTerrainMap.get(0).size() + 1);
+            DMap.set(i,newVec1);
+            Vector<Integer> newVec2 = new Vector<Integer>();
+            newVec2.setSize(DTerrainMap.get(0).size()+ 1);
+            DMapIndices.set(i,newVec2);
+        }
+
         for(int YPos = 0; YPos < DMap.size(); YPos++){
             if((0 == YPos)||(DMap.size() - 1 == YPos)){
                 for(int XPos = 0; XPos < DTerrainMap.get(0).size() + 1; XPos++){
@@ -457,10 +488,16 @@ public class TerrainMap {
             Index = 0xF;
         }
 
-        DMap.get(y+1).add(Type);
-        DMapIndices.get(y+1).add(Index);
+        Vector<ETileType> changeVec1 = DMap.get(y+1);
+        changeVec1.set(x+1,Type);
+        DMap.set(y+1, changeVec1);
 
-/*  The y+1 is to compensate for its use in RenderMap()
+        Vector<Integer> changeVec2 = DMapIndices.get(y+1);
+        changeVec2.set(x+1, Integer.valueOf(Index));
+        DMapIndices.set(y+1, changeVec2);
+
+
+/*  The y+1 is to compensate for its use in RenderTerrain()
         ETileType Type;
         int Index;
         CalculateTileTypeAndIndex(XPos-1, YPos-1, Type, Index);
@@ -486,8 +523,14 @@ public class TerrainMap {
      *
      */
     protected void SetTileTypeAndIndex(int x, int y, ETileType type, int index) {
-        DMap.get(y).add(type);
-        DMapIndices.get(y).add(index);
+
+        Vector<ETileType> changeVec1 = DMap.get(y);
+        changeVec1.set(x,type);
+        DMap.set(y, changeVec1);
+
+        Vector<Integer> changeVec2 = DMapIndices.get(y);
+        changeVec2.set(x,Integer.valueOf(index));
+        DMapIndices.set(y, changeVec2);
     }
 
 }

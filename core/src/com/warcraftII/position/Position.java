@@ -46,6 +46,8 @@ public class Position {
      * There is no initializer list construct for vectors
      */
     static protected void initVectors() {
+        DOctant = new Vector<Vector<EDirection>>();
+        DTileDirections = new Vector<Vector<EDirection>>();
 
         //These temp vectors will be used to fill DOctant and DTileDirections
         Vector<EDirection> temp1 = new Vector<EDirection>(1);

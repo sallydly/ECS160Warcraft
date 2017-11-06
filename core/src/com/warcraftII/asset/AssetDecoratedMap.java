@@ -1,6 +1,7 @@
 package com.warcraftII.asset;
 
 
+import com.badlogic.gdx.files.FileHandle;
 import com.warcraftII.terrain.TerrainMap;
 import com.warcraftII.terrain.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -13,7 +14,12 @@ import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+
+
+// TODO: add Android logging
+
 
 import java.lang.Math;
 
@@ -26,10 +32,10 @@ public class AssetDecoratedMap extends TerrainMap {
     //protected List<PlayerAsset> DAssets;
     protected List< SAssetInitialization > DAssetInitializationList;
     protected List< SResourceInitialization > DResourceInitializationList;
-    protected Vector< Vector< int > > DSearchMap;
-    protected Vector< Vector< int > > DLumberAvailable;
+    protected Vector< Vector< Integer > > DSearchMap;
+    protected Vector< Vector< Integer > > DLumberAvailable;
 
-    protected static Map< String, Integer > DMapNameTranslation = new HashMap<String,Integer>;
+    protected static Map< String, Integer > DMapNameTranslation;
     protected static Vector < AssetDecoratedMap > DAllMaps;
 
     /**
@@ -42,7 +48,7 @@ public class AssetDecoratedMap extends TerrainMap {
      */
     
     public AssetDecoratedMap() {
-        super();        
+        super();
     }
 
     /**
@@ -133,35 +139,30 @@ public class AssetDecoratedMap extends TerrainMap {
      */
 // TODO: implement this function
 
-/*
-    boolean LoadMaps(std.shared_ptr< CDataContainer > container){
-        auto FileIterator = container.First();
-        if(FileIterator == nullptr){
-            PrintError("FileIterator == nullptr\n");
-            return false;
-        }
-        while((FileIterator != nullptr)&&(FileIterator.IsValid())){
-            std.string Filename = FileIterator.Name();
-            FileIterator.Next();
-            if(Filename.rfind(".map") == (Filename.length() - 4)){
-                std.shared_ptr< AssetDecoratedMap > TempMap = std.make_shared< AssetDecoratedMap >();
 
-                if(!TempMap.LoadMap(container.DataSource(Filename))){
-                    PrintError("Failed to load map \"%s\".\n",Filename.c_str());
-                    continue;
-                }
-                else{
-                    PrintDebug(DEBUG_LOW,"Loaded map \"%s\".\n",Filename.c_str());
-                }
-                TempMap.RenderTerrain();
-                DMapNameTranslation[TempMap.MapName()] = DAllMaps.size();
-                DAllMaps.push_back(TempMap);
+    public static boolean LoadMaps(FileHandle directory) {
+        DMapNameTranslation = new HashMap<String, Integer>();
+        DAllMaps = new Vector<AssetDecoratedMap>();
+
+        FileHandle[] MapFileArray = directory.list(".map");
+
+        for (FileHandle fh : MapFileArray) {
+            AssetDecoratedMap TempMap = new AssetDecoratedMap();
+            FileDataSource Source = new FileDataSource(fh);
+            if (!TempMap.LoadMap(Source)) {
+                //Log.e(ASSETDEC, "Failed to load map " + fh.name());
+                continue;
+            } else {
+                //Log.d(ASSETDEC, "Loaded map " + fh.name());
             }
+            //TempMap.RenderTerrain();  // Shouldn't need to do this. Its in RenderMap()
+            DMapNameTranslation.put(TempMap.MapName(), DAllMaps.size());
+            DAllMaps.add(TempMap);
         }
-        //PrintDebug(DEBUG_LOW, "Maps loaded\n");
+        //Log.d(ASSETDEC, "Maps loaded\n");
         return true;
     }
-*/
+
 
     /**
      * Find the index of a map based on a map name
@@ -172,7 +173,7 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
-    public int FindMapIndex(String name) {
+    public static int FindMapIndex(String name) {
         Integer found = DMapNameTranslation.get(name);
 
         if (found != null) {
@@ -181,6 +182,19 @@ public class AssetDecoratedMap extends TerrainMap {
             return -1;
 
         }
+    }
+
+    /**
+     * Given an index, return a pointer to the corresponding map in DAllMaps
+     *
+     * @param[in] index The index of the map in DAllMaps
+     *
+     * @return a pointer to a map or an empty pointer if index is out of bounds
+     *
+     */
+
+    public static Set<String> GetMapNames(){
+         return DMapNameTranslation.keySet();
     }
 
 /**
@@ -192,7 +206,7 @@ public class AssetDecoratedMap extends TerrainMap {
  *
  */
 
-    public AssetDecoratedMap GetMap(int index){
+    public static AssetDecoratedMap GetMap(int index){
         if((0 > index)||(DAllMaps.size() <= index)){
             return new AssetDecoratedMap();
         }
@@ -537,39 +551,43 @@ public class AssetDecoratedMap extends TerrainMap {
      */
 
     public boolean LoadMap(DataSource source){
-        CommentSkipLineDataSource LineSource(source, '#');
+        DResourceInitializationList = new ArrayList<SResourceInitialization>();
+        DAssetInitializationList = new ArrayList<SAssetInitialization>();
+
         String TempString;
         Vector< String > Tokens;
-        SResourceInitialization TempResourceInit;
-        SAssetInitialization TempAssetInit;
+        SResourceInitialization TempResourceInit = new SResourceInitialization();
+        SAssetInitialization TempAssetInit = new SAssetInitialization();
+
         int ResourceCount, AssetCount, InitialLumber = 400;
         boolean ReturnStatus = false;
 
-        if(!TerrainMap.LoadMap(source)){
+        CommentSkipLineDataSource LineSource = new CommentSkipLineDataSource(source, '#');
+
+        if(!super.LoadMap(LineSource)){ // calls TerrainMap's LoadMap
             return false;
         }
-        try{
-            TempString = LineSource.read();
+        // try{ //TODO: throw/catch exception here
+            TempString = LineSource.read().trim();
             ResourceCount = Integer.parseInt(TempString);
-            DResourceInitializationList.clear();
+
             for(int Index = 0; Index <= ResourceCount; Index++){
                 TempString = LineSource.read();
                 Tokens = Tokenizer.Tokenize(TempString);
                 if(3 > Tokens.size()){
                     //Bad stuff!
                     //TODO: Create and throw custom exception
-                    //PrintError("Too few tokens for resource %d.\n", Index);
+                    //Log.e(ASSETDEC, "Too few tokens for resource %d.\n", Index);
                 }
                 
                 // TODO: Deal with player colors
-                /*
-                TempResourceInit.DColor = static_cast<EPlayerColor>(std.stoi(Tokens.get(0)));
+
+                TempResourceInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(0))];
                 if((0 == Index)&&(EPlayerColor.None != TempResourceInit.DColor)){
-                    PrintError("Expected first resource to be for color None.\n");
-                goto LoadMapExit;
+                    //Log.e(ASSETDEC, "Expected first resource to be for color None.\n");
+                    //goto LoadMapExit;
                 }
-                */
-                
+
                 TempResourceInit.DGold = Integer.parseInt(Tokens.get(1));
                 TempResourceInit.DLumber = Integer.parseInt(Tokens.get(2));
                 if(EPlayerColor.None == TempResourceInit.DColor){
@@ -580,9 +598,8 @@ public class AssetDecoratedMap extends TerrainMap {
             }
 
 
-            TempString = LineSource.read();
-            AssetCount = Integer.parseInt((TempString);
-            DAssetInitializationList.clear();
+            TempString = LineSource.read().trim();
+            AssetCount = Integer.parseInt(TempString);
             for(int Index = 0; Index < AssetCount; Index++){
                 TempString = LineSource.read();
                 Tokens = Tokenizer.Tokenize(TempString);
@@ -592,45 +609,46 @@ public class AssetDecoratedMap extends TerrainMap {
                     // PrintError("Too few tokens for asset %d.\n", Index);
                 }
                 TempAssetInit.DType = Tokens.get(0);
-                //TODO: Fix this static cast into PlayerColor enum.
-                //TempAssetInit.DColor = static_cast<EPlayerColor>(Integer.parseInt((Tokens.get(1)));
-                TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2)));
-                TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3)));
+                TempAssetInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(1))];
+                TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2))));
+                TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3))));
 
                 if((0 > TempAssetInit.DTilePosition.X())||(0 > TempAssetInit.DTilePosition.Y())){
                     //TODO: Create and throw custom exception
-                    //PrintError("Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
+                    //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
                 }
                 if((Width() <= TempAssetInit.DTilePosition.X())||(Height() <= TempAssetInit.DTilePosition.Y())){
                     //TODO: Create and throw custom exception
-                    //PrintError("Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
+                    //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
                 }
                 DAssetInitializationList.add(TempAssetInit);
             }
 
+            DLumberAvailable = new Vector<Vector<Integer>>();
             DLumberAvailable.setSize(DTerrainMap.size());
             for(int RowIndex = 0; RowIndex < DLumberAvailable.size(); RowIndex++){
-                DLumberAvailable[RowIndex].resize(DTerrainMap.get(RowIndex).size());
+                Vector<Integer> TempRow = new Vector<Integer>();
+                TempRow.setSize(DTerrainMap.get(RowIndex).size());
                 for(int ColIndex = 0; ColIndex < DTerrainMap.get(RowIndex).size(); ColIndex++){
                     if(ETerrainTileType.Forest == DTerrainMap.get(RowIndex).get(ColIndex)){
                         int Initlumb;
-                        if(DPartials.get(RowIndex).get(ColIndex)) {
+                        if(DPartials.get(RowIndex).get(ColIndex) > 0) {
                             Initlumb = InitialLumber;
                         } else {
                             Initlumb = 0;
                         }
-                        DLumberAvailable.get(RowIndex).set(ColIndex,Initlumb);
+                        TempRow.set(ColIndex,Initlumb);
                     }
                     else{
-                        DLumberAvailable.get(RowIndex).set(ColIndex, 0);
+                        TempRow.set(ColIndex, 0);
                     }
                 }
+                DLumberAvailable.set(RowIndex,TempRow);
             }
 
-            ReturnStatus = true;
-        }
+        ReturnStatus = true;
+        //}//TODO: catch exception here
         return ReturnStatus;
-
     }
 
     /**
@@ -658,8 +676,8 @@ public class AssetDecoratedMap extends TerrainMap {
      */
 
     public List< SAssetInitialization > AssetInitializationList(){
-            return DAssetInitializationList;
-        }
+        return DAssetInitializationList;
+    }
 
     /**
      * Get function, return the resource initiliazation list
@@ -670,7 +688,7 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
-    public < SResourceInitialization > ResourceInitializationList() {
+    public List< SResourceInitialization > ResourceInitializationList() {
         return DResourceInitializationList;
     }
 
