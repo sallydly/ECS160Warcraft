@@ -12,7 +12,7 @@ import com.warcraftII.GameDataTypes.*;
 
 
 public class SResourceInitialization {
-    EPlayerColor DColor;
-    int DGold;
-    int DLumber;
+    public EPlayerColor DColor;
+    public int DGold;
+    public int DLumber;
 }

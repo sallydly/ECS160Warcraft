@@ -12,9 +12,9 @@ import com.warcraftII.position.TilePosition;
  */
 
 public class SAssetInitialization {
-    String DType;
-    EPlayerColor DColor;
-    TilePosition DTilePosition;
+    public String DType;
+    public EPlayerColor DColor;
+    public TilePosition DTilePosition;
 
     public SAssetInitialization(){
         DTilePosition = new TilePosition();
