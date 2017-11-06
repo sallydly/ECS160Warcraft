@@ -38,7 +38,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private MapParser map;
 
     private OrthographicCamera camera;
+
+    // height and width of each map tile in pixels
+    // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
+    private int tileHeight = 32;
+    private int tileWidth = 32;
+
+    private float prevZoom = 1;
+    // camera zoom levels to fit map height/width
+    private float heightZoomRatio;
+    private float widthZoomRatio;
+
     float prevScale = 1; //initial scale for zoom
+
     private double prevDistance = 0;
     private float currentxmove;
     private float currentymove;
@@ -54,8 +66,17 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // adjust pointer drag amount by camera zoom level
+        deltaX *= camera.zoom;
+        deltaY *= camera.zoom;
 
-        return false;
+        // move camera based on distance of pointer drag
+        camera.translate(-deltaX, deltaY);
+
+        // limit panning to edge of map
+        calculateCameraBounds();
+
+        return true;
     }
 
     @Override
@@ -107,6 +128,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         map = new MapParser(Gdx.files.internal("map/hedges.map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
+
+        // calculate zoom levels to show entire map height/width
+        heightZoomRatio = map.getHeight() * tileHeight / camera.viewportHeight;
+        widthZoomRatio = map.getWidth() * tileWidth / camera.viewportWidth;
     }
 
     @Override
@@ -235,7 +260,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        //
         // readySound.play();
         return false;
     }
@@ -250,15 +274,35 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         return false;
     }
 
-    public boolean pan2Finger(float x, float y, float deltaX, float deltaY) {
-        deltaX *= 0.1;
-        deltaY *= 0.1;        // move camera based on distance of pointer drag
-        camera.translate(-deltaX, deltaY);
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
 
-        // height and width of each map tile in pixels
-        int tileHeight = 32;
-        int tileWidth = 32;
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        if (Math.abs(distance) <= 1) {
+            return false;
+        }
+        if (initialDistance != prevDistance) {
+            prevDistance = initialDistance;
+            prevZoom = camera.zoom;
+        }
 
+        float ratio = initialDistance / distance;
+        float newZoomLevel = prevZoom * ratio;
+        // change zoom level only if above minimum level
+        if (.5f <= newZoomLevel) {
+            camera.zoom = newZoomLevel;
+        }
+
+        // limit zoom to showing full map
+        calculateCameraBounds();
+
+        return true;
+    }
+
+    private void calculateCameraBounds() {
         // code adapted from https://gamedev.stackexchange.com/questions/74926/libgdx-keep-camera-within-bounds-of-tiledmap
         // The left boundary of the map (x)
         int mapLeft = 0;
@@ -281,9 +325,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
         // Horizontal axis
         // if map width is smaller than viewport width
-        if (map.getWidth() * 32 < camera.viewportWidth) {
-            // position camera at center of map horizontally
-            camera.position.x = mapRight / 2;
+        if (map.getWidth() * tileWidth / camera.zoom < camera.viewportWidth) {
+            // if can zoom out more to show entire map height
+            if (widthZoomRatio < heightZoomRatio) {
+                // position camera at center of map horizontally
+                camera.position.x = mapRight / 2;
+            } else {
+                // limit zoom to fit width of map
+                camera.zoom = widthZoomRatio;
+            }
         }
         // else if left boundary of camera is outside of map's left boundary
         else if (cameraLeft <= mapLeft) {
@@ -298,9 +348,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
         // Vertical axis
         // if map height is smaller than viewport height
-        if (map.getHeight() * 32 < camera.viewportHeight) {
-            // position camera at center of map vertically
-            camera.position.y = mapTop / 2;
+        if (map.getHeight() * tileHeight / camera.zoom < camera.viewportHeight) {
+            // if can zoom out more to show entire map width
+            if (widthZoomRatio > heightZoomRatio) {
+                // position camera at center of map vertically
+                camera.position.y = mapTop / 2;
+            } else {
+                // limit zoom to fit height of map
+                camera.zoom = heightZoomRatio;
+            }
         }
         // else if bottom boundary of camera is outside of map's bottom boundary
         else if (cameraBottom <= mapBottom) {
@@ -314,30 +370,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         }
 
         camera.update();
-
-        return true;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        if(Math.abs(distance) <= 1) return false;
-        if(initialDistance != prevDistance) {
-            prevDistance = initialDistance;
-            prevScale = camera.zoom;
-        }
-        float ratio = initialDistance / distance;
-        camera.zoom = prevScale * ratio;
-        return true;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        pan2Finger(initialPointer1.x, initialPointer1.y, pointer1.x - initialPointer1.x, pointer1.y-initialPointer1.y);
         return false;
     }
 
