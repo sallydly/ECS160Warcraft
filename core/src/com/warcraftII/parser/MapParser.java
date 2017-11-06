@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.data_source.FileDataSource;
 import com.warcraftII.terrain.TerrainMap;
@@ -20,6 +21,7 @@ import com.warcraftII.terrain.MapRenderer;
 import java.util.StringTokenizer;
 
 public class MapParser {
+    private Logger log = new Logger("MapParser", 2);
 
     private String name;
     private int height, width;
@@ -37,36 +39,35 @@ public class MapParser {
 
         /* This section reads in from the terrainmap,
         feeds it to the map renderer, and adds a layer to the tilemap */
-
         int MapNum = AssetDecoratedMap.FindMapIndex(mapName);
+        log.info(String.valueOf(MapNum));
         AssetDecoratedMap map = AssetDecoratedMap.GetMap(MapNum);
-        MapRenderer maprend = new MapRenderer(map);
+        MapRenderer mapRenderer = new MapRenderer(map);
+        StaticAssetParser staticAssetParser;
 
-        TiledMapTileLayer tileLayerBase = maprend.DrawMap();
+        switch (MapNum) {
+            case(0):
+                staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "bay.map");
+                break;
+            case(1):
+                staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "hedges.map");
+            case(2):
+                staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "mountain.map");
+                break;
+            case(3):
+                staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "nwhr2rn.map");
+                break;
+            default:
+                staticAssetParser = new StaticAssetParser(tiledMap, map.Width(), map.Height(), "bay.map");
+                log.error("MapNum not found");
+        }
+
+        TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
 
         layers.add(tileLayerBase);
+        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets();
+        layers.add(staticAssetsLayer);
 
-
-        /* This was the hail-mary asset addition */
-        TextureAtlas staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
-        TiledMapTileLayer assetLayer = new TiledMapTileLayer(width/2, height/2, 64,64); //needs to be changed to 32 later
-
-        //spriteMap = new Sprite[height][width];
-//            for (int i = 0; i < 5; i++) {
-
-        /*TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-        TextureRegion textureRegion = new TextureRegion();
-        textureRegion = staticAssets.findRegion("goldmine-inactive");
-        cell.setTile(new StaticTiledMapTile(textureRegion));
-        assetLayer.setCell(0, 0, cell);
-
-        textureRegion = staticAssets.findRegion("farm-place");
-        cell.setTile(new StaticTiledMapTile(textureRegion));
-        assetLayer.setCell(5, 6, cell);
-
-//            }
-        layers.add(assetLayer);
-*/
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 

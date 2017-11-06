@@ -14,11 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.parser.MapParser;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
+    private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
     private TextureAtlas terrain;
     private SpriteBatch batch;
@@ -35,6 +37,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
+        this.batch = game.batch;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -43,8 +46,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public void show() {
 
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-
-        batch = new SpriteBatch();
 
         stage = new Stage();
 

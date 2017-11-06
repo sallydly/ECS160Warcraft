@@ -177,7 +177,7 @@ public class AssetDecoratedMap extends TerrainMap {
         Integer found = DMapNameTranslation.get(name);
 
         if (found != null) {
-            return found.intValue();
+            return found;
         } else {
             return -1;
 

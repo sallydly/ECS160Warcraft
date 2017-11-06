@@ -1,31 +1,38 @@
 package com.warcraftII.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import com.warcraftII.asset.AssetDecoratedMap;
 
-
-
-/**
- * Created by Kimi on 11/5/2017.
- */
-
 public class MapSelection implements Screen {
+    private Logger log = new Logger("MapSelection", 2);
     private Warcraft game;
     private Texture texture;
     private Stage stage;
@@ -57,12 +64,30 @@ public class MapSelection implements Screen {
         Table menuTable = new Table();
         menuTable.setFillParent(true);
 
+        final List<String> mapNames = new ArrayList<String>();
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
         Vector<TextButton> MapButtons = new Vector<TextButton>();
+        Vector<ImageButton> imageButtons = new Vector<ImageButton>();
+
+        FileHandle dirHandle;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            dirHandle = Gdx.files.internal("map_previews");
+        } else {
+            dirHandle = Gdx.files.internal("./bin/map_previews");
+        }
+
+        for (FileHandle entry : dirHandle.list()) {
+            Texture mapPreview = new Texture(entry);
+            TextureRegion myTextureRegion= new TextureRegion(mapPreview);
+            TextureRegionDrawable drawable = new TextureRegionDrawable(myTextureRegion);
+            ImageButton button = new ImageButton(drawable);
+            imageButtons.add(button);
+        }
 
         for (final String MapName : AssetDecoratedMap.GetMapNames()) {
+            log.info(MapName);
             TextButton Button = new TextButton(MapName, skin);
-            Button.getLabel().setFontScale(2, 2);
+            Button.getLabel().setFontScale(1, 1);
             Button.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -70,14 +95,55 @@ public class MapSelection implements Screen {
                     game.setScreen(new SinglePlayer(game));
                 }
             });
+            mapNames.add(MapName);
             MapButtons.add(Button);
         }
 
-        // TODO: Make this screen scrollable if there are too many maps
-        for (TextButton Button : MapButtons) {
-            menuTable.add(Button).fillX().uniformX();
-            menuTable.row().pad(50, 0, 50, 0);
-        }
+        imageButtons.get(0).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.DMapName = mapNames.get(1);
+                game.setScreen(new SinglePlayer(game));
+            }
+        });
+
+        imageButtons.get(1).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.DMapName = mapNames.get(3);
+                game.setScreen(new SinglePlayer(game));
+            }
+        });
+
+        imageButtons.get(2).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.DMapName = mapNames.get(0);
+                game.setScreen(new SinglePlayer(game));
+            }
+        });
+
+        imageButtons.get(3).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.DMapName = mapNames.get(2);
+                game.setScreen(new SinglePlayer(game));
+            }
+        });
+
+        //TODO: Recheck after zoom
+        menuTable.add(MapButtons.get(0)).expandX();
+        menuTable.add(MapButtons.get(1)).expandX();
+        menuTable.row().pad(10, 0 ,0 ,0);
+        menuTable.add(imageButtons.get(2)).uniformX();
+        menuTable.add(imageButtons.get(0)).uniformX();
+        menuTable.row().pad(20, 0 ,0 ,0);
+        menuTable.add(MapButtons.get(2)).uniformX();
+        menuTable.add(MapButtons.get(3)).uniformX();
+        menuTable.row().pad(10, 0 ,0 ,0);
+        menuTable.add(imageButtons.get(3)).uniformX();
+        menuTable.add(imageButtons.get(1)).uniformX();
+
         return menuTable;
     }
 
