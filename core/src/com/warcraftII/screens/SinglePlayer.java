@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
 import com.warcraftII.parser.MapParser;
+import com.warcraftII.units.Unit;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private Warcraft game;
@@ -26,19 +27,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private SpriteBatch batch;
     private Sprite tile;
     private Music readySound;
-
-    private Sprite peasant;
     private SpriteBatch sb;
     private Texture texture;
-
     private Stage stage;
     private Skin skin;
     private Table table;
     private Vector<Sprite> peasant_vector;
     private MapParser map;
-
+    private Unit all_units;
     private OrthographicCamera camera;
-
     // height and width of each map tile in pixels
     // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
     private int tileHeight = 32;
@@ -55,9 +52,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private float currentxmove;
     private float currentymove;
     private int movement_flag;
-   // public static void addPeasant(Peasant b) {
-  //      peasants.add(b);
- //   }
    SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         //Implemented just to achieve hard goal. Not needed
@@ -81,8 +75,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
     @Override
     public void show() {
-        peasant_vector = new Vector<Sprite>(50);
-        movement_flag = 0;
+        all_units = new Unit();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
 
         batch = new SpriteBatch();
@@ -100,30 +93,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         table.align(Align.bottomLeft);
 
         stage = new Stage();
-        //stage.addActor(table);
-
         Gdx.input.setInputProcessor(stage);
-
         sb = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-        peasant = new Sprite(texture);
-        peasant.setPosition(67*32,3*32);
-        peasant_vector.addElement(peasant);
-        peasant = new Sprite(texture);
-        peasant.setPosition(9*32,4*32);
-        peasant_vector.addElement(peasant);
-        peasant = new Sprite(texture);
-        peasant.setPosition(121*32,40*32);
-        peasant_vector.addElement(peasant);
-        peasant = new Sprite(texture);
-        peasant.setPosition(47*32,68*32);
-        peasant_vector.addElement(peasant);
-        peasant = new Sprite(texture);
-        peasant.setPosition(91*32,123*32);
-        peasant_vector.addElement(peasant);
-        peasant = new Sprite(texture);
-        peasant.setPosition(5*32,123*32);
-        peasant_vector.addElement(peasant);
+        all_units.AddUnit(67,3,texture);
+        all_units.AddUnit(9,4,texture);
+        all_units.AddUnit(121,40,texture);
+        all_units.AddUnit(47,68,texture);
+        all_units.AddUnit(67,3,texture);
+        all_units.AddUnit(91,123,texture);
+        all_units.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new MapParser(Gdx.files.internal("map/hedges.map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
@@ -142,39 +121,17 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         batch.begin();
         camera.update();
         map.render(camera);
-        /*
-        for(int i = 0; i < map.getHeight(); i++) {
-            for(int j = 0; j < map.getHeight(); j++) {
-                map.spriteAt(i, j).draw(batch);
-            }
-        }*/
         batch.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-        //peasant.draw(sb);
         int counter = 0;
-        int new_peasant = 0;
-        while(counter < peasant_vector.size()){
-            Sprite temp_peasant = peasant_vector.elementAt(counter);
+        while(counter < all_units.unit_vector.size()){
+            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
             temp_peasant.draw(sb);
             counter+=1;
         }
         sb.end();
-        if (peasant.getX() != currentxmove && movement_flag == 1) {
-            if (peasant.getX() < currentxmove)
-                peasant.setX(peasant.getX() + 1);
-            if (peasant.getX() > currentxmove)
-                peasant.setX(peasant.getX() - 1);
-            if (peasant.getY() < currentymove)
-                peasant.setY(peasant.getY() + 1);
-            if (peasant.getY() > currentymove)
-                peasant.setY(peasant.getY() - 1);
-        }
-
-
-        /*
-        stage.act(delta);
-        stage.draw();*/
+        all_units.AllMovement();
     }
 
     @Override
@@ -204,56 +161,27 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         skin.dispose();
         map.dispose();
     }
-    public void movement(Sprite character, Vector3 position){
-        float currentx = character.getX();
-        float currenty = character.getY();
-        while (currentx != position.x) {
-            if (currentx < position.x) {
-                character.setPosition(currentx + 1, currenty);
-                currentx += 1;
-            }
-            if (currentx > position.x) {
-                character.setPosition(currentx - 1, currenty);
-                currentx -= 1;
-            }
-        }
-        while (currenty != position.y){
-            if (currenty < position.y) {
-                character.setPosition(currentx, currenty + 1);
-                currenty += 1;
-            }
-            if (currenty > position.y) {
-                character.setPosition(currentx, currenty - 1);
-                currenty -= 1;
-            }
-        }
-    }
+
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = camera.unproject(clickCoordinates);
         int counter = 0;
-        int new_peasant = 0;
-        while(counter < peasant_vector.size()){
-            Sprite temp_peasant = peasant_vector.elementAt(counter);
+        int unit_selected = 0;
+        while(counter < all_units.unit_vector.size()){
+            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
             if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here
                 // PEASANT SELECTED ==
-                readySound.play();
-
-                peasant = temp_peasant;
-                new_peasant = 1;
+                all_units.selected_unit_index = counter;
+                unit_selected = 1;
             }
             counter+=1;
         }
-        if (new_peasant == 0) {
-            //movement(peasant, position);
-            currentxmove = position.x;
-            currentymove = position.y;
-            movement_flag = 1;
-            //peasant.setX(peasant.getX() + 1);
-            //peasant.setY(peasant.getY() + 1);
+        if (unit_selected == 0) {
+            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentymove = position.y;
+            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentxmove = position.x;
         }
         return true;
     }
