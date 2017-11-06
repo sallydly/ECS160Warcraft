@@ -37,6 +37,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
+        this.batch = game.batch;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -45,8 +46,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public void show() {
 
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-
-        batch = new SpriteBatch();
 
         stage = new Stage();
 
