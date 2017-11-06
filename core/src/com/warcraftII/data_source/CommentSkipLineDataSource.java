@@ -6,39 +6,36 @@ import java.io.IOException;
 
 public class CommentSkipLineDataSource extends LineDataSource
 {
-    protected char commentChar;
-    private FileDataSource fileDataSource;
+    protected char DCommentChar;
 
     public CommentSkipLineDataSource(DataSource source, char commentChar) {
         super(source);
-        this.commentChar = commentChar;
+        DCommentChar = commentChar;
     }
 
     @Override
-    public String read() throws IOException {
+    public String read(){
         //TODO: Create and throw custom exception for "no data read"
-        String readLine;
-        String tempLine;
-        
+
         while(true) {
-            tempLine = super.read();
-            //If LineDataSource.read() == false in C++ code
-            if(tempLine.length() == 0) {
-                return null;
+            String tempLine = DFileAsLines[DLineNum];
+            DLineNum++;
+
+            if (tempLine.length() == 0 || tempLine.charAt(0) == DCommentChar) {
+                continue;
             }
 
-            if(tempLine.length() > 0 || tempLine.charAt(0) != commentChar){
-                readLine = tempLine;
-                break;
+            if (tempLine.length() == 1) {
+                return tempLine;
             }
-        
-            if((2 <= tempLine.length()) && (tempLine.charAt(1) == commentChar)){
-                readLine = tempLine.substring(1);
-                break;
+
+            for (int i = 1; i < tempLine.length(); i++) {
+                if (tempLine.charAt(i) == DCommentChar) {
+                    return tempLine.substring(0, i);
+                }
             }
+            return tempLine; //if no comment char found in string of length > 1
         }
-        return readLine;
     }
-
 
 } // end FileDataSource class

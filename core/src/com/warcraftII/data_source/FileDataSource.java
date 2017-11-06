@@ -2,26 +2,30 @@ package com.warcraftII.data_source;
 
 // Java packages
 
-import com.warcraftII.data_source.DataSource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+// Libgdx packages
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
+
 public class FileDataSource implements DataSource
 {
-    private File DFileHandle;
-    private FileInputStream DFileStream;
+    private FileHandle DFileHandle;
+    private String DFileAsString;
     private boolean DCloseFile = false;
    
 
-    public FileDataSource(String filename) throws IOException {
+    public FileDataSource(String filename){
         //TODO: Implement CPath.  For now, we just fill in the actual filename
         //DFullPath = CPath::CurrentPath().Simplify(filename).ToString();
-            DFileHandle = new File(filename);
-            DFileStream = new FileInputStream(DFileHandle);
+            DFileHandle = Gdx.files.internal(filename);
+            DFileAsString = DFileHandle.readString();
     }
 
+/* Using LIBGDX file system instead
     //Constructor from java.io.File object, instead of string
     public FileDataSource(File file) throws IOException {
         //TODO: Implement CPath.  For now, we just fill in the actual filename
@@ -29,22 +33,25 @@ public class FileDataSource implements DataSource
         DFileHandle = file;
         DFileStream = new FileInputStream(DFileHandle);
     }
+*/
 
-    @Override
-    public String read(int bytesToRead) throws IOException {
-            String InString = "";
-            byte[] InBytes = new byte[bytesToRead];
-            int BytesRead = DFileStream.read(InBytes);
-
-                if(0 < BytesRead){
-                    InString = new String(InBytes);
-                }
-                else
-                {
-                 //TODO: Create and throw custom exception for "no data read"
-                }
-            return InString;
+    //Constructor from libgdx FileHandle object, instead of string
+    public FileDataSource(FileHandle file) {
+        DFileHandle = file;
+        DFileAsString = DFileHandle.readString();
     }
+
+
+    public String read(int bytesToRead) {
+        // implement later
+        String InString = "";
+        return InString;
+    }
+
+    public String readEntire() {
+        return DFileAsString;
+    }
+
 
 //TODO: Add Container() implementation 
 /*

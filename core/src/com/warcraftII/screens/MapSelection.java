@@ -15,7 +15,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
 
-public class MainMenu implements Screen {
+import java.util.Vector;
+
+import com.warcraftII.asset.AssetDecoratedMap;
+
+
+
+/**
+ * Created by Kimi on 11/5/2017.
+ */
+
+public class MapSelection implements Screen {
     private Warcraft game;
     private Texture texture;
     private Stage stage;
@@ -23,7 +33,7 @@ public class MainMenu implements Screen {
     private Skin skin;
     private Music music;
 
-    public MainMenu(Warcraft game) {
+    public MapSelection(Warcraft game) {
         this.game = game;
         this.texture = new Texture("warcraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
@@ -47,40 +57,27 @@ public class MainMenu implements Screen {
         Table menuTable = new Table();
         menuTable.setFillParent(true);
 
-        TextButton singlePlayerButton = new TextButton("Single Player Game", skin);
-        TextButton multiPlayerButton = new TextButton("Multi Player Game", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
+        AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
+        Vector<TextButton> MapButtons = new Vector<TextButton>();
 
-        singlePlayerButton.getLabel().setFontScale(2, 2);
-        multiPlayerButton.getLabel().setFontScale(2, 2);
-        optionsButton.getLabel().setFontScale(2, 2);
+        for (final String MapName : AssetDecoratedMap.GetMapNames()) {
+            TextButton Button = new TextButton(MapName, skin);
+            Button.getLabel().setFontScale(2, 2);
+            Button.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    game.DMapName = MapName;
+                    game.setScreen(new SinglePlayer(game));
+                }
+            });
+            MapButtons.add(Button);
+        }
 
-        singlePlayerButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MapSelection(game));
-            }
-        });
-
-        multiPlayerButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MultiPlayer(game));
-            }
-        });
-
-        optionsButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Options(game));
-            }
-        });
-
-        menuTable.add(singlePlayerButton).fillX().uniformX();
-        menuTable.row().pad(100, 0 , 100, 0);
-        menuTable.add(multiPlayerButton).fillX().uniformX();
-        menuTable.row();
-        menuTable.add(optionsButton).fillX().uniformX();
+        // TODO: Make this screen scrollable if there are too many maps
+        for (TextButton Button : MapButtons) {
+            menuTable.add(Button).fillX().uniformX();
+            menuTable.row().pad(50, 0, 50, 0);
+        }
         return menuTable;
     }
 
