@@ -118,9 +118,6 @@ public class StaticAssetParser {
             if (GOLDMINE.equals(AssetType)) {
                 textureRegion = staticAssets.findRegion("goldmine-inactive");
                 cell.setTile(new StaticTiledMapTile(textureRegion));
-                System.out.println("goldminebuilt");
-                System.out.println(AssetInit.DTilePosition.X());
-                System.out.println(AssetInit.DTilePosition.X());
 
                 assetLayer.setCell(XPos, YPos, cell);
             } else if (PEASANT.equals(AssetType)) {
