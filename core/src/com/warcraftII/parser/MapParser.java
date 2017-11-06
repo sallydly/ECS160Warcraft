@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.data_source.FileDataSource;
 import com.warcraftII.terrain.TerrainMap;
@@ -20,6 +21,7 @@ import com.warcraftII.terrain.MapRenderer;
 import java.util.StringTokenizer;
 
 public class MapParser {
+    private Logger log = new Logger("MapParser", 2);
 
     private String name;
     private int height, width;
@@ -37,8 +39,17 @@ public class MapParser {
 
         /* This section reads in from the terrainmap,
         feeds it to the map renderer, and adds a layer to the tilemap */
-
+        log.info(mapName);
+        log.info("LOOP");
+        for(String name : AssetDecoratedMap.GetMapNames()) {
+            if (name.equals("Three ways to cross")) {
+                log.info("We found it!");
+            }
+        }
         int MapNum = AssetDecoratedMap.FindMapIndex(mapName);
+        if(MapNum == -1) {
+            log.info("Its negative???");
+        }
         AssetDecoratedMap map = AssetDecoratedMap.GetMap(MapNum);
         MapRenderer maprend = new MapRenderer(map);
 
