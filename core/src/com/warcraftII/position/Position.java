@@ -8,8 +8,17 @@ import java.util.Vector;
 import javax.print.Doc;
 
 /**
+ * FIXME: Refactor to change (0,0) from top left to bottom left
+ *      Maybe not ^^^ Kimi wants to leave it (11/5/17)
+ *
+ * This class is ported from Position.cpp
+ * Important notes:
+ *      -No overloaded operators in Java,that affects == and !=, and =
+ *       ==   `if(pos1 == pos2)` needs to be changed to `if(pos1.equals(pos2))`
+ *       !=   `if(pos1 != pos2)` --> `if(!pos1.equals(pos2))`
+ *       =    `pos1 = pos2;`     --> `pos1.set(pos2);`
+ *
  * Created by ajc on 10/27/17.
- * Ported from position.cpp
  */
 
 public class Position {
@@ -29,8 +38,8 @@ public class Position {
         initVectors();
     }
 
-    protected static Vector< Vector < EDirection > > DOctant;
-    protected static Vector< Vector < EDirection > > DTileDirections;
+    protected static Vector<Vector<EDirection>> DOctant;
+    protected static Vector<Vector<EDirection>> DTileDirections;
 
     /*
      * Fills the direction vectors in DOctant and DTileDirections
@@ -39,6 +48,8 @@ public class Position {
     static protected void initVectors() {
         DOctant = new Vector<Vector<EDirection>>();
         DTileDirections = new Vector<Vector<EDirection>>();
+
+        //These temp vectors will be used to fill DOctant and DTileDirections
         Vector<EDirection> temp1 = new Vector<EDirection>(1);
         Vector<EDirection> temp2 = new Vector<EDirection>(3);
         Vector<EDirection> temp3 = new Vector<EDirection>(3);
@@ -64,15 +75,23 @@ public class Position {
         temp4.add(EDirection.South);
         temp4.add(EDirection.SouthEast);
 
+        //DTileDirections looks like this...
+        //{ {NorthWest, North, NorthEast}
+        //  {West, Max, East}
+        //  {SouthWest, South, SouthEast}}
         DTileDirections.add(temp2);
         DTileDirections.add(temp3);
         DTileDirections.add(temp4);
     }
 
+    /*
+     * Three constructors
+     */
     protected Position() {
         DX = 0;
         DY = 0;
     }
+
     protected Position(int x, int y) {
         DX = x;
         DY = y;
@@ -82,8 +101,6 @@ public class Position {
         DX = pos.DX;
         DY = pos.DY;
     }
-
-    //Position &operator=(Position pos);
 
     protected void set(int x, int y) {
         DX = x;
@@ -105,43 +122,47 @@ public class Position {
     }
 
     /*
-     * Not sure what this does / how it gets directionTo yet...
+     * In progress...
      * A.J. Collins 10/27
      */
-    protected EDirection directionTo(Position pos){
+    protected EDirection directionTo(Position pos) {
+        //divX and dixY get the change in X and Y in terms of halfTileWidth
         Position deltaPosition = new Position((pos.DX - DX), (pos.DY - DY));
-        int divX = deltaPosition.DX / halfTileWidth(); //How does this avoid divide by zero?
+        int divX = deltaPosition.DX / halfTileWidth();
         int divY = deltaPosition.DY / halfTileHeight();
         int div;
 
-        //makes sure they're positive
+        //make sure they're positive
         divX = 0 > divX ? -divX : divX;
         divY = 0 > divY ? -divY : divY;
 
-        //Sets div to the greater of divx and divy
+        //Sets div to the greater of divX and divY
         div = divX > divY ? divX : divY;
 
-        if(div != 0){
+        if (div != 0) {
             deltaPosition.DX /= div;
             deltaPosition.DY /= div;
         }
         deltaPosition.DX += halfTileWidth();
         deltaPosition.DY += halfTileHeight();
-        if(0 > deltaPosition.DX){
+        if (0 > deltaPosition.DX) {
             deltaPosition.DX = 0;
         }
-        if(0 > deltaPosition.DY){
+        if (0 > deltaPosition.DY) {
             deltaPosition.DY = 0;
         }
-        if(tileWidth() <= deltaPosition.DX){
+        if (tileWidth() <= deltaPosition.DX) {
             deltaPosition.DX = tileWidth() - 1;
         }
-        if(tileHeight() <= deltaPosition.DY){
+        if (tileHeight() <= deltaPosition.DY) {
             deltaPosition.DY = tileHeight() - 1;
         }
         return deltaPosition.tileOctant();
     }
 
+    /*
+     *
+     */
     protected EDirection tileOctant() {
         return DOctant.get(DY % DTileHeight).get(DX % DTileWidth);
     }
@@ -175,12 +196,12 @@ public class Position {
          * that is also <= distanceSquared
          */
         one = 1 << 30; //equivalent to 1073741824 in decimal
-        while(one > distanceSquared){
+        while (one > distanceSquared) {
             one >>= 2;
         }
 
-        while(0 != one){
-            if(distanceSquared >= result + one){
+        while (0 != one) {
+            if (distanceSquared >= result + one) {
                 distanceSquared -= result + one;
                 result += one << 1;  // <-- faster than 2 * one
             }
@@ -194,40 +215,44 @@ public class Position {
         return DX;
     }
 
-    public int X(int x){
+    public int X(int x) {
         return DX = x;
     }
 
-    public int incrementX(int x){
+    public int incrementX(int x) {
         DX += x;
         return DX;
     }
 
-    public int decrementX(int x){
+    public int decrementX(int x) {
         DX -= x;
         return DX;
     }
 
-    public int Y(){
+    public int Y() {
         return DY;
     }
 
-    public int Y(int y){
+    public int Y(int y) {
         return DY = y;
     }
 
-    public int incrementY(int y){
+    public int incrementY(int y) {
         DY += y;
         return DY;
     }
 
-    public int decrementY(int y){
+    public int decrementY(int y) {
         DY -= y;
         return DY;
     }
 
-    public static void setTileDimensions(int width, int height){
-        if((0 < width) && (0 < height)) {
+    /*
+     * sets DTileWidth, DTileHeight, DHalfTileWidth, and DHalfTileHeight
+     *
+     */
+    public static void setTileDimensions(int width, int height) {
+        if ((0 < width) && (0 < height)) {
             DTileWidth = width;
             DTileHeight = height;
             DHalfTileWidth = width / 2;
@@ -236,65 +261,58 @@ public class Position {
             DOctant.setSize(DTileHeight);
 
             //iterate through the vector, resize each inner row
-            DOctant.setSize(DTileHeight);
             for (int i = 0; i < DOctant.size(); i++) {
                 for (int j = 0; j < DOctant.get(i).size(); j++) {
+                    //FIXME: This might be done incorrectly, DOctant.get(j) might return a copy...
                     DOctant.get(j).setSize(DTileWidth);
                 }
             }
 
 
-            for(int Y = 0; Y < DTileHeight; Y++){
-                for(int X = 0; X < DTileWidth; X++){
+            for (int Y = 0; Y < DTileHeight; Y++) {
+                for (int X = 0; X < DTileWidth; X++) {
                     int xDistance = X - DHalfTileWidth;
                     int yDistance = Y - DHalfTileHeight;
                     boolean negativeX = xDistance < 0;
-                    boolean negativeY = yDistance > 0; // Top of screen is 0
+                    boolean negativeY = yDistance > 0; // FIXME: Top of screen is 0
                     double sinSquared;
 
                     xDistance *= xDistance;
                     yDistance *= yDistance;
 
-                    if(0 == (xDistance + yDistance)){
+                    if (0 == (xDistance + yDistance)) {
                         DOctant.get(Y).set(X, EDirection.Max);
                         continue;
                     }
-                    sinSquared = (double)yDistance / (xDistance + yDistance);
+                    sinSquared = (double) yDistance / (xDistance + yDistance);
 
-                    if(0.1464466094 > sinSquared){
+                    if (0.1464466094 > sinSquared) {
                         // East or West
-                        if(negativeX){
+                        if (negativeX) {
                             DOctant.get(Y).set(X, EDirection.West); // West
-                        }
-                        else{
+                        } else {
                             DOctant.get(Y).set(X, EDirection.East); // East
                         }
-                    }
-                    else if(0.85355339059 > sinSquared){
+                    } else if (0.85355339059 > sinSquared) {
                         // NE, SE, SW, NW
-                        if(negativeY){
-                            if(negativeX){
+                        if (negativeY) {
+                            if (negativeX) {
                                 DOctant.get(Y).set(X, EDirection.SouthWest); // SW
-                            }
-                            else{
+                            } else {
                                 DOctant.get(Y).set(X, EDirection.SouthEast); // SE
                             }
-                        }
-                        else{
-                            if(negativeX){
+                        } else {
+                            if (negativeX) {
                                 DOctant.get(Y).set(X, EDirection.NorthWest); // NW
-                            }
-                            else{
+                            } else {
                                 DOctant.get(Y).set(X, EDirection.NorthEast); // NE
                             }
                         }
-                    }
-                    else{
+                    } else {
                         // North or South
-                        if(negativeY){
+                        if (negativeY) {
                             DOctant.get(Y).set(X, EDirection.South); // South
-                        }
-                        else{
+                        } else {
                             DOctant.get(Y).set(X, EDirection.North); // North
                         }
                     }
@@ -303,19 +321,19 @@ public class Position {
         }
     }
 
-    public static int tileWidth(){
+    public static int tileWidth() {
         return DTileWidth;
     }
 
-    public static int tileHeight(){
+    public static int tileHeight() {
         return DTileHeight;
     }
 
-    public static int halfTileWidth(){
+    public static int halfTileWidth() {
         return DHalfTileWidth;
     }
 
-    public static int halfTileHeight(){
+    public static int halfTileHeight() {
         return DHalfTileHeight;
     }
 
