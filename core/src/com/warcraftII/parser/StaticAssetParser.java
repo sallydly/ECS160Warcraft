@@ -122,9 +122,6 @@ public class StaticAssetParser {
             } else if (PEASANT.equals(AssetType)) {
                 GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "scouttower-place");
             } else if (TOWNHALL.equals(AssetType)) {
-                textureRegion = staticAssets.findRegion("townhall-inactive");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                assetLayer.setCell(XPos, YPos, cell);
                 GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "townhall-inactive");
             }
         }
