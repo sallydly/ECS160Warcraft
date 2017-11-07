@@ -10,6 +10,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -20,7 +25,8 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.parser.MapParser;
+import com.warcraftII.asset.StaticAssetParser;
+import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
 
 
@@ -37,9 +43,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Skin skin;
     private Table table;
     private Vector<Sprite> peasant_vector;
-    private MapParser map;
+
+
+    private AssetDecoratedMap map;
+    private TiledMap tiledMap;
+    private OrthogonalTiledMapRenderer orthomaprenderer;
+    private MapProperties properties;
+
     private Unit all_units;
     private OrthographicCamera camera;
+
     // height and width of each map tile in pixels
     // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
     private int tileHeight = 32;
@@ -109,13 +122,36 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         all_units.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        map = new MapParser(game.DMapName);
+
+
+        // Loading the map:
+        tiledMap = new TiledMap();
+        MapLayers layers = tiledMap.getLayers();
+
+
+        /* This section reads in from the terrainmap,
+        feeds it to the map renderer, and adds a layer to the tilemap */
+        int MapNum = AssetDecoratedMap.FindMapIndex(game.DMapName);
+        log.info(String.valueOf(MapNum));
+        map = AssetDecoratedMap.GetMap(MapNum);
+
+        MapRenderer mapRenderer = new MapRenderer(map);
+        StaticAssetParser staticAssetParser = new StaticAssetParser();
+
+        TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
+        layers.add(tileLayerBase);
+
+        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets(map);
+        layers.add(staticAssetsLayer);
+
+        orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
 
         // calculate zoom levels to show entire map height/width
-        heightZoomRatio = map.getHeight() * tileHeight / camera.viewportHeight;
-        widthZoomRatio = map.getWidth() * tileWidth / camera.viewportWidth;
+        heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
+        widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
     }
 
     @Override
@@ -125,7 +161,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.begin();
         camera.update();
-        map.render(camera);
+        orthomaprenderer.setView(camera);
+        orthomaprenderer.render();
 
         batch.end();
         sb.setProjectionMatrix(camera.combined);
@@ -165,7 +202,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         terrain.dispose();
         stage.dispose();
         skin.dispose();
-        map.dispose();
+        tiledMap.dispose();
+        orthomaprenderer.dispose();
     }
 
     @Override
@@ -242,11 +280,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // The left boundary of the map (x)
         int mapLeft = 0;
         // The right boundary of the map (x + width)
-        int mapRight = map.getWidth() * tileWidth;
+        int mapRight = map.Width() * tileWidth;
         // The bottom boundary of the map (y)
         int mapBottom = 0;
         // The top boundary of the map (y + height)
-        int mapTop = map.getHeight() * tileHeight;
+        int mapTop = map.Height() * tileHeight;
 
         // The camera dimensions, halved
         float cameraHalfWidth = camera.viewportWidth * camera.zoom * .5f;
@@ -260,7 +298,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // Horizontal axis
         // if map width is smaller than viewport width
-        if (map.getWidth() * tileWidth / camera.zoom < camera.viewportWidth) {
+        if (map.Width() * tileWidth / camera.zoom < camera.viewportWidth) {
             // if can zoom out more to show entire map height
             if (widthZoomRatio < heightZoomRatio) {
                 // position camera at center of map horizontally
@@ -283,7 +321,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // Vertical axis
         // if map height is smaller than viewport height
-        if (map.getHeight() * tileHeight / camera.zoom < camera.viewportHeight) {
+        if (map.Height() * tileHeight / camera.zoom < camera.viewportHeight) {
             // if can zoom out more to show entire map width
             if (widthZoomRatio > heightZoomRatio) {
                 // position camera at center of map vertically
