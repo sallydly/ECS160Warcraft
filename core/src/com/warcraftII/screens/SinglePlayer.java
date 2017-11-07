@@ -42,7 +42,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Stage stage;
     private Skin skin;
     private Table table;
-    private Vector<Sprite> peasant_vector;
+    private Vector<Sprite> peasantVector;
 
 
     private AssetDecoratedMap map;
@@ -50,7 +50,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private OrthogonalTiledMapRenderer orthomaprenderer;
     private MapProperties properties;
 
-    private Unit all_units;
+    private Unit allUnits;
     private OrthographicCamera camera;
 
     // height and width of each map tile in pixels
@@ -66,10 +66,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     float prevScale = 1; //initial scale for zoom
 
     private double prevDistance = 0;
-    private float currentxmove;
-    private float currentymove;
-    private int movement_flag;
-   SinglePlayer(com.warcraftII.Warcraft game) {
+    private float currentXMove;
+    private float currentYMove;
+    private int movementFlag;
+    SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         this.batch = game.batch;
         //Implemented just to achieve hard goal. Not needed
@@ -94,7 +94,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void show() {
-        all_units = new Unit();
+        allUnits = new Unit();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
 
         stage = new Stage();
@@ -113,14 +113,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.input.setInputProcessor(stage);
         sb = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-        all_units.AddUnit(67,3,texture);
-        all_units.AddUnit(9,4,texture);
-        all_units.AddUnit(121,40,texture);
-        all_units.AddUnit(47,68,texture);
-        all_units.AddUnit(67,3,texture);
-        all_units.AddUnit(91,123,texture);
+        allUnits.AddUnit(67,3,texture);
+        allUnits.AddUnit(9,4,texture);
+        allUnits.AddUnit(121,40,texture);
+        allUnits.AddUnit(47,68,texture);
+        allUnits.AddUnit(67,3,texture);
+        allUnits.AddUnit(91,123,texture);
 
-        all_units.AddUnit(5,123,texture);
+        allUnits.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
@@ -168,13 +168,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         int counter = 0;
-        while(counter < all_units.unit_vector.size()){
-            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
+        while(counter < allUnits.unitVector.size()){
+            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
             temp_peasant.draw(sb);
             counter+=1;
         }
         sb.end();
-        all_units.AllMovement();
+        allUnits.AllMovement();
     }
 
     @Override
@@ -212,20 +212,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 position = camera.unproject(clickCoordinates);
         int counter = 0;
         int unit_selected = 0;
-        while(counter < all_units.unit_vector.size()){
-            Sprite temp_peasant = all_units.unit_vector.elementAt(counter).sprite;
+        while(counter < allUnits.unitVector.size()){
+            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
             if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here
                 // PEASANT SELECTED ==
-                all_units.selected_unit_index = counter;
+                allUnits.selectedUnitIndex = counter;
                 unit_selected = 1;
             }
             counter+=1;
         }
         if (unit_selected == 0) {
-            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentymove = position.y;
-            all_units.unit_vector.elementAt(all_units.selected_unit_index).currentxmove = position.x;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = position.y;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = position.x;
         }
         return true;
     }

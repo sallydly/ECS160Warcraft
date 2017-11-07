@@ -25,7 +25,7 @@ public class MainMenu implements Screen {
 
     public MainMenu(Warcraft game) {
         this.game = game;
-        this.texture = new Texture("warcraft_icon.png");
+        this.texture = new Texture("img/warcraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         ScreenViewport port = new ScreenViewport();

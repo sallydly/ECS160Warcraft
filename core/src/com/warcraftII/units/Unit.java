@@ -8,12 +8,12 @@ import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Unit {
-    public Vector<IndividualUnit> unit_vector;
-    public int selected_unit_index;
+    public Vector<IndividualUnit> unitVector;
+    public int selectedUnitIndex;
 
     public Unit() {
-        unit_vector = new Vector<IndividualUnit>(50);
-        selected_unit_index = 0;
+        unitVector = new Vector<IndividualUnit>(50);
+        selectedUnitIndex = 0;
     }
 
     public class IndividualUnit {
@@ -22,26 +22,26 @@ public class Unit {
         public float currentymove;
     }
     public void AddUnit(float x_position, float y_position, Texture texture) {
-        IndividualUnit new_unit = new IndividualUnit();
-        new_unit.sprite = new Sprite(texture);
-        new_unit.sprite.setSize(72,72);
-        new_unit.sprite.setPosition(x_position*32,y_position*32);
-        new_unit.currentxmove = x_position*32;
-        new_unit.currentymove = y_position*32;
-        unit_vector.add(new_unit);
+        IndividualUnit newUnit = new IndividualUnit();
+        newUnit.sprite = new Sprite(texture);
+        newUnit.sprite.setSize(72,72);
+        newUnit.sprite.setPosition(x_position*32,y_position*32);
+        newUnit.currentxmove = x_position*32;
+        newUnit.currentymove = y_position*32;
+        unitVector.add(newUnit);
     }
 
     public void AllMovement() {
-        for (int i = 0; i < unit_vector.size(); i++) {
-            if ((unit_vector.elementAt(i).sprite.getX() != unit_vector.elementAt(i).currentxmove) && (unit_vector.elementAt(i).sprite.getY() != unit_vector.elementAt(i).currentymove)) {
-                if (unit_vector.elementAt(i).sprite.getX() < unit_vector.elementAt(i).currentxmove)
-                    unit_vector.elementAt(i).sprite.setX(unit_vector.elementAt(i).sprite.getX() + 1);
-                if (unit_vector.elementAt(i).sprite.getX() > unit_vector.elementAt(i).currentxmove)
-                    unit_vector.elementAt(i).sprite.setX(unit_vector.elementAt(i).sprite.getX() - 1);
-                if (unit_vector.elementAt(i).sprite.getY() < unit_vector.elementAt(i).currentymove)
-                    unit_vector.elementAt(i).sprite.setY(unit_vector.elementAt(i).sprite.getY() + 1);
-                if (unit_vector.elementAt(i).sprite.getY() > unit_vector.elementAt(i).currentymove)
-                    unit_vector.elementAt(i).sprite.setY(unit_vector.elementAt(i).sprite.getY() - 1);
+        for (int i = 0; i < unitVector.size(); i++) {
+            if ((unitVector.elementAt(i).sprite.getX() != unitVector.elementAt(i).currentxmove) && (unitVector.elementAt(i).sprite.getY() != unitVector.elementAt(i).currentymove)) {
+                if (unitVector.elementAt(i).sprite.getX() < unitVector.elementAt(i).currentxmove)
+                    unitVector.elementAt(i).sprite.setX(unitVector.elementAt(i).sprite.getX() + 1);
+                if (unitVector.elementAt(i).sprite.getX() > unitVector.elementAt(i).currentxmove)
+                    unitVector.elementAt(i).sprite.setX(unitVector.elementAt(i).sprite.getX() - 1);
+                if (unitVector.elementAt(i).sprite.getY() < unitVector.elementAt(i).currentymove)
+                    unitVector.elementAt(i).sprite.setY(unitVector.elementAt(i).sprite.getY() + 1);
+                if (unitVector.elementAt(i).sprite.getY() > unitVector.elementAt(i).currentymove)
+                    unitVector.elementAt(i).sprite.setY(unitVector.elementAt(i).sprite.getY() - 1);
             }
         }
     }

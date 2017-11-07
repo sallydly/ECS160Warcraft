@@ -43,21 +43,21 @@ public class MapSelection implements Screen {
 
     public MapSelection(Warcraft game) {
         this.game = game;
-        this.texture = new Texture("warcraft_icon.png");
+        this.texture = new Texture("img/warcraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         ScreenViewport port = new ScreenViewport();
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         this.stage = new Stage(port, game.batch);
-        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
-        this.music.setLooping(true);
+        //this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
+        //this.music.setLooping(true);
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
         Table menuTable = createMenuTable();
-        music.play();
+        //music.play();
         stage.addActor(menuTable);
     }
 
@@ -102,6 +102,7 @@ public class MapSelection implements Screen {
                 }
             });
 
+            //When switch statements can't handle strings, you get this shit >:(
             if(MapName.trim().equals(BAY_GAME_NAME)) {
                 fileNameToImageButtonMap.get("bay.PNG").addListener(new ClickListener(){
                     @Override
@@ -173,7 +174,7 @@ public class MapSelection implements Screen {
 
     @Override
     public void pause() {
-        music.pause();
+        //music.pause();
     }
 
     @Override
@@ -190,6 +191,6 @@ public class MapSelection implements Screen {
     public void dispose() {
         skin.dispose();
         atlas.dispose();
-        music.dispose();
+        //music.dispose();
     }
 }

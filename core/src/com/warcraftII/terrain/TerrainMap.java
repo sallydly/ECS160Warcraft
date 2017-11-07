@@ -234,81 +234,81 @@ public class TerrainMap {
         DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
-            DMapName = LineSource.read();
-            if(DMapName.isEmpty()) {
-                return returnStatus;
-            }
+        DMapName = LineSource.read();
+        if(DMapName.isEmpty()) {
+            return returnStatus;
+        }
 
+        tempString = LineSource.read();
+        if(tempString.isEmpty()) {
+            return returnStatus;
+        }
+        tokens = Tokenizer.Tokenize(tempString);
+        if (2 != tokens.size()) {
+            return returnStatus;
+        }
+
+        Vector<String> StringMap = new Vector<String>();
+        mapWidth = Integer.valueOf(tokens.get(0));
+        mapHeight = Integer.valueOf(tokens.get(1));
+
+        if ((8 > mapWidth) || (8 > mapHeight)) {
+            return returnStatus;
+        }
+        while (StringMap.size() < mapHeight + 1) {
             tempString = LineSource.read();
             if(tempString.isEmpty()) {
                 return returnStatus;
             }
-            tokens = Tokenizer.Tokenize(tempString);
-            if (2 != tokens.size()) {
+            StringMap.add(tempString);
+            if (mapWidth + 1 > StringMap.lastElement().length()) {
                 return returnStatus;
             }
+        }
+        if (mapHeight + 1 > StringMap.size()) {
+            return returnStatus;
+        }
 
-            Vector<String> StringMap = new Vector<String>();
-            mapWidth = Integer.valueOf(tokens.get(0));
-            mapHeight = Integer.valueOf(tokens.get(1));
+        DTerrainMap.setSize(mapHeight + 1);
+        for (int i = 0; i < DTerrainMap.size(); i++) {
+            Vector<ETerrainTileType> TempRow = new Vector<ETerrainTileType>();
+            TempRow.setSize(mapWidth + 1);
 
-            if ((8 > mapWidth) || (8 > mapHeight)) {
-                return returnStatus;
-            }
-            while (StringMap.size() < mapHeight + 1) {
-                tempString = LineSource.read();
-                if(tempString.isEmpty()) {
-                    return returnStatus;
+            for (int j = 0; j < mapWidth + 1; j++) {
+                switch (StringMap.get(i).charAt(j)) {
+                    case 'G':
+                        TempRow.set(j, ETerrainTileType.DarkGrass);
+                        break;
+                    case 'g':
+                        TempRow.set(j, ETerrainTileType.LightGrass);
+                        break;
+                    case 'D':
+                        TempRow.set(j, ETerrainTileType.DarkDirt);
+                        break;
+                    case 'd':
+                        TempRow.set(j, ETerrainTileType.LightDirt);
+                        break;
+                    case 'R':
+                        TempRow.set(j, ETerrainTileType.Rock);
+                        break;
+                    case 'r':
+                        TempRow.set(j, ETerrainTileType.RockPartial);
+                        break;
+                    case 'F':
+                        TempRow.set(j, ETerrainTileType.Forest);
+                        break;
+                    case 'f':
+                        TempRow.set(j, ETerrainTileType.ForestPartial);
+                        break;
+                    case 'W':
+                        TempRow.set(j, ETerrainTileType.DeepWater);
+                        break;
+                    case 'w':
+                        TempRow.set(j, ETerrainTileType.ShallowWater);
+                        break;
+                    default:
+                        return returnStatus;
                 }
-                StringMap.add(tempString);
-                if (mapWidth + 1 > StringMap.lastElement().length()) {
-                    return returnStatus;
-                }
-            }
-            if (mapHeight + 1 > StringMap.size()) {
-                return returnStatus;
-            }
-
-            DTerrainMap.setSize(mapHeight + 1);
-            for (int i = 0; i < DTerrainMap.size(); i++) {
-                Vector<ETerrainTileType> TempRow = new Vector<ETerrainTileType>();
-                TempRow.setSize(mapWidth + 1);
-
-                for (int j = 0; j < mapWidth + 1; j++) {
-                    switch (StringMap.get(i).charAt(j)) {
-                        case 'G':
-                            TempRow.set(j, ETerrainTileType.DarkGrass);
-                            break;
-                        case 'g':
-                            TempRow.set(j, ETerrainTileType.LightGrass);
-                            break;
-                        case 'D':
-                            TempRow.set(j, ETerrainTileType.DarkDirt);
-                            break;
-                        case 'd':
-                            TempRow.set(j, ETerrainTileType.LightDirt);
-                            break;
-                        case 'R':
-                            TempRow.set(j, ETerrainTileType.Rock);
-                            break;
-                        case 'r':
-                            TempRow.set(j, ETerrainTileType.RockPartial);
-                            break;
-                        case 'F':
-                            TempRow.set(j, ETerrainTileType.Forest);
-                            break;
-                        case 'f':
-                            TempRow.set(j, ETerrainTileType.ForestPartial);
-                            break;
-                        case 'W':
-                            TempRow.set(j, ETerrainTileType.DeepWater);
-                            break;
-                        case 'w':
-                            TempRow.set(j, ETerrainTileType.ShallowWater);
-                            break;
-                        default:
-                            return returnStatus;
-                    }
                     /* Should not be given invalid maps?s
                     if (j >= 1) {
                         if (!DAllowedAdjacent[DTerrainMap.get(i).get(j).ordinal()][DTerrainMap.get(i).get(j-1).ordinal()]) {
@@ -321,42 +321,42 @@ public class TerrainMap {
                         }
                     }
                     */
-                }
-                DTerrainMap.set(i,TempRow);
             }
+            DTerrainMap.set(i,TempRow);
+        }
 
-            // Now starts reading map partial bits.
-            StringMap.clear();
-            while (StringMap.size() < mapHeight + 1) {
-                tempString = LineSource.read();
-                if(tempString.isEmpty()) {
-                    return returnStatus;
-                }
-                StringMap.add(tempString);
-                if (mapWidth + 1 > StringMap.lastElement().length()) {
-                    return returnStatus;
-                }
-            }
-            if (mapHeight + 1 > StringMap.size()) {
+        // Now starts reading map partial bits.
+        StringMap.clear();
+        while (StringMap.size() < mapHeight + 1) {
+            tempString = LineSource.read();
+            if(tempString.isEmpty()) {
                 return returnStatus;
             }
-
-            DPartials = new Vector<Vector<Byte>>();
-            DPartials.setSize(mapHeight + 1);
-            for (int i = 0; i < DTerrainMap.size(); i++) {
-                Vector<Byte> TempPartialsRow = new Vector<Byte>();
-                TempPartialsRow.setSize(mapWidth + 1);
-                for (int j = 0; j < mapWidth + 1; j++) {
-                    if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
-                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
-                    } else if (('A' <= StringMap.get(i).charAt(j)) && ('F' >= StringMap.get(i).charAt(j))) {
-                        TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
-                    } else {
-                        return returnStatus;
-                    }
-                }
-                DPartials.set(i,TempPartialsRow);
+            StringMap.add(tempString);
+            if (mapWidth + 1 > StringMap.lastElement().length()) {
+                return returnStatus;
             }
+        }
+        if (mapHeight + 1 > StringMap.size()) {
+            return returnStatus;
+        }
+
+        DPartials = new Vector<Vector<Byte>>();
+        DPartials.setSize(mapHeight + 1);
+        for (int i = 0; i < DTerrainMap.size(); i++) {
+            Vector<Byte> TempPartialsRow = new Vector<Byte>();
+            TempPartialsRow.setSize(mapWidth + 1);
+            for (int j = 0; j < mapWidth + 1; j++) {
+                if (('0' <= StringMap.get(i).charAt(j)) && ('9' >= StringMap.get(i).charAt(j))) {
+                    TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - '0'));
+                } else if (('A' <= StringMap.get(i).charAt(j)) && ('F' >= StringMap.get(i).charAt(j))) {
+                    TempPartialsRow.set(j, (byte)(StringMap.get(i).charAt(j) - 'A' + 0x0A));
+                } else {
+                    return returnStatus;
+                }
+            }
+            DPartials.set(i,TempPartialsRow);
+        }
         returnStatus = true;
         System.out.println(DTerrainMap.size());
         return returnStatus;

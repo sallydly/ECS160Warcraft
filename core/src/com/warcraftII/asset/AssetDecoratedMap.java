@@ -46,7 +46,7 @@ public class AssetDecoratedMap extends TerrainMap {
      * @return Nothing
      *
      */
-    
+
     public AssetDecoratedMap() {
         super();
     }
@@ -194,17 +194,17 @@ public class AssetDecoratedMap extends TerrainMap {
      */
 
     public static Set<String> GetMapNames(){
-         return DMapNameTranslation.keySet();
+        return DMapNameTranslation.keySet();
     }
 
-/**
- * Given an index, return a pointer to the corresponding map in DAllMaps
- *
- * @param[in] index The index of the map in DAllMaps
- *
- * @return a pointer to a map or an empty pointer if index is out of bounds
- *
- */
+    /**
+     * Given an index, return a pointer to the corresponding map in DAllMaps
+     *
+     * @param[in] index The index of the map in DAllMaps
+     *
+     * @return a pointer to a map or an empty pointer if index is out of bounds
+     *
+     */
 
     public static AssetDecoratedMap GetMap(int index){
         if((0 > index)||(DAllMaps.size() <= index)){
@@ -566,94 +566,94 @@ public class AssetDecoratedMap extends TerrainMap {
             return false;
         }
         // try{ //TODO: throw/catch exception here
-            TempString = LineSource.read().trim();
-            ResourceCount = Integer.parseInt(TempString);
+        TempString = LineSource.read().trim();
+        ResourceCount = Integer.parseInt(TempString);
 
-            for(int Index = 0; Index <= ResourceCount; Index++){
-                SResourceInitialization TempResourceInit = new SResourceInitialization();
+        for(int Index = 0; Index <= ResourceCount; Index++){
+            SResourceInitialization TempResourceInit = new SResourceInitialization();
 
-                TempString = LineSource.read();
-                Tokens = Tokenizer.Tokenize(TempString);
-                if(3 > Tokens.size()){
-                    //Bad stuff!
-                    //TODO: Create and throw custom exception
-                    //Log.e(ASSETDEC, "Too few tokens for resource %d.\n", Index);
-                }
-                
-                // TODO: Deal with player colors
-
-                TempResourceInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(0))];
-                if((0 == Index)&&(EPlayerColor.None != TempResourceInit.DColor)){
-                    //Log.e(ASSETDEC, "Expected first resource to be for color None.\n");
-                    //goto LoadMapExit;
-                }
-
-                TempResourceInit.DGold = Integer.parseInt(Tokens.get(1));
-                TempResourceInit.DLumber = Integer.parseInt(Tokens.get(2));
-                if(EPlayerColor.None == TempResourceInit.DColor){
-                    InitialLumber = TempResourceInit.DLumber;
-                }
-
-                DResourceInitializationList.add(TempResourceInit);
+            TempString = LineSource.read();
+            Tokens = Tokenizer.Tokenize(TempString);
+            if(3 > Tokens.size()){
+                //Bad stuff!
+                //TODO: Create and throw custom exception
+                //Log.e(ASSETDEC, "Too few tokens for resource %d.\n", Index);
             }
 
+            // TODO: Deal with player colors
 
-            TempString = LineSource.read().trim();
-            AssetCount = Integer.parseInt(TempString);
-            for(int Index = 0; Index < AssetCount; Index++){
-                SAssetInitialization TempAssetInit = new SAssetInitialization();
-
-                TempString = LineSource.read();
-                Tokens = Tokenizer.Tokenize(TempString);
-                if(4 > Tokens.size()){
-                    //Bad stuff!
-                    //TODO: Create and throw custom exception
-                    // PrintError("Too few tokens for asset %d.\n", Index);
-                }
-                TempAssetInit.DType = Tokens.get(0);
-                TempAssetInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(1))];
-                TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2))));
-                TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3))));
-                System.out.println("name is");
-                System.out.println(TempAssetInit.DType);
-                System.out.println("x is");
-                System.out.println(TempAssetInit.DTilePosition.X());
-                System.out.println("y is");
-                System.out.println(TempAssetInit.DTilePosition.Y());
-
-
-                if((0 > TempAssetInit.DTilePosition.X())||(0 > TempAssetInit.DTilePosition.Y())){
-                    //TODO: Create and throw custom exception
-                    //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
-                }
-                if((Width() <= TempAssetInit.DTilePosition.X())||(Height() <= TempAssetInit.DTilePosition.Y())){
-                    //TODO: Create and throw custom exception
-                    //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
-                }
-                DAssetInitializationList.add(TempAssetInit);
+            TempResourceInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(0))];
+            if((0 == Index)&&(EPlayerColor.None != TempResourceInit.DColor)){
+                //Log.e(ASSETDEC, "Expected first resource to be for color None.\n");
+                //goto LoadMapExit;
             }
 
-            DLumberAvailable = new Vector<Vector<Integer>>();
-            DLumberAvailable.setSize(DTerrainMap.size());
-            for(int RowIndex = 0; RowIndex < DLumberAvailable.size(); RowIndex++){
-                Vector<Integer> TempRow = new Vector<Integer>();
-                TempRow.setSize(DTerrainMap.get(RowIndex).size());
-                for(int ColIndex = 0; ColIndex < DTerrainMap.get(RowIndex).size(); ColIndex++){
-                    if(ETerrainTileType.Forest == DTerrainMap.get(RowIndex).get(ColIndex)){
-                        int Initlumb;
-                        if(DPartials.get(RowIndex).get(ColIndex) > 0) {
-                            Initlumb = InitialLumber;
-                        } else {
-                            Initlumb = 0;
-                        }
-                        TempRow.set(ColIndex,Initlumb);
+            TempResourceInit.DGold = Integer.parseInt(Tokens.get(1));
+            TempResourceInit.DLumber = Integer.parseInt(Tokens.get(2));
+            if(EPlayerColor.None == TempResourceInit.DColor){
+                InitialLumber = TempResourceInit.DLumber;
+            }
+
+            DResourceInitializationList.add(TempResourceInit);
+        }
+
+
+        TempString = LineSource.read().trim();
+        AssetCount = Integer.parseInt(TempString);
+        for(int Index = 0; Index < AssetCount; Index++){
+            SAssetInitialization TempAssetInit = new SAssetInitialization();
+
+            TempString = LineSource.read();
+            Tokens = Tokenizer.Tokenize(TempString);
+            if(4 > Tokens.size()){
+                //Bad stuff!
+                //TODO: Create and throw custom exception
+                // PrintError("Too few tokens for asset %d.\n", Index);
+            }
+            TempAssetInit.DType = Tokens.get(0);
+            TempAssetInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(1))];
+            TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2))));
+            TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3))));
+            System.out.println("name is");
+            System.out.println(TempAssetInit.DType);
+            System.out.println("x is");
+            System.out.println(TempAssetInit.DTilePosition.X());
+            System.out.println("y is");
+            System.out.println(TempAssetInit.DTilePosition.Y());
+
+
+            if((0 > TempAssetInit.DTilePosition.X())||(0 > TempAssetInit.DTilePosition.Y())){
+                //TODO: Create and throw custom exception
+                //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
+            }
+            if((Width() <= TempAssetInit.DTilePosition.X())||(Height() <= TempAssetInit.DTilePosition.Y())){
+                //TODO: Create and throw custom exception
+                //Log.e(ASSETDEC, "Invalid resource position %d (%d, %d).\n", Index, TempAssetInit.DTilePosition.X(), TempAssetInit.DTilePosition.Y());
+            }
+            DAssetInitializationList.add(TempAssetInit);
+        }
+
+        DLumberAvailable = new Vector<Vector<Integer>>();
+        DLumberAvailable.setSize(DTerrainMap.size());
+        for(int RowIndex = 0; RowIndex < DLumberAvailable.size(); RowIndex++){
+            Vector<Integer> TempRow = new Vector<Integer>();
+            TempRow.setSize(DTerrainMap.get(RowIndex).size());
+            for(int ColIndex = 0; ColIndex < DTerrainMap.get(RowIndex).size(); ColIndex++){
+                if(ETerrainTileType.Forest == DTerrainMap.get(RowIndex).get(ColIndex)){
+                    int Initlumb;
+                    if(DPartials.get(RowIndex).get(ColIndex) > 0) {
+                        Initlumb = InitialLumber;
+                    } else {
+                        Initlumb = 0;
                     }
-                    else{
-                        TempRow.set(ColIndex, 0);
-                    }
+                    TempRow.set(ColIndex,Initlumb);
                 }
-                DLumberAvailable.set(RowIndex,TempRow);
+                else{
+                    TempRow.set(ColIndex, 0);
+                }
             }
+            DLumberAvailable.set(RowIndex,TempRow);
+        }
 
         ReturnStatus = true;
         //}//TODO: catch exception here
