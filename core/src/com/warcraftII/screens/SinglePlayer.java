@@ -73,7 +73,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         camera.translate(-deltaX, deltaY);
 
         // limit panning to edge of map
-        calculateCameraBounds();
+        //calculateCameraBounds();
+        camera.update();
 
         return true;
     }
@@ -230,7 +231,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
 
         // limit zoom to showing full map
-        calculateCameraBounds();
+        //calculateCameraBounds();
+        camera.update();
 
         return true;
     }
@@ -302,7 +304,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             camera.position.y = mapTop - cameraHalfHeight;
         }
 
-        camera.update();
     }
 
     @Override
