@@ -1,25 +1,25 @@
 package com.warcraftII.screens;
 
-import java.util.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
 import com.warcraftII.parser.MapParser;
 import com.warcraftII.units.Unit;
+
+import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private Warcraft game;
@@ -30,12 +30,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private SpriteBatch sb;
     private Texture texture;
     private Stage stage;
+    private Stage sidebarStage;
     private Skin skin;
-    private Table table;
     private Vector<Sprite> peasant_vector;
     private MapParser map;
     private Unit all_units;
     private OrthographicCamera camera;
+    private OrthographicCamera sidebarCamera;
     // height and width of each map tile in pixels
     // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
     private int tileHeight = 32;
@@ -80,20 +81,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
 
         batch = new SpriteBatch();
 
-        stage = new Stage();
-
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
 
         tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
         tile.setScale(5);
         tile.setPosition(300, 300);
 
-        table = new Table(skin);
-        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.align(Align.bottomLeft);
-
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+
         sb = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
         all_units.AddUnit(67,3,texture);
@@ -104,9 +100,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         all_units.AddUnit(91,123,texture);
         all_units.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        sidebarCamera = new OrthographicCamera(Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight());
+        ScreenViewport sidebarViewport = new ScreenViewport(sidebarCamera);
+        sidebarStage = new Stage(sidebarViewport);
+
+        ScreenViewport mapViewport = new ScreenViewport(camera);
+        stage = new Stage(mapViewport);
         map = new MapParser(Gdx.files.internal("map/hedges.map"));
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
+
+        stage.getViewport().update(Math.round(Gdx.graphics.getWidth() + Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight(), true);
+//        stage.getViewport().getCamera().position.x = Gdx.graphics.getWidth()*.75f;
+        stage.getViewport().getCamera().update();
 
         // calculate zoom levels to show entire map height/width
         heightZoomRatio = map.getHeight() * tileHeight / camera.viewportHeight;
