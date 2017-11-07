@@ -15,7 +15,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Logger;
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import com.warcraftII.asset.AssetDecoratedMap;
+import com.warcraftII.asset.GraphicTileset;
 import com.warcraftII.asset.SAssetInitialization;
 import com.warcraftII.position.TilePosition;
 
@@ -38,7 +40,7 @@ public class StaticAssetParser {
                              int mapWidth,
                              int mapHeight,
                              String mapName) {
-        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
+        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
         //this.mapName = mapName;
@@ -101,7 +103,7 @@ public class StaticAssetParser {
         List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
         System.out.println("start render");
 
-        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets.atlas"));
+        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
 
         for(SAssetInitialization AssetInit : AssetInitializationList) {
@@ -110,24 +112,20 @@ public class StaticAssetParser {
 
             int XPos = AssetInit.DTilePosition.X();
             //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
-            int YPos = map.Height() - AssetInit.DTilePosition.Y() - 3; // dont ask about the -3 haha
+            int YPos = map.Height() - AssetInit.DTilePosition.Y() - 1; // -1 to account for 0 index
 
             String AssetType = AssetInit.DType;
 
 
             if (GOLDMINE.equals(AssetType)) {
-                textureRegion = staticAssets.findRegion("goldmine-inactive");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-
-                assetLayer.setCell(XPos, YPos, cell);
+                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "goldmine-inactive");
             } else if (PEASANT.equals(AssetType)) {
-                textureRegion = staticAssets.findRegion("scouttower-place");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                assetLayer.setCell(XPos, YPos, cell);
+                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "scouttower-place");
             } else if (TOWNHALL.equals(AssetType)) {
                 textureRegion = staticAssets.findRegion("townhall-inactive");
                 cell.setTile(new StaticTiledMapTile(textureRegion));
                 assetLayer.setCell(XPos, YPos, cell);
+                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "townhall-inactive");
             }
         }
 
