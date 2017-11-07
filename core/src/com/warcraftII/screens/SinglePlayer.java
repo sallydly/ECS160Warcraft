@@ -16,12 +16,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
+import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.parser.MapParser;
 import com.warcraftII.units.Unit;
 
-public class SinglePlayer implements Screen, GestureDetector.GestureListener {
+
+public class SinglePlayer implements Screen, GestureDetector.GestureListener{
+    private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
     private TextureAtlas terrain;
     private SpriteBatch batch;
@@ -54,6 +58,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     private int movement_flag;
    SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
+        this.batch = game.batch;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -68,7 +73,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         camera.translate(-deltaX, deltaY);
 
         // limit panning to edge of map
-        calculateCameraBounds();
+        //calculateCameraBounds();
+        camera.update();
 
         return true;
     }
@@ -77,8 +83,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
     public void show() {
         all_units = new Unit();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-
-        batch = new SpriteBatch();
 
         stage = new Stage();
 
@@ -102,9 +106,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         all_units.AddUnit(47,68,texture);
         all_units.AddUnit(67,3,texture);
         all_units.AddUnit(91,123,texture);
+
         all_units.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        map = new MapParser(Gdx.files.internal("map/hedges.map"));
+        map = new MapParser(game.DMapName);
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
         Gdx.input.setInputProcessor(new GestureDetector(this));
 
@@ -121,6 +126,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         batch.begin();
         camera.update();
         map.render(camera);
+
         batch.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
@@ -225,7 +231,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
         }
 
         // limit zoom to showing full map
-        calculateCameraBounds();
+        //calculateCameraBounds();
+        camera.update();
 
         return true;
     }
@@ -297,7 +304,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener {
             camera.position.y = mapTop - cameraHalfHeight;
         }
 
-        camera.update();
     }
 
     @Override

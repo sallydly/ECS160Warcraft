@@ -5,6 +5,9 @@ package com.warcraftII;
     Converted C++ enum classes to normal enums in java, since java enums have data safety.
 */
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GameDataTypes {
 
     public enum EPlayerColor {
@@ -110,12 +113,22 @@ public class GameDataTypes {
         NorthWest,
         Max
     }
-}
-    /* // Code form Effective Modern C++ by Scott Meyers (see Item 10)
-    template<typename E>
-    constexpr typename std::underlying_type<E>::type to_underlying(E enumerator) noexcept{
-        return static_cast<typename std::underlying_type<E>::type>(enumerator);
+
+    public static int to_underlying(Enum enumerator) {
+        int enumIndex = 0;
+        Class<?> enumeratorClass = enumerator.getClass();
+        List<?> enumValuesList = Arrays.asList(enumeratorClass.getEnumConstants());
+
+        for (Object enumValue : enumValuesList) {
+            if (enumerator == enumValue) {
+                return enumIndex;
+            } else {
+                enumIndex++;
+            }
+        }
+        return 0;
     }
-    */
+}
+
 // TODO: redefine DirectionOpposite function
 //#define DirectionOpposite(dir)      static_cast<EDirection>( (to_underlying(dir) + to_underlying(EDirection::Max) / 2) % to_underlying(EDirection::Max))
