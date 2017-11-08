@@ -4,6 +4,9 @@ package com.warcraftII.terrain;
  * Created by Kimi on 10/28/2017.
  */
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TileTypes {
     public enum ETerrainTileType {
         None,
@@ -33,6 +36,20 @@ public class TileTypes {
         DeepWater,
         ShallowWater,
         Max
+    }
+    public static int to_underlying(Enum enumerator) {
+        int enumIndex = 0;
+        Class<?> enumeratorClass = enumerator.getClass();
+        List<?> enumValuesList = Arrays.asList(enumeratorClass.getEnumConstants());
+
+        for (Object enumValue : enumValuesList) {
+            if (enumerator == enumValue) {
+                return enumIndex;
+            } else {
+                enumIndex++;
+            }
+        }
+        return 0;
     }
 
 }

@@ -3,12 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ECS160Android.iml" filepath="$PROJECT_DIR$/ECS160Android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ECS160Android.iml" filepath="$PROJECT_DIR$/ECS160Android.iml" />
+      <module fileurl="file://C:\Users\Kimi\Documents\GitHub\ECS160Android\ECS160Android.iml" filepath="C:\Users\Kimi\Documents\GitHub\ECS160Android\ECS160Android.iml" />
+      <module fileurl="file://C:\Users\Kimi\Documents\GitHub\ECS160Android\ECS160Android-master.iml" filepath="C:\Users\Kimi\Documents\GitHub\ECS160Android\ECS160Android-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ECS160Android-master.iml" filepath="$PROJECT_DIR$/ECS160Android-master.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
+      <module fileurl="file://C:\Users\Kimi\Documents\GitHub\ECS160Android\android\android.iml" filepath="C:\Users\Kimi\Documents\GitHub\ECS160Android\android\android.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://C:\Users\Kimi\Documents\GitHub\ECS160Android\core\core.iml" filepath="C:\Users\Kimi\Documents\GitHub\ECS160Android\core\core.iml" />
     </modules>
   </component>
 </project>

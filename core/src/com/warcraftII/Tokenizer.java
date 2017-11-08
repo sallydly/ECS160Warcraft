@@ -2,6 +2,7 @@ package com.warcraftII;
 
 import com.warcraftII.data_source.DataSource;
 
+import java.util.StringTokenizer;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -49,32 +50,25 @@ public class Tokenizer {
     }
 
     public static Vector<String> Tokenize(String data, String delimiters){
-            String Delimiters;
-            String TempTokenString;
-            Vector<String> Tokens =  new Vector<String>();
+        String Delimiters;
 
-            if(delimiters.length() > 0){
-                Delimiters = delimiters;
-            } else{
-                Delimiters = " \t\r\n";
-            }
+        Vector<String> Tokens =  new Vector<String>();
 
-        TempTokenString = new String();
-        for(int Index = 0; Index < data.length(); Index++){
-            if(-1 == Delimiters.indexOf(data.charAt(Index))){
-                TempTokenString = TempTokenString + data.charAt(Index);
-            } else if(TempTokenString.length() > 0){
-                Tokens.add(TempTokenString);
-                TempTokenString = new String();
-            }
+        if(delimiters.length() > 0){
+            Delimiters = delimiters;
+        } else{
+            Delimiters = " \t\r\n";
         }
 
-        if(TempTokenString.length() > 0){
+        StringTokenizer st = new StringTokenizer(data, Delimiters);
+
+        while (st.hasMoreTokens()) {
+            String TempTokenString = st.nextToken();
             Tokens.add(TempTokenString);
         }
 
         return Tokens;
-        } // end Tokenize() function
+    } // end Tokenize() function
 
 
 } // end class
