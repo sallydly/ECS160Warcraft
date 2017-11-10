@@ -16,13 +16,13 @@ public class FileDataSource implements DataSource
     private FileHandle DFileHandle;
     private String DFileAsString;
     private boolean DCloseFile = false;
-   
+
 
     public FileDataSource(String filename){
         //TODO: Implement CPath.  For now, we just fill in the actual filename
         //DFullPath = CPath::CurrentPath().Simplify(filename).ToString();
-            DFileHandle = Gdx.files.internal(filename);
-            DFileAsString = DFileHandle.readString();
+        DFileHandle = Gdx.files.internal(filename);
+        DFileAsString = DFileHandle.readString();
     }
 
 /* Using LIBGDX file system instead
