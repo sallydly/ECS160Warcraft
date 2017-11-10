@@ -1,24 +1,16 @@
 package com.warcraftII.parser;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.data_source.FileDataSource;
-import com.warcraftII.terrain.TerrainMap;
+import com.warcraftII.asset.StaticAssetParser;
 import com.warcraftII.terrain.MapRenderer;
-
-import java.util.StringTokenizer;
 
 public class MapParser {
     private Logger log = new Logger("MapParser", 2);
@@ -78,8 +70,7 @@ public class MapParser {
     }
 
     public void render(OrthographicCamera camera){
-        renderer.setView(camera);
-        renderer.render();
+
     }
 
     public int getWidth() {
@@ -90,24 +81,6 @@ public class MapParser {
         return height;
     }
 
-    public Sprite spriteAt(int i, int j) {
-        return spriteMap[i][j];
-    }
-
-    public TiledMap getTiledMap(){
-        return tiledMap;
-    }
-
-    public int getTileHeight(){
-        return tiledMap.getProperties().get("height", Integer.class);
-    }
-
-    public int getTileWidth(){
-        return tiledMap.getProperties().get("width", Integer.class);
-    }
-
     public void dispose(){
-        tiledMap.dispose();
-        renderer.dispose();
     }
 }

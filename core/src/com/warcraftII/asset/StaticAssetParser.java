@@ -1,4 +1,4 @@
-package com.warcraftII.parser;
+package com.warcraftII.asset;
 
 /*
 * Adds stationary assets onto a new layer of map
