@@ -2,6 +2,7 @@ package com.warcraftII.terrain;
 
 
 import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
@@ -32,9 +33,14 @@ public class TerrainMap {
     protected Vector<Vector<Integer>> DMapIndices;
     protected boolean DRendered;
     protected String DMapName;
+    protected String DMapDescription;
+
+    protected Logger log;
 
     public TerrainMap() {
         this.DRendered = false;
+
+        log = new Logger("TerrainMap", 2);
     }
 
     public TerrainMap(final TerrainMap map) {
@@ -44,8 +50,9 @@ public class TerrainMap {
         this.DMap = map.DMap;
         this.DMapIndices = map.DMapIndices;
         this.DRendered = map.DRendered;
-    }
 
+        log = new Logger("TerrainMap", 2);
+    }
 
 
     /*  The important get() functions of TerrainMap: */
@@ -234,6 +241,7 @@ public class TerrainMap {
         DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
+        //read map name
         DMapName = LineSource.read();
         if(DMapName.isEmpty()) {
             return returnStatus;
@@ -255,6 +263,39 @@ public class TerrainMap {
         if ((8 > mapWidth) || (8 > mapHeight)) {
             return returnStatus;
         }
+
+        /*
+         * HM: expecting map's description here
+         * TODO: may want to have some code to check for error while reading map description
+         */
+        tempString = LineSource.read();
+        if(tempString.isEmpty()) {
+            return returnStatus;
+        }
+        if(LineSource.isDIsAfterComment()) {
+            //first line of map description
+            DMapDescription = tempString;
+        }
+        tempString = LineSource.read();
+        if(tempString.isEmpty()) {
+            return returnStatus;
+        }
+        /*
+         * HM: expecting that there's no comments in map description
+         * if encounters a comment, expect the next field be map tileset (path to Terrain.dat)
+         */
+        while(LineSource.isDIsAfterComment() == false) {
+            DMapDescription += ("\n" + tempString);
+            tempString = LineSource.read();
+            if(tempString.isEmpty()) {
+                return returnStatus;
+            }
+        }
+        log.info("Map Description: " + DMapDescription + " END OF MAP DESCRIPTION");
+        //IMPORTANT: at this point tempString should already contain map tileset (path to Terrain.dat)
+
+        //TODO: codes related to Map Tileset goes here, if necessary
+
         while (StringMap.size() < mapHeight + 1) {
             tempString = LineSource.read();
             if(tempString.isEmpty()) {
