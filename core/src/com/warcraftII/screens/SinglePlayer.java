@@ -18,9 +18,13 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.StaticAssetParser;
@@ -50,8 +54,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Unit allUnits;
 
     private OrthographicCamera mapCamera;
-    private ScreenViewport mapViewport;
+    private FitViewport mapViewport;
     private Stage mapStage;
+
+    private OrthographicCamera sidebarCamera;
+    private FitViewport sidebarViewport;
+    private Stage sidebarStage;
+
+    private Table sidebarTable;
 
     // height and width of each map tile in pixels
     // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
@@ -110,16 +120,49 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         allUnits.AddUnit(91,123,texture);
         allUnits.AddUnit(5,123,texture);
 
-        mapCamera = new OrthographicCamera(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight());
-        mapViewport = new ScreenViewport(mapCamera);
+        mapCamera = new OrthographicCamera();
+        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
         mapStage = new Stage(mapViewport);
 
+        mapStage.getViewport().apply();
+        mapStage.draw();
         // set size of map viewport to 75% of the screen width and 100% height
         mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight(), false);
         // position map viewport on right 75% of the screen
-        mapStage.getViewport().setScreenX(Math.round(Gdx.graphics.getWidth() * .25f));
+        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight());
         mapStage.getViewport().apply();
-        mapStage.draw();
+
+        sidebarCamera = new OrthographicCamera();
+        sidebarViewport = new FitViewport(Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight(), sidebarCamera);
+        sidebarStage = new Stage(sidebarViewport);
+
+        sidebarStage.getViewport().apply();
+        sidebarStage.draw();
+        // set size of sidebar viewport to 25% of the screen width and 100% height
+        sidebarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight(), false);
+        // position sidebar viewport on left 25% of the screen
+        sidebarStage.getViewport().setScreenBounds(0, 0, Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight());
+        sidebarStage.getViewport().apply();
+
+        // table for layout of sidebar
+        sidebarTable = new Table();
+        sidebarTable.setDebug(true); // TODO: remove when done laying out table
+        sidebarTable.setFillParent(true);
+        sidebarTable.align(Align.bottomLeft);
+        sidebarStage.addActor(sidebarTable);
+        sidebarStage.draw();
+
+        Label nameLabel = new Label("Name:", skin);
+        TextField nameText = new TextField("", skin);
+        Label addressLabel = new Label("Address:", skin);
+        TextField addressText = new TextField("", skin);
+
+        sidebarTable.add(nameLabel);
+        sidebarTable.add(nameText);
+        sidebarTable.row();
+        sidebarTable.add(addressLabel);
+        sidebarTable.add(addressText);
+        sidebarStage.draw();
 
         // Loading the map:
         tiledMap = new TiledMap();
@@ -154,11 +197,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        mapCamera.update();
+        mapStage.getViewport().apply();
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
@@ -199,6 +242,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public void dispose() {
         terrain.dispose();
         mapStage.dispose();
+        sidebarStage.dispose();
         skin.dispose();
         tiledMap.dispose();
         orthomaprenderer.dispose();
