@@ -6,6 +6,8 @@ package com.warcraftII.units;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
+import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;
@@ -28,6 +30,17 @@ public class Unit {
         newUnit.sprite.setPosition(x_position*32,y_position*32);
         newUnit.currentxmove = x_position*32;
         newUnit.currentymove = y_position*32;
+        unitVector.add(newUnit);
+    }
+
+    public void AddUnit(TilePosition tilePosition, Texture texture) {
+        IndividualUnit newUnit = new IndividualUnit();
+        newUnit.sprite = new Sprite(texture);
+        newUnit.sprite.setSize(72,72);
+        UnitPosition upos = new UnitPosition(tilePosition);
+        newUnit.sprite.setPosition(upos.X(),upos.Y());
+        newUnit.currentxmove = upos.X();
+        newUnit.currentymove = upos.Y();
         unitVector.add(newUnit);
     }
 

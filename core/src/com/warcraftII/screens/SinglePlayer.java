@@ -25,7 +25,9 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
+import com.warcraftII.asset.SAssetInitialization;
 import com.warcraftII.asset.StaticAssetParser;
+import com.warcraftII.position.*;
 import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
 
@@ -113,14 +115,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.input.setInputProcessor(stage);
         sb = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-        allUnits.AddUnit(67,3,texture);
+/*      allUnits.AddUnit(67,3,texture);
         allUnits.AddUnit(9,4,texture);
         allUnits.AddUnit(121,40,texture);
         allUnits.AddUnit(47,68,texture);
         allUnits.AddUnit(67,3,texture);
         allUnits.AddUnit(91,123,texture);
 
-        allUnits.AddUnit(5,123,texture);
+        allUnits.AddUnit(5,123,texture);*/
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
@@ -137,6 +139,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         MapRenderer mapRenderer = new MapRenderer(map);
         StaticAssetParser staticAssetParser = new StaticAssetParser();
+
+
+        // DEBUG
+        UnitPosition.setMapDimensions(map);
+        Position.setTileDimensions(32,32);
+        for (SAssetInitialization ass : map.AssetInitializationList() )
+        {
+            if (ass.DType.equals("Peasant"))
+            {
+                allUnits.AddUnit(ass.DTilePosition,texture);
+            }
+        }
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
