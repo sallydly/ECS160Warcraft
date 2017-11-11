@@ -20,6 +20,29 @@ public class TilePosition extends Position{
         super(pos);
     }
 
+    //SUPER IMPORTANT: Constructor from UnitPosition
+    public TilePosition(UnitPosition upos){
+        DX = (int) (upos.X() / DTileWidth);
+        DY = (int)(DMapHeight - upos.Y() / DTileHeight);
+    }
+
+
+
+    public void SetFromUnit(UnitPosition upos) {
+        DX = (int) (upos.X() / DTileWidth);
+        DY = DMapHeight - (int) (upos.Y() / DTileHeight);
+    }
+
+    public void setXFromUnit(int x) {
+        DX = (int) (x / DTileWidth);
+    }
+
+    public void setYFromUnit(int y) {
+        DY = DMapHeight - (int) (y / DTileHeight);
+    }
+
+
+
     public void SetFromPixel(PixelPosition pos) {
         DX = pos.X() / DTileWidth;
         DY = pos.Y() / DTileHeight;

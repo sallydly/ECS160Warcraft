@@ -1,20 +1,32 @@
 package com.warcraftII.position;
 
+import com.warcraftII.asset.AssetDecoratedMap;
+
+import java.util.Vector;
+
 /**
- * Created by ajc on 10/28/17.
+ * Created by Kimi on 11/10/2017.
+ * 
+ * 
  */
 
-public class PixelPosition extends Position {
+public class UnitPosition extends Position {
 
-    public PixelPosition() {
+    public UnitPosition() {
     }
 
-    public PixelPosition(int x, int y) {
+    public UnitPosition(int x, int y) {
         super(x,y);
     }
 
-    public PixelPosition(PixelPosition pos) {
+    public UnitPosition(UnitPosition pos) {
         super(pos);
+    }
+
+    //SUPER IMPORTANT: Constructor from TilePosition
+    public UnitPosition(TilePosition tpos) {
+        DX = tpos.X() * DTileWidth + DHalfTileWidth;
+        DY = (DMapHeight - tpos.Y()) * DTileHeight + DHalfTileHeight;
     }
 
     public boolean tileAligned() {
@@ -24,7 +36,7 @@ public class PixelPosition extends Position {
 
     public void setFromTile(TilePosition pos) {
         DX = pos.X() * DTileWidth + DHalfTileWidth;
-        DY = pos.Y() * DTileHeight + DHalfTileHeight;
+        DY = (DMapHeight - pos.Y()) * DTileHeight + DHalfTileHeight;
     }
 
     public void setXFromTile(int x) {
@@ -32,12 +44,12 @@ public class PixelPosition extends Position {
     }
 
     public void setYFromTile(int y) {
-        DY = y * DTileHeight + DHalfTileHeight;
+        DY = (DMapHeight - y) * DTileHeight + DHalfTileHeight;
     }
 
-    public PixelPosition closestPosition(PixelPosition objPos, int objSize) {
-        PixelPosition curPosition = new PixelPosition(objPos);
-        PixelPosition bestPosition = new PixelPosition();
+    public UnitPosition closestPosition(UnitPosition objPos, int objSize) {
+        UnitPosition curPosition = new UnitPosition(objPos);
+        UnitPosition bestPosition = new UnitPosition();
         int bestDistance = -1;
 
         for(int yIndex = 0; yIndex < objSize; yIndex++) {
@@ -56,5 +68,19 @@ public class PixelPosition extends Position {
 
         return bestPosition;
     }
+
+
+        /*
+    Sets map dimensions to do the inversion.
+     */
+
+    public static void setMapDimensions(AssetDecoratedMap map){
+        DMapHeight = map.Height();
+        DMapWidth = map.Width();
+    }
+
+
+
+
 
 }
