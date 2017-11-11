@@ -4,13 +4,23 @@ package com.warcraftII.units;
  * Created by Ian on 10/29/2017.
  * Is the basis for all units.
  */
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.warcraftII.GameDataTypes;
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;
     public int selectedUnitIndex;
+    private TextureAtlas[] unitTextures = {
+        new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
+    };
 
     public Unit() {
         unitVector = new Vector<IndividualUnit>(50);
@@ -28,8 +38,25 @@ public class Unit {
         1 = moving
          */
     }
-    public void AddUnit(float x_position, float y_position, Texture texture) {
+    public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit) {
         IndividualUnit newUnit = new IndividualUnit();
+        TextureRegion texture;
+        switch(inUnit) {
+            case Peasant:
+                texture = unitTextures[0].findRegion("walk-n-0");
+                break;
+            case Footman:
+                texture = unitTextures[1].findRegion("walk-n-0");
+                break;
+            case Archer:
+                texture = unitTextures[2].findRegion("walk-n-0");
+                break;
+            case Ranger:
+                texture = unitTextures[3].findRegion("walk-n-0");
+                break;
+            default:
+                texture = unitTextures[0].findRegion("walk-n-0");
+        }
         newUnit.sprite = new Sprite(texture);
         newUnit.sprite.setSize(72,72);
         newUnit.sprite.setOriginCenter();

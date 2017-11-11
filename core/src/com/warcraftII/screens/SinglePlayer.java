@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
+import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.StaticAssetParser;
@@ -36,6 +37,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
     private TextureAtlas terrain;
+    private TextureAtlas peasant;
     private SpriteBatch batch;
     private Sprite tile;
     private Music readySound;
@@ -98,7 +100,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public void show() {
         allUnits = new Unit();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-
+        TextureAtlas[] unitTextures = {
+                new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
+        };
         stage = new Stage();
 
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
@@ -114,15 +121,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         sb = new SpriteBatch();
-        texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-        allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(9,4,texture);
-        allUnits.AddUnit(121,40,texture);
-        allUnits.AddUnit(47,68,texture);
-        allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(91,123,texture);
 
-        allUnits.AddUnit(5,123,texture);
+        allUnits.AddUnit(67,3, GameDataTypes.EUnitType.Archer);
+        allUnits.AddUnit(9,4, GameDataTypes.EUnitType.Footman);
+        allUnits.AddUnit(121,40, GameDataTypes.EUnitType.Peasant);
+        allUnits.AddUnit(47,68, GameDataTypes.EUnitType.Ranger);
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 

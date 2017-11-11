@@ -82,6 +82,7 @@ public class GameDataTypes {
         Max
     }
 
+    // This can disappear at some point, to be replaced by the two below
     public enum EAssetType {
         None,
         Peasant,
@@ -99,6 +100,31 @@ public class GameDataTypes {
         ScoutTower,
         GuardTower,
         CannonTower,
+        Max
+    }
+
+    public enum EStaticAssetType {
+        None,
+        GoldMine,
+        TownHall,
+        Keep,
+        Castle,
+        Farm,
+        Barracks,
+        LumberMill,
+        Blacksmith,
+        ScoutTower,
+        GuardTower,
+        CannonTower,
+        Max
+    }
+
+    public enum EUnitType {
+        None,
+        Peasant,
+        Footman,
+        Archer,
+        Ranger,
         Max
     }
 
