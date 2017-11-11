@@ -21,6 +21,12 @@ public class Unit {
         public float currentxmove;
         public float currentymove;
     }
+
+    public void stopMovement() {
+        unitVector.elementAt(selectedUnitIndex).currentymove = unitVector.elementAt(selectedUnitIndex).sprite.getY();
+        unitVector.elementAt(selectedUnitIndex).currentxmove = unitVector.elementAt(selectedUnitIndex).sprite.getX();
+    }
+
     public void AddUnit(float x_position, float y_position, Texture texture) {
         IndividualUnit newUnit = new IndividualUnit();
         newUnit.sprite = new Sprite(texture);

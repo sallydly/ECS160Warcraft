@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -20,15 +21,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.StaticAssetParser;
 import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
-
+import com.warcraftII.units.UnitActions;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -42,14 +48,21 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Stage stage;
     private Skin skin;
     private Table table;
-    private Vector<Sprite> peasantVector;
 
+    private int movement;
+    private InputMultiplexer multiplexer;
+
+    private TextButton movementButton;
+    private TextButton stopButton;
+    private TextButton patrolButton;
+    private TextButton attackButton;
 
     private AssetDecoratedMap map;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer orthomaprenderer;
     private MapProperties properties;
 
+    private UnitActions unitActions;
     private Unit allUnits;
     private OrthographicCamera camera;
 
@@ -66,9 +79,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     float prevScale = 1; //initial scale for zoom
 
     private double prevDistance = 0;
-    private float currentXMove;
-    private float currentYMove;
-    private int movementFlag;
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         this.batch = game.batch;
@@ -95,9 +105,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void show() {
         allUnits = new Unit();
-        terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
+        unitActions = new UnitActions();
 
-        stage = new Stage();
+        movement = 0;
+
+        terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
 
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
 
@@ -109,8 +121,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.align(Align.bottomLeft);
 
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
+        stage = new Stage(new ScreenViewport());
         sb = new SpriteBatch();
         texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
         allUnits.AddUnit(67,3,texture);
@@ -123,6 +134,36 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         allUnits.AddUnit(5,123,texture);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        // Make Buttons for the Unit Actions
+        unitActions.createBasicSkin();
+        movementButton = new TextButton("Move", unitActions.skin);
+        stopButton = new TextButton("Stop", unitActions.skin);
+        patrolButton = new TextButton("Patrol", unitActions.skin);
+        attackButton = new TextButton("Attack", unitActions.skin);
+        movementButton.setPosition(5 , 10);
+        stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
+        patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
+        attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
+        movementButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                movement = 1;
+                return true;
+            }
+        });
+
+        stopButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                allUnits.stopMovement();
+                return true;
+            }
+        });
+
+        stage.addActor(movementButton);
+        stage.addActor(stopButton);
+        stage.addActor(patrolButton);
+        stage.addActor(attackButton);
 
         // Loading the map:
         tiledMap = new TiledMap();
@@ -147,7 +188,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
-        Gdx.input.setInputProcessor(new GestureDetector(this));
+
+        multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(new GestureDetector(this));
+        Gdx.input.setInputProcessor(multiplexer);
+        // Gdx.input.setInputProcessor(stage);
+        //Gdx.input.setInputProcessor(new GestureDetector(this));
 
         // calculate zoom levels to show entire map height/width
         heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
@@ -158,7 +205,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         camera.update();
         orthomaprenderer.setView(camera);
@@ -174,6 +220,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
+        stage.act();
+        stage.draw();
         allUnits.AllMovement();
     }
 
@@ -223,9 +271,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             counter+=1;
         }
-        if (unit_selected == 0) {
+        if (unit_selected == 0 && movement == 1) {
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = position.y;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = position.x;
+            movement = 0;
         }
         return true;
     }
