@@ -35,6 +35,7 @@ import com.warcraftII.asset.StaticAssetParser;
 import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
+import static java.lang.Math.round;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -222,7 +223,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb.end();
         stage.act();
         stage.draw();
-        allUnits.AllMovement();
+        allUnits.UnitStateHandler();
     }
 
     @Override
@@ -258,6 +259,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = camera.unproject(clickCoordinates);
+        System.out.println(String.format("Press location: %f, %f", position.x, position.y));
         int counter = 0;
         int unit_selected = 0;
         while(counter < allUnits.unitVector.size()){
@@ -272,9 +274,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         if (unit_selected == 0 && movement == 1) {
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = position.y;
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = position.x;
-            movement = 0;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = 1;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+	    movement = 0;
         }
         return true;
     }
