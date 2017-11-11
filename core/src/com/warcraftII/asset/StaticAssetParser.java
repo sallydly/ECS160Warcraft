@@ -118,8 +118,6 @@ public class StaticAssetParser {
 
             if (GOLDMINE.equals(AssetType)) {
                 GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "goldmine-inactive");
-            } else if (PEASANT.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "scouttower-place");
             } else if (TOWNHALL.equals(AssetType)) {
                 GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "townhall-inactive");
             }
