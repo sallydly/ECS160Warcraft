@@ -47,6 +47,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Skin skin;
     private Table table;
     private Vector<Sprite> peasantVector;
+    private float elapsedTime;
 
 
     private AssetDecoratedMap map;
@@ -158,12 +159,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // calculate zoom levels to show entire map height/width
         heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
         widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
+        elapsedTime = 0;
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        elapsedTime += Gdx.graphics.getDeltaTime();
 
         batch.begin();
         camera.update();
@@ -175,12 +179,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb.begin();
         int counter = 0;
         while(counter < allUnits.unitVector.size()){
-            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
-            temp_peasant.draw(sb);
+            Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
+            //temp_peasant.draw(sb);
+            sb.draw(temp_peasant.curAnim.getKeyFrame(elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
         }
         sb.end();
-        allUnits.UnitStateHandler();
+        allUnits.UnitStateHandler(elapsedTime);
     }
 
     @Override
@@ -231,7 +236,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         if (unit_selected == 0) {
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = 1;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
         }

@@ -140,6 +140,25 @@ public class GameDataTypes {
         Max
     }
 
+    public enum EUnitState {
+        Idle,
+        Move,
+        Mine,
+        Convey,
+        Repair,
+        Attack,
+        StandGround,
+        BuildSimple,
+        BuildTownHall,
+        BuildFarm,
+        BuildBarracks,
+        BuildLumberMill,
+        BuildScoutTower,
+        BuildBlacksmith,
+        BuildWall,
+        Patrol
+    }
+
     public static int to_underlying(Enum enumerator) {
         int enumIndex = 0;
         Class<?> enumeratorClass = enumerator.getClass();
