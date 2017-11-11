@@ -53,6 +53,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Table table;
     private float elapsedTime;
     private int movement;
+    public int attack;
+    public int patrol;
     private InputMultiplexer multiplexer;
 
     private TextButton movementButton;
@@ -111,6 +113,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         unitActions = new UnitActions();
 
         movement = 0;
+        attack = 0;
+        patrol = 0;
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         TextureAtlas[] unitTextures = {
                 new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
@@ -161,6 +165,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 allUnits.stopMovement();
+                movement = 0;
+                patrol = 0;
+                attack = 0;
                 return true;
             }
         });
@@ -276,6 +283,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here
                 // PEASANT SELECTED ==
+                if (attack == 1) {
+                    unit_selected = 1;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
+                    attack = 0;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
+                }
                 allUnits.selectedUnitIndex = counter;
                 unit_selected = 1;
             }
@@ -285,7 +298,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
-	    movement = 0;
+	        movement = 0;
+        }
+        if (unit_selected == 0 && patrol == 1) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Patrol;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX();
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY();
+            patrol = 0;
         }
         return true;
     }

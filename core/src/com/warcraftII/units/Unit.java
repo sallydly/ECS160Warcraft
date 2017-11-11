@@ -32,17 +32,21 @@ public class Unit {
         public Sprite sprite;
         public int maxHP = 40;
         public int curHP = 40;
+        public int attackDamage = 5;
         public int speed = 10;
+        public int range = 1;
         public float currentxmove;
         public float currentymove;
+        public float patrolxmove;
+        public float patrolymove;
+        public IndividualUnit target;
         public GameDataTypes.EUnitState curState;
         public Animation<TextureRegion> curAnim;
 
     }
 
     public void stopMovement() {
-        unitVector.elementAt(selectedUnitIndex).currentymove = unitVector.elementAt(selectedUnitIndex).sprite.getY();
-        unitVector.elementAt(selectedUnitIndex).currentxmove = unitVector.elementAt(selectedUnitIndex).sprite.getX();
+        unitVector.elementAt(selectedUnitIndex).curState = GameDataTypes.EUnitState.Idle;
     }
     public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit) {
         IndividualUnit newUnit = new IndividualUnit();
@@ -88,6 +92,11 @@ public class Unit {
                 case Move:
                     UnitMoveState(unitVector.elementAt(i));
                     break;
+                case Attack:
+                    UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target);
+                    break;
+                case Patrol:
+                    UnitPatrolState(unitVector.elementAt(i));
                 default:
                     System.out.println("How'd you manage to get to that state?");
                     break;
@@ -95,6 +104,50 @@ public class Unit {
         }
     }
 
+    private void UnitPatrolState(IndividualUnit cur) {
+        if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
+            System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
+            // TODO: If another unit gets in curr.range attack the other unit until dead, once unit dead go back to patrol
+            if (cur.sprite.getX()+36 < cur.currentxmove)
+                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
+            if (cur.sprite.getX()+36 > cur.currentxmove)
+                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
+            if (cur.sprite.getY()+36 < cur.currentymove)
+                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
+            if (cur.sprite.getY()+36 > cur.currentymove)
+                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
+        } else {
+            cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
+            float tempxmove = cur.currentxmove;
+            float tempymove = cur.currentymove;
+            cur.currentxmove = cur.patrolxmove;
+            cur.currentymove = cur.patrolymove;
+            cur.patrolxmove = tempxmove;
+            cur.patrolymove = tempymove;
+        }
+    }
+
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar) {
+        //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
+        if ((cur.sprite.getX()+36 != tar.sprite.getX()+36 - cur.range) || (cur.sprite.getY()+36 != tar.sprite.getY() + 36 - cur.range)) {
+            System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
+            if (cur.sprite.getX()+36 < tar.sprite.getX()+36 - cur.range)
+                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
+            if (cur.sprite.getX()+36 > tar.sprite.getX()+36 - cur.range)
+                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
+            if (cur.sprite.getY()+36 < tar.sprite.getY() + 36 - cur.range)
+                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
+            if (cur.sprite.getY()+36 > tar.sprite.getY() + 36 - cur.range)
+                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
+        } else {
+            cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
+            tar.curHP = tar.curHP - cur.attackDamage;
+            System.out.println(String.format("Current Unit did %f damage to Target, Target now has %f health", cur.attackDamage, tar.curHP));
+            if (tar.curHP <= 0)
+                cur.curState = GameDataTypes.EUnitState.Idle;
+        }
+    }
+    
     private void UnitMoveState(IndividualUnit cur) {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
@@ -111,7 +164,6 @@ public class Unit {
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
-
 }
 
 
