@@ -4,13 +4,24 @@ package com.warcraftII.units;
  * Created by Ian on 10/29/2017.
  * Is the basis for all units.
  */
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.warcraftII.GameDataTypes;
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;
     public int selectedUnitIndex;
+    private TextureAtlas[] unitTextures = {
+        new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
+        new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
+    };
 
     public Unit() {
         unitVector = new Vector<IndividualUnit>(50);
@@ -19,40 +30,62 @@ public class Unit {
 
     public class IndividualUnit {
         public Sprite sprite;
+        public int maxHP = 40;
+        public int curHP = 40;
+        public int speed = 10;
         public float currentxmove;
         public float currentymove;
-        public int curState;
-        /*
-        For now, state values are as follows. Feel free to convert to strings or something else later.
-        0 = idle
-        1 = moving
-         */
+        public GameDataTypes.EUnitState curState;
+        public Animation<TextureRegion> curAnim;
+
     }
 
     public void stopMovement() {
         unitVector.elementAt(selectedUnitIndex).currentymove = unitVector.elementAt(selectedUnitIndex).sprite.getY();
         unitVector.elementAt(selectedUnitIndex).currentxmove = unitVector.elementAt(selectedUnitIndex).sprite.getX();
     }
-
-    public void AddUnit(float x_position, float y_position, Texture texture) {
+    public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit) {
         IndividualUnit newUnit = new IndividualUnit();
+        TextureRegion texture;
+        Animation<TextureRegion> anim;
+        switch(inUnit) {
+            case Peasant:
+                texture = unitTextures[0].findRegion("walk-n");
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegions("walk-n"));
+                break;
+            case Footman:
+                texture = unitTextures[1].findRegion("walk-n");
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[1].findRegions("walk-n"));
+                break;
+            case Archer:
+                texture = unitTextures[2].findRegion("walk-n");
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[2].findRegions("walk-n"));
+                break;
+            case Ranger:
+                texture = unitTextures[3].findRegion("walk-n");
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[3].findRegions("walk-n"));
+                break;
+            default:
+                texture = unitTextures[0].findRegion("walk-n");
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegions("walk-n"));
+        }
         newUnit.sprite = new Sprite(texture);
         newUnit.sprite.setSize(72,72);
         newUnit.sprite.setOriginCenter();
-        System.out.println(String.format("Origin X: %f, Origin Y: %f", newUnit.sprite.getOriginX(), newUnit.sprite.getOriginY()));
         newUnit.sprite.setPosition(x_position,y_position);
         newUnit.currentxmove = x_position*32;
         newUnit.currentymove = y_position*32;
-        newUnit.curState = 0;
+        newUnit.curState = GameDataTypes.EUnitState.Idle;
+        newUnit.curAnim = anim;
         unitVector.add(newUnit);
     }
 
-    public void UnitStateHandler() {
+    public void UnitStateHandler(float elapsedTime) {
         for (int i = 0; i < unitVector.size(); i++) {
             switch (unitVector.elementAt(i).curState) {
-                case 0: // idle
+                case Idle:
                     break;
-                case 1: // moving
+                case Move:
                     UnitMoveState(unitVector.elementAt(i));
                     break;
                 default:
@@ -66,16 +99,16 @@ public class Unit {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
             if (cur.sprite.getX()+36 < cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 + 1);
+                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
             if (cur.sprite.getX()+36 > cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 - 1);
+                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
             if (cur.sprite.getY()+36 < cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 + 1);
+                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
             if (cur.sprite.getY()+36 > cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 - 1);
+                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
         } else {
             cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
-            cur.curState = 0;
+            cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
 
