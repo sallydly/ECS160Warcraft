@@ -1,6 +1,7 @@
 package com.warcraftII.screens;
 
 import java.util.*;
+import java.lang.String;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -55,12 +57,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private int movement;
     public int attack;
     public int patrol;
+    public int mine;
+    public int ability;
     private InputMultiplexer multiplexer;
 
     private TextButton movementButton;
     private TextButton stopButton;
     private TextButton patrolButton;
     private TextButton attackButton;
+    private TextButton newAbility;
 
     private AssetDecoratedMap map;
     private TiledMap tiledMap;
@@ -115,6 +120,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         movement = 0;
         attack = 0;
         patrol = 0;
+        ability = 0;
+        mine = 0;
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         TextureAtlas[] unitTextures = {
                 new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
@@ -168,6 +175,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 movement = 0;
                 patrol = 0;
                 attack = 0;
+                mine = 0;
+                ability = 0;
                 return true;
             }
         });
@@ -236,9 +245,45 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
+        specialButtons();
         stage.act();
         stage.draw();
         allUnits.UnitStateHandler(elapsedTime);
+    }
+
+    public void specialButtons() {
+        int counter = 0;
+        for (Actor actor : stage.getActors()) {
+            if (counter > 3)
+                actor.remove();
+            counter = counter + 1;
+        }
+        for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
+            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
+                newAbility = new TextButton("Mine", unitActions.skin);
+                newAbility.setPosition(5, 70+(20*(i+1))+((3+i+1)*Gdx.graphics.getHeight() / 10));
+                newAbility.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        mine = 1;
+                        return true;
+                    }
+                });
+                stage.addActor(newAbility);
+            }
+            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.RangerScouting) {
+                newAbility = new TextButton("Ranger Scouting", unitActions.skin);
+                newAbility.setPosition(5, 70 + (20 * (i + 1)) + ((3 + i + 1) * Gdx.graphics.getHeight() / 10));
+                newAbility.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        ability = 1;
+                        return true;
+                    }
+                });
+                stage.addActor(newAbility);
+            }
+        }
     }
 
     @Override
@@ -289,6 +334,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     attack = 0;
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
                 }
+                //TODO
+                //if (ability == 1) {
+                //}
                 allUnits.selectedUnitIndex = counter;
                 unit_selected = 1;
             }
@@ -308,6 +356,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY();
             patrol = 0;
         }
+        //TODO
+        //if (unit_selected == 0 && assetSelected == 1){
+          //  if (assetSelected == Goldmine && mine == 1) {
+            //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
+              //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+               // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+                //mine = 1;
+            //}
+        //}
         return true;
     }
 

@@ -42,6 +42,7 @@ public class Unit {
         public IndividualUnit target;
         public GameDataTypes.EUnitState curState;
         public Animation<TextureRegion> curAnim;
+        public Vector<GameDataTypes.EAssetCapabilityType> abilities;
 
     }
 
@@ -50,12 +51,14 @@ public class Unit {
     }
     public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit) {
         IndividualUnit newUnit = new IndividualUnit();
+        newUnit.abilities = new Vector<GameDataTypes.EAssetCapabilityType>(5);
         TextureRegion texture;
         Animation<TextureRegion> anim;
         switch(inUnit) {
             case Peasant:
                 texture = unitTextures[0].findRegion("walk-n");
                 anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegions("walk-n"));
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
                 break;
             case Footman:
                 texture = unitTextures[1].findRegion("walk-n");
@@ -68,6 +71,7 @@ public class Unit {
             case Ranger:
                 texture = unitTextures[3].findRegion("walk-n");
                 anim = new Animation<TextureRegion>(0.067f, unitTextures[3].findRegions("walk-n"));
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
                 break;
             default:
                 texture = unitTextures[0].findRegion("walk-n");
@@ -97,11 +101,23 @@ public class Unit {
                     break;
                 case Patrol:
                     UnitPatrolState(unitVector.elementAt(i));
+                    break;
+                case Mine:
+                    UnitMineState(unitVector.elementAt(i));
+                    break;
                 default:
                     System.out.println("How'd you manage to get to that state?");
                     break;
             }
         }
+    }
+
+    private void UnitMineState(IndividualUnit cur) {
+        if ((cur.sprite.getX()+36 != cur.currentxmove - 1) || (cur.sprite.getY()+36 != cur.currentymove - 1)) {
+            // mine
+        }
+        else
+            UnitMoveState(cur);
     }
 
     private void UnitPatrolState(IndividualUnit cur) {
@@ -147,7 +163,7 @@ public class Unit {
                 cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
-    
+
     private void UnitMoveState(IndividualUnit cur) {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
