@@ -72,7 +72,7 @@ public class MainMenu implements Screen {
         optionsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Options(game));
+                game.setScreen(new Options());
             }
         });
 
@@ -113,7 +113,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void hide() {
-//        music.pause();
+        music.pause();
     }
 
     @Override
