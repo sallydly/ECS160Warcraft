@@ -143,10 +143,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stage = new Stage(new ScreenViewport());
         sb = new SpriteBatch();
 
-        allUnits.AddUnit(67,3, GameDataTypes.EUnitType.Archer);
-        allUnits.AddUnit(9,4, GameDataTypes.EUnitType.Footman);
-        allUnits.AddUnit(121,40, GameDataTypes.EUnitType.Peasant);
-        allUnits.AddUnit(47,68, GameDataTypes.EUnitType.Ranger);
+        allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
+        allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman);
+        allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
+        allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -237,10 +237,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+        Texture selected = new Texture(Gdx.files.internal("img/select.png"));
         int counter = 0;
         while(counter < allUnits.unitVector.size()){
             Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
             //temp_peasant.draw(sb);
+            // TODO: This isn't a good way of doing the selection and should be improved
+            if (temp_peasant.selected) {
+                sb.draw(selected,temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
+            }
             sb.draw(temp_peasant.curAnim.getKeyFrame(elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
         }
@@ -339,6 +344,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //}
                 allUnits.selectedUnitIndex = counter;
                 unit_selected = 1;
+                allUnits.unitVector.elementAt(counter).selected = true;
+            } else {
+                allUnits.unitVector.elementAt(counter).selected = false;
             }
             counter+=1;
         }

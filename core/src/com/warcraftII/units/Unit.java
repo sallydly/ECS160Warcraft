@@ -30,11 +30,14 @@ public class Unit {
 
     public class IndividualUnit {
         public Sprite sprite;
+        public GameDataTypes.EUnitType unitClass;
+        public int unitTexInd;
         public int maxHP = 40;
         public int curHP = 40;
         public int attackDamage = 5;
         public int speed = 10;
         public int range = 1;
+        public boolean selected = false;
         public float currentxmove;
         public float currentymove;
         public float patrolxmove;
@@ -43,6 +46,33 @@ public class Unit {
         public GameDataTypes.EUnitState curState;
         public Animation<TextureRegion> curAnim;
         public Vector<GameDataTypes.EAssetCapabilityType> abilities;
+
+        public String getDirection() {
+            boolean west = false;
+            boolean north = false;
+            if (currentxmove > sprite.getX()+36) {
+                west = false;
+            } else {
+                west = true;
+            }
+            if (currentymove > sprite.getY()+36) {
+                north = true;
+            } else {
+                north = false;
+            }
+
+            if (north && west) {
+                return "nw";
+            } else if (north && !west) {
+                return "ne";
+            } else if (!north && west) {
+                return "sw";
+            } else if (!north && !west) {
+                return "se";
+            } else {
+                return "n";
+            }
+        }
 
     }
 
@@ -57,25 +87,36 @@ public class Unit {
         switch(inUnit) {
             case Peasant:
                 texture = unitTextures[0].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegions("walk-n"));
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegion("walk-n", 0));
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
+                newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
+                newUnit.unitTexInd = 0;
                 break;
             case Footman:
                 texture = unitTextures[1].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[1].findRegions("walk-n"));
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[1].findRegion("walk-n", 0));
+                newUnit.unitClass = GameDataTypes.EUnitType.Footman;
+                newUnit.unitTexInd = 1;
                 break;
             case Archer:
                 texture = unitTextures[2].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[2].findRegions("walk-n"));
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[2].findRegion("walk-n", 0));
+                newUnit.unitClass = GameDataTypes.EUnitType.Archer;
+                newUnit.unitTexInd = 2;
                 break;
             case Ranger:
                 texture = unitTextures[3].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[3].findRegions("walk-n"));
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[3].findRegion("walk-n", 0));
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
+                newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
+                newUnit.unitTexInd = 3;
                 break;
             default:
                 texture = unitTextures[0].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegions("walk-n"));
+                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegion("walk-n", 0));
+                newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
+                newUnit.unitTexInd = 0;
+                break;
         }
         newUnit.sprite = new Sprite(texture);
         newUnit.sprite.setSize(72,72);
@@ -90,6 +131,9 @@ public class Unit {
 
     public void UnitStateHandler(float elapsedTime) {
         for (int i = 0; i < unitVector.size(); i++) {
+            if (unitVector.elementAt(i).curHP <= 0) {
+                unitVector.remove(i);
+            }
             switch (unitVector.elementAt(i).curState) {
                 case Idle:
                     break;
@@ -123,6 +167,7 @@ public class Unit {
     private void UnitPatrolState(IndividualUnit cur) {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
+            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegions("walk-"+cur.getDirection()));
             // TODO: If another unit gets in curr.range attack the other unit until dead, once unit dead go back to patrol
             if (cur.sprite.getX()+36 < cur.currentxmove)
                 cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
@@ -166,6 +211,7 @@ public class Unit {
 
     private void UnitMoveState(IndividualUnit cur) {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
+            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegions("walk-"+cur.getDirection()));
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
             if (cur.sprite.getX()+36 < cur.currentxmove)
                 cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
@@ -176,6 +222,7 @@ public class Unit {
             if (cur.sprite.getY()+36 > cur.currentymove)
                 cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
         } else {
+            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegion("walk-"+cur.getDirection(), 0));
             cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
