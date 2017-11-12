@@ -104,6 +104,7 @@ public class StaticAssetParser {
 
         this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
+        this.assetLayer.setName("StationaryAssets");
 
         for(SAssetInitialization AssetInit : AssetInitializationList) {
             TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
