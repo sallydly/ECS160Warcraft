@@ -36,18 +36,16 @@ public class MainMenu implements Screen {
         this.stage = new Stage(port, game.batch);
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
         this.music.setLooping(true);
+    }
 
+    @Override
+    public void show() {
         Gdx.input.setInputProcessor(stage);
         Table menuTable = createMenuTable();
         music.play();
         stage.addActor(menuTable);
 
         Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void show() {
-
     }
 
     private Table createMenuTable() {
