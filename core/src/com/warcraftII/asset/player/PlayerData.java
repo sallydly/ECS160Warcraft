@@ -3,8 +3,10 @@ package com.warcraftII.asset.player;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.asset.*;
+import com.warcraftII.asset.static_assets.StaticAsset;
 
 import java.util.Map;
+import java.util.List;
 import java.util.Vector;
 //import com.warcraftII.asset.VisibilityMap;
 
@@ -17,7 +19,7 @@ public class PlayerData {
     //CAssetDecoratedMap DActualMap;
     //CAssetDecoratedMa DPlayerMap;
     protected Map< String, PlayerAssetType > DAssetTypes;
-    //protected List< StationaryAsset > DStationaryAssets;
+    protected List< StaticAsset > DStaticAssets;
     //Vector< Boolean > DUpgrades;
     //Vector< SGameEvent > DGameEvents;
     protected int DGold;
@@ -109,6 +111,7 @@ public class PlayerData {
         DLumber -= lumber;
         return DLumber;
     }
+
     /*
     public int FoodConsumption() {};
     public int FoodProduction() {};
@@ -120,9 +123,11 @@ public class PlayerData {
     std::shared_ptr< CAssetDecoratedMap > PlayerMap() {
         return DPlayerMap;
     }
-    std::list< std::weak_ptr< CPlayerAsset > > Assets() {
-        return DAssets;
+    */
+    public List<StaticAsset> StaticAssets() {
+        return DStaticAssets;
     }
+    /*
     std::shared_ptr< std::unordered_map< std::string, std::shared_ptr< CPlayerAssetType > > > &AssetTypes(){
         return DAssetTypes;
     }

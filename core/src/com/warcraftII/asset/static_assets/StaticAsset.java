@@ -5,31 +5,40 @@ import com.warcraftII.position.PixelPosition;
 import com.warcraftII.position.TilePosition;
 
 public class StaticAsset {
-    enum State {
+    public enum EState {
+        CONSTRUCT_0,
         CONSTRUCT_1,
-        CONSTRUCT_2,
         ACTIVE,
-        INACTIVE
+        INACTIVE,
+        PLACE
     }
 
+    private EState DState;
     private int DHitPoints;
     private int DGold;
     private int DLumber;
     private PlayerAssetType DType;
-    private PixelPosition DPosition;
+    private TilePosition DPosition;
 
     StaticAsset(PlayerAssetType type) {
         this.DHitPoints = type.HitPoints();
         this.DGold = 0;
         this.DLumber = 0;
-        this.DPosition = new PixelPosition(0, 0);
+        this.DPosition = new TilePosition(0, 0);
     }
 
-    public final TilePosition tilePosition() {
-        TilePosition returnPosition = new TilePosition();
-        returnPosition.setFromPixel(DPosition);
-        return returnPosition;
+    public TilePosition Position() {
+        return DPosition;
     }
+
+    public EState State(){
+        return DState;
+    }
+
+    public PlayerAssetType Type(){
+        return DType;
+    }
+
 
 
 }

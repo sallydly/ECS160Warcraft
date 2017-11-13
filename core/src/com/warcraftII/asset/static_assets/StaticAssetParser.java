@@ -29,7 +29,7 @@ import java.util.List;
 public class StaticAssetParser {
     //private static final Logger log = new Logger("StaticAssetParser", 2);
 
-    private TextureAtlas staticAssets;
+    private TextureAtlas staticAssetTextures;
     private TiledMap tiledMap;
     private TiledMapTileLayer assetLayer;
     private String[] staticAssetsArray;
@@ -42,7 +42,7 @@ public class StaticAssetParser {
                              int mapWidth,
                              int mapHeight,
                              String mapName) {
-        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
+        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
         //this.mapName = mapName;
@@ -62,7 +62,7 @@ public class StaticAssetParser {
         List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
         System.out.println("start render");
 
-        this.staticAssets = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
+        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
         this.assetLayer.setName("StationaryAssets");
 
@@ -78,22 +78,31 @@ public class StaticAssetParser {
 
 
             if (GOLDMINE.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "goldmine-inactive");
+                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "goldmine-inactive");
             } else if (TOWNHALL.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssets, assetLayer, XPos, YPos, "townhall-inactive");
+                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "townhall-inactive");
             }
         }
 
         return assetLayer;
     }
 
-    // This one takes in a vector of PlayerData objects
-    public TiledMapTileLayer addStaticAssets(PlayerData) {
-        for (StationaryAsset StatAsset: PlayerData.StaticAssets()){
+    // This one takes in the map AND a vector of PlayerData objects, and a tiledMapTileLayer that it edits.
+    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map, PlayerData player) {
+        System.out.println("start render");
+
+        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
+
+        if (null == this.assetLayer)
+        {
+            this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
+            this.assetLayer.setName("StationaryAssets");
+        }
+
+        for (StaticAsset StatAsset: player.StaticAssets()){
             String tileName, typeName, stateName;
-            StatAsset.Type
-             PlayerAssetType      sassesttype;
-            switch (sassesttype.Type()){
+
+            switch (StatAsset.Type().Type()){
                 case GoldMine:
                     typeName = "goldmine-";
                 case TownHall:
@@ -111,16 +120,36 @@ public class StaticAssetParser {
                 case ScoutTower:
                     typeName = "scouttower-";
                 case GuardTower:
-                    typeName = "guardtower-"
+                    typeName = "guardtower-";
                 case CannonTower:
-                    typeName = "cannontower-"
+                    typeName = "cannontower-";
                 default:
                     //BAD STUFF
+                    typeName = "badtype-";
                 }
             switch (StatAsset.State()){
-
+                case CONSTRUCT_0:
+                    stateName = "construct-0";
+                case CONSTRUCT_1:
+                    stateName = "construct-1";
+                case ACTIVE:
+                    stateName = "active";
+                case INACTIVE:
+                    stateName = "inactive";
+                case PLACE:
+                    stateName = "place";
+                default:
+                    //BAD STUFF
+                    stateName = "badstate";
             }
+            tileName = typeName + stateName;
+
+            int XPos = StatAsset.Position().X();
+            //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
+            int YPos = map.Height() - StatAsset.Position().Y() - 1; // -1 to account for 0 index
+            GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
         }
+        return assetLayer;
     }
 
 }

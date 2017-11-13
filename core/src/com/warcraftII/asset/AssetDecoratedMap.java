@@ -9,6 +9,7 @@ import com.warcraftII.terrain.TileTypes.*;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.data_source.*;
+import com.warcraftII.asset.static_assets.*;
 import com.warcraftII.Tokenizer;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class AssetDecoratedMap extends TerrainMap {
     protected Vector< Vector< Integer > > DSearchMap;
     protected Vector< Vector< Integer > > DLumberAvailable;
 
-    protected List<StationaryAsset> DStationaryAssets;
+    protected List<StaticAsset> DStationaryAssets;
 
     protected static Map< String, Integer > DMapNameTranslation;
     protected static Vector < AssetDecoratedMap > DAllMaps;
