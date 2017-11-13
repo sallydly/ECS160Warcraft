@@ -1,4 +1,4 @@
-package com.warcraftII.screens;
+package com.warcraftII.screens.options;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -15,20 +15,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
 
-public class Options implements Screen {
-    private Logger log = new Logger("Options", 2);
+public class SoundOptions implements Screen {
+    private Logger log = new Logger("Sound Options", 2);
 
     private Warcraft game;
     private Stage stage;
     private Skin skin;
 
-    public Options(Warcraft game) {
+    public SoundOptions(Warcraft game) {
         // disable continuous rendering to improve performance
         Gdx.graphics.setContinuousRendering(false);
 
@@ -59,12 +60,6 @@ public class Options implements Screen {
         // code adapted from https://github.com/libgdx/libgdx/wiki/Gdx-freetype
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/kingthings/Kingthings_Calligraphica_2.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 8;
-        BitmapFont kingthings8 = generator.generateFont(parameter);
-        parameter.size = 10;
-        BitmapFont kingthings10 = generator.generateFont(parameter);
-        parameter.size = 12;
-        BitmapFont kingthings12 = generator.generateFont(parameter);
         parameter.size = 16;
         BitmapFont kingthings16 = generator.generateFont(parameter);
         parameter.size = 24;
@@ -81,48 +76,73 @@ public class Options implements Screen {
         titleLabelStyle.font = kingthings24;
         titleLabelStyle.fontColor = Color.WHITE;
 
-        Label titleLabel = new Label("Options", titleLabelStyle);
+        Label titleLabel = new Label("Sound Options", titleLabelStyle);
         titleLabel.setFontScale(4);
-        table.add(titleLabel).expandY().align(Align.top);
+        table.add(titleLabel).align(Align.top);
+        table.row();
+
+        Label.LabelStyle optionsStyle = new Label.LabelStyle();
+        optionsStyle.font = kingthings16;
+        optionsStyle.fontColor = Color.WHITE;
+
+        Table optionsTable = new Table();
+
+        Label nameLabel = new Label("FX Volume:", skin);
+        nameLabel.setStyle(optionsStyle);
+        nameLabel.setFontScale(2);
+        TextField nameText = new TextField("100", skin);
+        Label addressLabel = new Label("Music Volume:", skin);
+        addressLabel.setStyle(optionsStyle);
+        addressLabel.setFontScale(2);
+        TextField addressText = new TextField("50", skin);
+        nameLabel.setStyle(optionsStyle);
+        nameLabel.setFontScale(2);
+
+        optionsTable.add(nameLabel);
+        optionsTable.add(nameText).prefWidth(200).expandY();
+        optionsTable.row();
+
+        optionsTable.add(addressLabel);
+        optionsTable.add(addressText).prefWidth(200).expandY();
+        optionsTable.row();
+
+        table.add(optionsTable).expandY();
         table.row();
 
         Label.LabelStyle buttonLabelStyle = new Label.LabelStyle();
         buttonLabelStyle.font = kingthings16;
         buttonLabelStyle.fontColor = Color.YELLOW;
 
-        // TODO: implement button actions for Sound, Network, and Back
-        TextButton soundOptionsButton = new TextButton("Sound Options", skin);
-        soundOptionsButton.getLabel().setStyle(buttonLabelStyle);
-        soundOptionsButton.getLabel().setFontScale(2);
-        table.add(soundOptionsButton).uniformX().expandY();
-        table.row();
+        // table for OK and Cancel buttons in bottom right of screen
+        Table buttonsTable = new Table();
 
-        TextButton networkOptionsButton = new TextButton("Network Options", skin);
-        networkOptionsButton.getLabel().setStyle(buttonLabelStyle);
-        networkOptionsButton.getLabel().setFontScale(2);
-        table.add(networkOptionsButton).uniformX().expandY();
-        table.row();
-
-        // empty row for more space
-        table.add().expandY();
-        table.row();
-
-        TextButton backButton = new TextButton("Back", skin);
-        backButton.getLabel().setStyle(buttonLabelStyle);
-        backButton.getLabel().setFontScale(2);
-        backButton.addListener(new ClickListener() {
+        TextButton okButton = new TextButton("OK", skin);
+        okButton.getLabel().setStyle(buttonLabelStyle);
+        okButton.getLabel().setFontScale(2);
+        okButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                log.info("Back button clicked.");
-                game.setScreen(new MainMenu(game));
+                log.info("OK button clicked.");
+                game.setScreen(new Options(game));
             }
         });
-        table.add(backButton).uniformX().expandY();
-        table.row();
+        buttonsTable.add(okButton).uniformX().pad(10);
+        buttonsTable.row();
 
-        // empty row for more space
-        table.add().expandY();
-        table.row();
+        TextButton cancelButton = new TextButton("Cancel", skin);
+        cancelButton.getLabel().setStyle(buttonLabelStyle);
+        cancelButton.getLabel().setFontScale(2);
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                log.info("Cancel button clicked.");
+                game.setScreen(new Options(game));
+            }
+        });
+        buttonsTable.add(cancelButton).uniformX().pad(10);
+        buttonsTable.row();
+
+        table.add(buttonsTable).expandX().align(Align.bottomRight);
 
         Gdx.graphics.requestRendering();
     }
