@@ -2,6 +2,8 @@ package com.warcraftII.asset;
 
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.terrain.TerrainMap;
 import com.warcraftII.terrain.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -469,7 +471,7 @@ public class AssetDecoratedMap extends TerrainMap {
 
     // TODO: Fix this function later
 
-    void RemoveLumber(TilePosition pos, TilePosition from, int amount){
+    public void RemoveLumber(MapRenderer map, TiledMapTileLayer terrainLayer, TilePosition pos, TilePosition from, int amount){
         int Index = 0;
         int currLumber = DLumberAvailable.get(pos.Y()).get(pos.X());
 
@@ -478,11 +480,10 @@ public class AssetDecoratedMap extends TerrainMap {
                 int XPos = pos.X() + XOff;
                 int YPos = pos.Y() + YOff;
                 int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
-                Index |= (bool == (DPartials.get(YPos).get(XPos) & 0xFF)) ? 1<<(YOff * 2 + XOff) : 0;
+                Index |= (bool == 1 && ((DPartials.get(YPos).get(XPos) & 0xFF) != 0)) ? 1<<(YOff * 2 + XOff) : 0;
             }
         }
-
-        if(0xF != Index){
+        if(Index > 0 && 0xF != Index){
             switch(Index){
                 case 1:     Index = 0;
                     break;
@@ -518,24 +519,28 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X())){
                         DLumberAvailable.get(pos.Y()).set(pos.X(), 0);
                         ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
+//                        map.UpdateTile(pos.X(), pos.Y(), terrainLayer); //TODO: adjust Y position
                     }
                     break;
                 case 1: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X()+1)){
                         DLumberAvailable.get(pos.Y()).set(pos.X()+1, 0);
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
+//                        map.UpdateTile(pos.X()+1, pos.Y(), terrainLayer);
                     }
                     break;
                 case 2: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X())){
                         DLumberAvailable.get(pos.Y()+1).set(pos.X(), 0);
                         ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
+//                        map.UpdateTile(pos.X(), pos.Y()+1, terrainLayer);
                     }
                     break;
                 case 3: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X()+1)){
                         DLumberAvailable.get(pos.Y()+1).set(pos.X()+1, 0);
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
+//                        map.UpdateTile(pos.X()+1, pos.Y()+1, terrainLayer);
                     }
                     break;
             }
@@ -644,9 +649,11 @@ public class AssetDecoratedMap extends TerrainMap {
             for(int ColIndex = 0; ColIndex < DTerrainMap.get(RowIndex).size(); ColIndex++){
                 if(ETerrainTileType.Forest == DTerrainMap.get(RowIndex).get(ColIndex)){
                     int Initlumb;
+
                     if(DPartials.get(RowIndex).get(ColIndex) > 0) {
                         Initlumb = InitialLumber;
-                    } else {
+                    }
+                    else {
                         Initlumb = 0;
                     }
                     TempRow.set(ColIndex,Initlumb);
