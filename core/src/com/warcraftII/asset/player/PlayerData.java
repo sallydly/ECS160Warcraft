@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 //import com.warcraftII.asset.VisibilityMap;
 
-class PlayerData {
+public class PlayerData {
     private Logger log = new Logger("PlayerData", 2);
 
     protected boolean DIsAI;

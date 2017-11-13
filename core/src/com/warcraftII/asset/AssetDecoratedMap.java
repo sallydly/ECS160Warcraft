@@ -37,8 +37,12 @@ public class AssetDecoratedMap extends TerrainMap {
     protected Vector< Vector< Integer > > DSearchMap;
     protected Vector< Vector< Integer > > DLumberAvailable;
 
+    protected List<StationaryAsset> DStationaryAssets;
+
     protected static Map< String, Integer > DMapNameTranslation;
     protected static Vector < AssetDecoratedMap > DAllMaps;
+
+
 
     /**
      * Constructor

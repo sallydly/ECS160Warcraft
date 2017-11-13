@@ -1,5 +1,6 @@
 package com.warcraftII.asset;
 
+
 /*
 * Adds stationary assets onto a new layer of map
 *
@@ -19,6 +20,8 @@ import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.GraphicTileset;
 import com.warcraftII.asset.SAssetInitialization;
 import com.warcraftII.position.TilePosition;
+
+import com.warcraftII.asset.player.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,49 +57,6 @@ public class StaticAssetParser {
 
     }
 
-    /*private void parseMap() {
-        FileHandle handle = Gdx.files.internal("map/" + mapName);
-        String text = handle.readString();
-        String[] fileArray = text.split("\\r?\\n");
-
-        int index = 0;
-        int assetIndexStart = 0;
-        for(String word : fileArray) {
-            if(word.equals("# Starting assets Type Owner X Y")) {
-                assetIndexStart = index + 1;
-            }
-            index ++;
-        }
-
-        this.staticAssetsArray = Arrays.copyOfRange(fileArray, assetIndexStart, index);
-    }*/
-
-    /*public TiledMapTileLayer addStaticAssets() {
-        parseMap();
-
-        for(String staticAssetLine : staticAssetsArray) {
-            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-            TextureRegion textureRegion = new TextureRegion();
-            String[] staticAssetInfo = staticAssetLine.split(" ");
-
-            if (GOLDMINE.equals(staticAssetInfo[0])) {
-                textureRegion = staticAssets.findRegion("goldmine-inactive");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                assetLayer.setCell(Integer.valueOf(staticAssetInfo[2]), Integer.valueOf(staticAssetInfo[3]), cell);
-            } else if (PEASANT.equals(staticAssetInfo[0])) {
-                textureRegion = staticAssets.findRegion("scouttower-place");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                assetLayer.setCell(Integer.valueOf(staticAssetInfo[2]), Integer.valueOf(staticAssetInfo[3]), cell);
-            } else if (TOWNHALL.equals(staticAssetInfo[0])) {
-                textureRegion = staticAssets.findRegion("townhall-inactive");
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                assetLayer.setCell(Integer.valueOf(staticAssetInfo[2]), Integer.valueOf(staticAssetInfo[3]), cell);
-            }
-        }
-
-        return assetLayer;
-    }*/
-
     // takes in an AssetDecoratedMap instead
     public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map) {
         List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
@@ -126,5 +86,42 @@ public class StaticAssetParser {
 
         return assetLayer;
     }
+
+    // This one takes in a vector of PlayerData objects
+    public TiledMapTileLayer addStaticAssets(PlayerData) {
+        for (StationaryAsset StatAsset: PlayerData.StaticAssets()){
+            String tileName, typeName, stateName;
+            StatAsset.Type
+             PlayerAssetType      sassesttype;
+            switch (sassesttype.Type()){
+                case GoldMine:
+                    typeName = "goldmine-";
+                case TownHall:
+                    typeName = "townhall-";
+                case Keep:
+                    typeName = "keep-";
+                case Castle:
+                    typeName = "castle-";
+                case Farm:
+                    typeName = "farm-";
+                case Barracks:
+                    typeName = "barracks-";
+                case Blacksmith:
+                    typeName = "blacksmith-";
+                case ScoutTower:
+                    typeName = "scouttower-";
+                case GuardTower:
+                    typeName = "guardtower-"
+                case CannonTower:
+                    typeName = "cannontower-"
+                default:
+                    //BAD STUFF
+                }
+            switch (StatAsset.State()){
+
+            }
+        }
+    }
+
 }
 
