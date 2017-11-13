@@ -33,7 +33,6 @@ import com.warcraftII.units.Unit;
 
 import java.util.Vector;
 
-
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
@@ -125,6 +124,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage = new Stage(mapViewport);
 
         mapStage.getViewport().apply();
+        mapStage.act();
         mapStage.draw();
         // set size of map viewport to 75% of the screen width and 100% height
         mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight(), false);
@@ -133,10 +133,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.getViewport().apply();
 
         sidebarCamera = new OrthographicCamera();
+//        sidebarCamera.setToOrtho(false, Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight());
         sidebarViewport = new FitViewport(Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight(), sidebarCamera);
         sidebarStage = new Stage(sidebarViewport);
 
         sidebarStage.getViewport().apply();
+        sidebarStage.act();
         sidebarStage.draw();
         // set size of sidebar viewport to 25% of the screen width and 100% height
         sidebarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight(), false);
@@ -146,7 +148,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // table for layout of sidebar
         sidebarTable = new Table();
-        sidebarTable.setDebug(true); // TODO: remove when done laying out table
+        sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
         sidebarTable.setFillParent(true);
         sidebarTable.align(Align.bottomLeft);
         sidebarStage.addActor(sidebarTable);
@@ -163,6 +165,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(addressLabel);
         sidebarTable.add(addressText);
         sidebarStage.draw();
+
+//        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
+//        sidebarStage.getViewport().getCamera().update();
 
         // Loading the map:
         tiledMap = new TiledMap();
@@ -202,6 +207,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.begin();
         mapStage.getViewport().apply();
+        mapStage.act();
+        mapStage.draw();
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
@@ -216,6 +223,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         sb.end();
         allUnits.AllMovement();
+
+        sidebarStage.getViewport().apply();
+        sidebarStage.act();
+        sidebarStage.draw();
     }
 
     @Override
