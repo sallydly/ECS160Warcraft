@@ -36,8 +36,8 @@ public class MapRenderer {
     public MapRenderer(TerrainMap map) {
         DMap = map;
 
-        int DMapWidth = DMap.Width();
-        int DMapHeight = DMap.Height();
+        DMapWidth = DMap.Width();
+        DMapHeight = DMap.Height();
 
         // Resize DTileTextures with the terrain map
         DTileTextures = new Vector<Vector<Vector<TextureRegion> > >();
@@ -226,7 +226,6 @@ public class MapRenderer {
         if (!DMap.IsRendered()) {
             DMap.RenderTerrain();
         }
-
 
         TiledMapTileLayer tileLayerBase = new TiledMapTileLayer(DMapWidth, DMapHeight, 32, 32);
         tileLayerBase.setName("Terrain");
