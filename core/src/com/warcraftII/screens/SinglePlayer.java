@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
@@ -18,9 +19,11 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
@@ -146,6 +149,25 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.getViewport().setScreenBounds(0, 0, Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight());
         sidebarStage.getViewport().apply();
 
+        // set background texture image for sidebar menu
+        // code adapted from https://libgdx.info/basic_image/
+        Texture backgroundImageTexture = new Texture("img/Texture.png");
+        backgroundImageTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        TextureRegion backgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
+        backgroundImageTextureRegion.setRegion(0, 0, sidebarStage.getWidth(), sidebarStage.getHeight());
+
+        //backgroundImage.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Image backgroundImage = new Image(backgroundImageTextureRegion);
+        backgroundImage.setPosition(0, 0);
+        sidebarStage.addActor(backgroundImage);
+
+        //add the menu and pause buttons
+        TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
+        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
+
+        TextButton menuButton = new TextButton("Menu", skin);
+        TextButton pauseButton = new TextButton("Pause", skin);
+
         // table for layout of sidebar
         sidebarTable = new Table();
         sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
@@ -159,6 +181,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Label addressLabel = new Label("Address:", skin);
         TextField addressText = new TextField("", skin);
 
+        //align the sidebarTable
+        sidebarTable.top();
+
+        //add buttons to the sidebar menu
+        sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
+        sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
+        sidebarTable.row();
         sidebarTable.add(nameLabel);
         sidebarTable.add(nameText);
         sidebarTable.row();
