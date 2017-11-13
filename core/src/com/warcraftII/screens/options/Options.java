@@ -1,13 +1,11 @@
-package com.warcraftII.screens;
+package com.warcraftII.screens.options;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,37 +17,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
-import com.warcraftII.screens.options.Options;
+import com.warcraftII.screens.MainMenu;
 
-public class MainMenu implements Screen {
+public class Options implements Screen {
+    private Logger log = new Logger("Options", 2);
+
     private Warcraft game;
-    private Texture texture;
     private Stage stage;
-    private TextureAtlas atlas;
     private Skin skin;
-    private Music music;
 
-    private BitmapFont kingthings8;
-    private BitmapFont kingthings10;
-    private BitmapFont kingthings12;
-    private BitmapFont kingthings16;
-    private BitmapFont kingthings24;
-
-    public MainMenu(Warcraft game) {
+    public Options(Warcraft game) {
         // disable continuous rendering to improve performance
         Gdx.graphics.setContinuousRendering(false);
 
         this.game = game;
-        this.texture = new Texture("img/warcraft_icon.png");
-        this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
-        this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
-        ScreenViewport port = new ScreenViewport();
-        port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        this.stage = new Stage(port, game.batch);
-        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
-        this.music.setLooping(true);
+
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
     }
 
     @Override
@@ -68,90 +55,78 @@ public class MainMenu implements Screen {
         backgroundImage.setPosition(0, 0);
         stage.addActor(backgroundImage);
 
-        Table menuTable = createMenuTable();
-        music.play();
-        stage.addActor(menuTable);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    private Table createMenuTable() {
         // generate Kingthings font
         // TODO: may need to move this to static class/singleton
         // code adapted from https://github.com/libgdx/libgdx/wiki/Gdx-freetype
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/kingthings/Kingthings_Calligraphica_2.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 8;
-        kingthings8 = generator.generateFont(parameter);
-        parameter.size = 10;
-        kingthings10 = generator.generateFont(parameter);
-        parameter.size = 12;
-        kingthings12 = generator.generateFont(parameter);
         parameter.size = 16;
-        kingthings16 = generator.generateFont(parameter);
+        BitmapFont kingthings16 = generator.generateFont(parameter);
         parameter.size = 24;
-        kingthings24 = generator.generateFont(parameter);
+        BitmapFont kingthings24 = generator.generateFont(parameter);
         generator.dispose();
 
-        Table menuTable = new Table();
-        menuTable.setFillParent(true);
+        // layout Options screen using Table
+        Table table = new Table();
+        table.setFillParent(true);
+        stage.addActor(table);
 
         // code adapted from https://libgdx.info/basic-label/
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle();
         titleLabelStyle.font = kingthings24;
         titleLabelStyle.fontColor = Color.WHITE;
 
-        Label titleLabel = new Label("SJACraft 2: MOSS of Darkness", titleLabelStyle);
+        Label titleLabel = new Label("Options", titleLabelStyle);
         titleLabel.setFontScale(4);
-        menuTable.add(titleLabel).expandY().align(Align.top);
-        menuTable.row();
-
-        TextButton singlePlayerButton = new TextButton("Single Player Game", skin);
-        TextButton multiPlayerButton = new TextButton("Multi Player Game", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
+        table.add(titleLabel).expandY().align(Align.top);
+        table.row();
 
         Label.LabelStyle buttonLabelStyle = new Label.LabelStyle();
         buttonLabelStyle.font = kingthings16;
         buttonLabelStyle.fontColor = Color.YELLOW;
 
-        singlePlayerButton.getLabel().setFontScale(2, 2);
-        singlePlayerButton.getLabel().setStyle(buttonLabelStyle);
-        multiPlayerButton.getLabel().setFontScale(2, 2);
-        multiPlayerButton.getLabel().setStyle(buttonLabelStyle);
-        optionsButton.getLabel().setFontScale(2, 2);
-        optionsButton.getLabel().setStyle(buttonLabelStyle);
-
-        singlePlayerButton.addListener(new ClickListener(){
+        // TODO: implement button actions for Sound, Network, and Back
+        TextButton soundOptionsButton = new TextButton("Sound Options", skin);
+        soundOptionsButton.getLabel().setStyle(buttonLabelStyle);
+        soundOptionsButton.getLabel().setFontScale(2);
+        soundOptionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MapSelection(game));
+                log.info("Sound Options button clicked.");
+                game.setScreen(new SoundOptions(game));
             }
         });
+        table.add(soundOptionsButton).uniformX().expandY();
+        table.row();
 
-        multiPlayerButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MultiPlayer(game));
-            }
-        });
+        TextButton networkOptionsButton = new TextButton("Network Options", skin);
+        networkOptionsButton.getLabel().setStyle(buttonLabelStyle);
+        networkOptionsButton.getLabel().setFontScale(2);
+        table.add(networkOptionsButton).uniformX().expandY();
+        table.row();
 
-        optionsButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Options(game));
-            }
-        });
-
-        menuTable.add(singlePlayerButton).uniformX();
-        menuTable.row().pad(100, 0 , 100, 0);
-        menuTable.add(multiPlayerButton).uniformX();
-        menuTable.row();
-        menuTable.add(optionsButton).uniformX();
-        menuTable.row();
         // empty row for more space
-        menuTable.add().expandY();
+        table.add().expandY();
+        table.row();
 
-        return menuTable;
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.getLabel().setStyle(buttonLabelStyle);
+        backButton.getLabel().setFontScale(2);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                log.info("Back button clicked.");
+                game.setScreen(new MainMenu(game));
+            }
+        });
+        table.add(backButton).uniformX().expandY();
+        table.row();
+
+        // empty row for more space
+        table.add().expandY();
+        table.row();
+
+        Gdx.graphics.requestRendering();
     }
 
     @Override
@@ -161,35 +136,31 @@ public class MainMenu implements Screen {
 
         stage.act();
         stage.draw();
-        game.batch.begin();
-        game.batch.draw(texture, 0, 0);
-        game.batch.end();
     }
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void pause() {
-        music.pause();
+
     }
 
     @Override
     public void resume() {
-        music.play();
+
     }
 
     @Override
     public void hide() {
-        music.pause();
+
     }
 
     @Override
     public void dispose() {
+        stage.dispose();
         skin.dispose();
-        atlas.dispose();
-        music.dispose();
     }
 }
