@@ -15,21 +15,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
-import com.warcraftII.screens.MainMenu;
 
-public class Options implements Screen {
-    private Logger log = new Logger("Options", 2);
+public class NetworkOptions implements Screen {
+    private Logger log = new Logger("Network Options", 2);
 
     private Warcraft game;
     private Stage stage;
     private Skin skin;
 
-    public Options(Warcraft game) {
+    public NetworkOptions(Warcraft game) {
         // disable continuous rendering to improve performance
         Gdx.graphics.setContinuousRendering(false);
 
@@ -76,62 +76,81 @@ public class Options implements Screen {
         titleLabelStyle.font = kingthings24;
         titleLabelStyle.fontColor = Color.WHITE;
 
-        Label titleLabel = new Label("Options", titleLabelStyle);
+        Label titleLabel = new Label("Network Options", titleLabelStyle);
         titleLabel.setFontScale(4);
-        table.add(titleLabel).expandY().align(Align.top);
+        table.add(titleLabel).align(Align.top);
+        table.row();
+
+        Label.LabelStyle optionsStyle = new Label.LabelStyle();
+        optionsStyle.font = kingthings16;
+        optionsStyle.fontColor = Color.WHITE;
+
+        Table optionsTable = new Table();
+
+        Label userNameLabel = new Label("User Name:", skin);
+        userNameLabel.setStyle(optionsStyle);
+        userNameLabel.setFontScale(2);
+        TextField userNameText = new TextField("user", skin);
+
+        Label remoteHostnameLabel = new Label("Remote Hostname:", skin);
+        remoteHostnameLabel.setStyle(optionsStyle);
+        remoteHostnameLabel.setFontScale(2);
+        TextField remoteHostnameText = new TextField("localhost", skin);
+
+        Label remotePortLabel = new Label("Remote Port:", skin);
+        remotePortLabel.setStyle(optionsStyle);
+        remotePortLabel.setFontScale(2);
+        TextField remotePortText = new TextField("55107", skin);
+
+        optionsTable.add(userNameLabel);
+        optionsTable.add(userNameText).prefWidth(200).expandY();
+        optionsTable.row();
+
+        optionsTable.add(remoteHostnameLabel);
+        optionsTable.add(remoteHostnameText).prefWidth(200).expandY();
+        optionsTable.row();
+
+        optionsTable.add(remotePortLabel);
+        optionsTable.add(remotePortText).prefWidth(200).expandY();
+        optionsTable.row();
+
+        table.add(optionsTable).expandY();
         table.row();
 
         Label.LabelStyle buttonLabelStyle = new Label.LabelStyle();
         buttonLabelStyle.font = kingthings16;
         buttonLabelStyle.fontColor = Color.YELLOW;
 
-        // TODO: implement button actions for Sound, Network, and Back
-        TextButton soundOptionsButton = new TextButton("Sound Options", skin);
-        soundOptionsButton.getLabel().setStyle(buttonLabelStyle);
-        soundOptionsButton.getLabel().setFontScale(2);
-        soundOptionsButton.addListener(new ClickListener() {
+        // table for OK and Cancel buttons in bottom right of screen
+        Table buttonsTable = new Table();
+
+        TextButton okButton = new TextButton("OK", skin);
+        okButton.getLabel().setStyle(buttonLabelStyle);
+        okButton.getLabel().setFontScale(2);
+        okButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                log.info("Sound Options button clicked.");
-                game.setScreen(new SoundOptions(game));
+                log.info("OK button clicked.");
+                game.setScreen(new Options(game));
             }
         });
-        table.add(soundOptionsButton).uniformX().expandY();
-        table.row();
+        buttonsTable.add(okButton).uniformX().pad(10);
+        buttonsTable.row();
 
-        TextButton networkOptionsButton = new TextButton("Network Options", skin);
-        networkOptionsButton.getLabel().setStyle(buttonLabelStyle);
-        networkOptionsButton.getLabel().setFontScale(2);
-        networkOptionsButton.addListener(new ClickListener() {
+        TextButton cancelButton = new TextButton("Cancel", skin);
+        cancelButton.getLabel().setStyle(buttonLabelStyle);
+        cancelButton.getLabel().setFontScale(2);
+        cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                log.info("Network Options button clicked.");
-                game.setScreen(new NetworkOptions(game));
+                log.info("Cancel button clicked.");
+                game.setScreen(new Options(game));
             }
         });
-        table.add(networkOptionsButton).uniformX().expandY();
-        table.row();
+        buttonsTable.add(cancelButton).uniformX().pad(10);
+        buttonsTable.row();
 
-        // empty row for more space
-        table.add().expandY();
-        table.row();
-
-        TextButton backButton = new TextButton("Back", skin);
-        backButton.getLabel().setStyle(buttonLabelStyle);
-        backButton.getLabel().setFontScale(2);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                log.info("Back button clicked.");
-                game.setScreen(new MainMenu(game));
-            }
-        });
-        table.add(backButton).uniformX().expandY();
-        table.row();
-
-        // empty row for more space
-        table.add().expandY();
-        table.row();
+        table.add(buttonsTable).expandX().align(Align.bottomRight);
 
         Gdx.graphics.requestRendering();
     }
@@ -147,7 +166,7 @@ public class Options implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+
     }
 
     @Override
