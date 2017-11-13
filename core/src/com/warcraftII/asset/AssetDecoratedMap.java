@@ -468,18 +468,21 @@ public class AssetDecoratedMap extends TerrainMap {
      */
 
     // TODO: Fix this function later
-/*
+
     void RemoveLumber(TilePosition pos, TilePosition from, int amount){
         int Index = 0;
+        int currLumber = DLumberAvailable.get(pos.Y()).get(pos.X());
 
         for(int YOff = 0; YOff < 2; YOff++){
             for(int XOff = 0; XOff < 2; XOff++){
                 int XPos = pos.X() + XOff;
                 int YPos = pos.Y() + YOff;
-                Index |= (ETerrainTileType.Forest == DTerrainMap.get(YPos.get(XPos) && DPartials.get(YPos).get(XPos) ? 1<<(YOff * 2 + XOff) : 0;
+                int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
+                Index |= (bool == (DPartials.get(YPos).get(XPos) & 0xFF)) ? 1<<(YOff * 2 + XOff) : 0;
             }
         }
-        if(Index && (0xF != Index)){
+
+        if(0xF != Index){
             switch(Index){
                 case 1:     Index = 0;
                     break;
@@ -511,34 +514,34 @@ public class AssetDecoratedMap extends TerrainMap {
                     break;
             }
             switch(Index){
-                case 0: DLumberAvailable[pos.Y()][pos.X()] -= amount;
-                    if(0 >= DLumberAvailable[pos.Y()][pos.X()]){
-                        DLumberAvailable[pos.Y()][pos.X()] = 0;
-                        ChangeTerrainTilePartial(pos.X(), pos.Y(), 0);
+                case 0: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
+                    if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X())){
+                        DLumberAvailable.get(pos.Y()).set(pos.X(), 0);
+                        ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
                     }
                     break;
-                case 1: DLumberAvailable[pos.Y()][pos.X()+1] -= amount;
-                    if(0 >= DLumberAvailable[pos.Y()][pos.X()+1]){
-                        DLumberAvailable[pos.Y()][pos.X()+1] = 0;
-                        ChangeTerrainTilePartial(pos.X()+1, pos.Y(), 0);
+                case 1: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
+                    if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X()+1)){
+                        DLumberAvailable.get(pos.Y()).set(pos.X()+1, 0);
+                        ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
                     }
                     break;
-                case 2: DLumberAvailable[pos.Y()+1][pos.X()] -= amount;
-                    if(0 >= DLumberAvailable[pos.Y()+1][pos.X()]){
-                        DLumberAvailable[pos.Y()+1][pos.X()] = 0;
-                        ChangeTerrainTilePartial(pos.X(), pos.Y()+1, 0);
+                case 2: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
+                    if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X())){
+                        DLumberAvailable.get(pos.Y()+1).set(pos.X(), 0);
+                        ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
                     }
                     break;
-                case 3: DLumberAvailable[pos.Y()+1][pos.X()+1] -= amount;
-                    if(0 >= DLumberAvailable[pos.Y()+1][pos.X()+1]){
-                        DLumberAvailable[pos.Y()+1][pos.X()+1] = 0;
-                        ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, 0);
+                case 3: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
+                    if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X()+1)){
+                        DLumberAvailable.get(pos.Y()+1).set(pos.X()+1, 0);
+                        ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
                     }
                     break;
             }
         }
     }
-*/
+
 
     /**
      * Fills the asset and resource initialization lists and the available

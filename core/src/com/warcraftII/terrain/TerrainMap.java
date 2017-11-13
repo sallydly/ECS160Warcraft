@@ -29,7 +29,7 @@ public class TerrainMap {
     };
     protected Vector<Vector<ETileType>> DMap;
     protected Vector<Vector<ETerrainTileType>> DTerrainMap;
-    protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
+    protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed (and it with 0xFF to get unsigned val)
     protected Vector<Vector<Integer>> DMapIndices;
     protected boolean DRendered;
     protected String DMapName;
@@ -574,4 +574,42 @@ public class TerrainMap {
         DMapIndices.set(y, changeVec2);
     }
 
+
+    /**
+     * This function changes the tile to match the surrounding terrain,
+     * for example used when lumber is removed from forest tile
+     *
+     * @param[in] xindex The x coordinate of the tile
+     * @param[in] yindex The y coordinate of the tile
+     * @param[in] val New value of partial at the coordinate
+     *
+     * @return Nothing
+     *
+     */
+
+    public void ChangeTerrainTilePartial(int xindex, int yindex, byte val){
+        if((0 > yindex)||(0 > xindex)){
+            return;
+        }
+        if(yindex >= DPartials.size()){
+            return;
+        }
+        if(xindex >= DPartials.get(0).size()){
+            return;
+        }
+        DPartials.get(yindex).set(xindex, Byte.valueOf(val));
+        for(int YOff = 0; YOff < 2; YOff++){
+            for(int XOff = 0; XOff < 2; XOff++){
+                if(DRendered){
+                    int XPos = xindex + XOff;
+                    int YPos = yindex + YOff;
+                    if((0 < XPos)&&(0 < YPos)){
+                        if((YPos + 1 < DMap.size())&&(XPos + 1 < DMap.get(YPos).size())){
+                            SetTileTypeAndIndex(XPos-1, YPos-1);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
