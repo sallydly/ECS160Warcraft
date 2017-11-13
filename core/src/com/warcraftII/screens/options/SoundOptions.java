@@ -87,23 +87,22 @@ public class SoundOptions implements Screen {
 
         Table optionsTable = new Table();
 
-        Label nameLabel = new Label("FX Volume:", skin);
-        nameLabel.setStyle(optionsStyle);
-        nameLabel.setFontScale(2);
-        TextField nameText = new TextField("100", skin);
-        Label addressLabel = new Label("Music Volume:", skin);
-        addressLabel.setStyle(optionsStyle);
-        addressLabel.setFontScale(2);
-        TextField addressText = new TextField("50", skin);
-        nameLabel.setStyle(optionsStyle);
-        nameLabel.setFontScale(2);
+        Label fxVolumeLabel = new Label("FX Volume:", skin);
+        fxVolumeLabel.setStyle(optionsStyle);
+        fxVolumeLabel.setFontScale(2);
+        TextField fxVolumeText = new TextField("100", skin);
 
-        optionsTable.add(nameLabel);
-        optionsTable.add(nameText).prefWidth(200).expandY();
+        Label musicVolumeLabel = new Label("Music Volume:", skin);
+        musicVolumeLabel.setStyle(optionsStyle);
+        musicVolumeLabel.setFontScale(2);
+        TextField musicVolumeText = new TextField("50", skin);
+
+        optionsTable.add(fxVolumeLabel);
+        optionsTable.add(fxVolumeText).prefWidth(200).expandY();
         optionsTable.row();
 
-        optionsTable.add(addressLabel);
-        optionsTable.add(addressText).prefWidth(200).expandY();
+        optionsTable.add(musicVolumeLabel);
+        optionsTable.add(musicVolumeText).prefWidth(200).expandY();
         optionsTable.row();
 
         table.add(optionsTable).expandY();
