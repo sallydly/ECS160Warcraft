@@ -8,25 +8,39 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.warcraftII.Warcraft;
 
 public class Options implements Screen {
+    private Logger log = new Logger("Options", 2);
+
+    private Warcraft game;
     private Stage stage;
     private Skin skin;
 
-    public Options() {
+    public Options(Warcraft game) {
         // disable continuous rendering to improve performance
         Gdx.graphics.setContinuousRendering(false);
 
+        this.game = game;
+
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
 
         // set background texture image
         // code adapted from https://libgdx.info/basic_image/
@@ -96,12 +110,21 @@ public class Options implements Screen {
         TextButton backButton = new TextButton("Back", skin);
         backButton.getLabel().setStyle(buttonLabelStyle);
         backButton.getLabel().setFontScale(2);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                log.info("Back button clicked.");
+                game.setScreen(new MainMenu(game));
+            }
+        });
         table.add(backButton).uniformX().expandY();
-    }
+        table.row();
 
-    @Override
-    public void show() {
+        // empty row for more space
+        table.add().expandY();
+        table.row();
 
+        Gdx.graphics.requestRendering();
     }
 
     @Override
