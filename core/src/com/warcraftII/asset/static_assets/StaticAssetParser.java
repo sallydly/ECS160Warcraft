@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.asset.static_assets;
 
 
 /*

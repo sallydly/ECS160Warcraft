@@ -210,7 +210,7 @@ public class PlayerAssetType {
         
         AssetType = NameToType(Name);
         
-        if((EAssetType.None == AssetType) && (Name != DTypeStrings.get(GameDataTypes.to_underlying(EAssetType.None)))){
+        if((EAssetType.None == AssetType) && (!Name.equals(DTypeStrings.get(GameDataTypes.to_underlying(EAssetType.None))))){
             log.error("Unknown resource type: " + Name);
             return false;
         }

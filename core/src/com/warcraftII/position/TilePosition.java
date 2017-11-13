@@ -43,7 +43,7 @@ public class TilePosition extends Position{
 
 
 
-    public void SetFromPixel(PixelPosition pos) {
+    public void setFromPixel(PixelPosition pos) {
         DX = pos.X() / DTileWidth;
         DY = pos.Y() / DTileHeight;
     }
@@ -75,7 +75,7 @@ public class TilePosition extends Position{
             thisPixelPosition.setFromTile(this);
             targetPixelPosition.setFromTile(pos);
 
-            targetTilePosition.SetFromPixel( thisPixelPosition.closestPosition(targetPixelPosition,
+            targetTilePosition.setFromPixel( thisPixelPosition.closestPosition(targetPixelPosition,
                                                                                 objSize) );
             return adjacentTileDirection(targetTilePosition, 1);
         }
