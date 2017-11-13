@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 
 public class SoundOptions implements Screen {
@@ -90,12 +91,14 @@ public class SoundOptions implements Screen {
         Label fxVolumeLabel = new Label("FX Volume:", skin);
         fxVolumeLabel.setStyle(optionsStyle);
         fxVolumeLabel.setFontScale(2);
-        TextField fxVolumeText = new TextField("100", skin);
+        // TODO: change to slider
+        final TextField fxVolumeText = new TextField(Integer.toString(Volume.getFxVolume()), skin);
 
         Label musicVolumeLabel = new Label("Music Volume:", skin);
         musicVolumeLabel.setStyle(optionsStyle);
         musicVolumeLabel.setFontScale(2);
-        TextField musicVolumeText = new TextField("50", skin);
+        // TODO: change to slider
+        final TextField musicVolumeText = new TextField(Integer.toString(Volume.getMusicVolume()), skin);
 
         optionsTable.add(fxVolumeLabel);
         optionsTable.add(fxVolumeText).prefWidth(200).expandY();
@@ -122,6 +125,8 @@ public class SoundOptions implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 log.info("OK button clicked.");
+                Volume.setFxVolume(Integer.valueOf(fxVolumeText.getText()));
+                Volume.setMusicVolume(Integer.valueOf(musicVolumeText.getText()));
                 game.setScreen(new Options(game));
             }
         });
