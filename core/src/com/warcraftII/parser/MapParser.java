@@ -9,7 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.asset.StaticAssetParser;
+import com.warcraftII.asset.static_assets.StaticAssetParser;
 import com.warcraftII.terrain.MapRenderer;
 
 public class MapParser {

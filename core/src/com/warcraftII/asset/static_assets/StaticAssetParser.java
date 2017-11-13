@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.asset.static_assets;
 
 /*
 * Adds stationary assets onto a new layer of map

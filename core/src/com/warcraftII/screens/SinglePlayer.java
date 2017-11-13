@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.SAssetInitialization;
-import com.warcraftII.asset.StaticAssetParser;
+import com.warcraftII.asset.static_assets.StaticAssetParser;
 import com.warcraftII.position.*;
 import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
