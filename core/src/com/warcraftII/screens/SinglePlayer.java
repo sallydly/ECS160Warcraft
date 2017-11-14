@@ -244,7 +244,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         elapsedTime += Gdx.graphics.getDeltaTime();
-
         batch.begin();
         camera.update();
         orthomaprenderer.setView(camera);
@@ -266,7 +265,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
-        specialButtons();
         stage.act();
         stage.draw();
         allUnits.UnitStateHandler(elapsedTime);
@@ -367,6 +365,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             counter+=1;
         }
+        specialButtons();
         //if asset is at position.x position.y then assetSelected = 1 and selectedAsset =  asset
         if (unit_selected == 0 && movement == 1) {
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
