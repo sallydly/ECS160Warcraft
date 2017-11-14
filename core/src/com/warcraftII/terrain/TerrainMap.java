@@ -588,6 +588,7 @@ public class TerrainMap {
      */
 
     public void ChangeTerrainTilePartial(int xindex, int yindex, byte val){
+        log.info("Changing Terrain Tile Partial");
         if((0 > yindex)||(0 > xindex)){
             return;
         }
@@ -597,7 +598,9 @@ public class TerrainMap {
         if(xindex >= DPartials.get(0).size()){
             return;
         }
-        DPartials.get(yindex).set(xindex, Byte.valueOf(val));
+        Vector<Byte> modRow = DPartials.get(yindex);
+        modRow.set(xindex, Byte.valueOf(val));
+        DPartials.set(yindex,modRow);
         for(int YOff = 0; YOff < 2; YOff++){
             for(int XOff = 0; XOff < 2; XOff++){
                 if(DRendered){

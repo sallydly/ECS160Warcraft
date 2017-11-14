@@ -33,12 +33,13 @@ import com.warcraftII.asset.static_assets.*;
 
 public class AssetDecoratedMap extends TerrainMap {
     //TODO: Uncomment DAssets when PlayerAsset become available
-    private Logger log = new Logger("AssetDecoratedMap", 2);
+    private static Logger log = new Logger("AssetDecoratedMap", 2);
     protected List<StaticAsset> DStaticAssets;
     protected List< SAssetInitialization > DAssetInitializationList;
     protected List< SResourceInitialization > DResourceInitializationList;
     protected Vector< Vector< Integer > > DSearchMap;
     protected Vector< Vector< Integer > > DLumberAvailable;
+    protected Vector< Vector< Integer > > DStoneAvailable;
     protected List <EPlayerColor> DPlayers;
 
     protected static Map< String, Integer > DMapNameTranslation;
@@ -156,10 +157,10 @@ public class AssetDecoratedMap extends TerrainMap {
             AssetDecoratedMap TempMap = new AssetDecoratedMap();
             FileDataSource Source = new FileDataSource(fh);
             if (!TempMap.LoadMap(Source)) {
-                //Log.e(ASSETDEC, "Failed to load map " + fh.name());
+                log.error("Failed to load map " + fh.name());
                 continue;
             } else {
-                //Log.d(ASSETDEC, "Loaded map " + fh.name());
+                log.debug("Loaded map " + fh.name());
             }
             //TempMap.RenderTerrain();  // Shouldn't need to do this. Its in RenderMap()
             DMapNameTranslation.put(TempMap.MapName(), DAllMaps.size());
@@ -470,18 +471,122 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
-    // TODO: Fix this function later
 
-    public void RemoveLumber(MapRenderer map, TiledMapTileLayer terrainLayer, TilePosition pos, TilePosition from, int amount){
+    public void RemoveLumber(TilePosition pos, TilePosition from, int amount){
         int Index = 0;
-        int currLumber = DLumberAvailable.get(pos.Y()).get(pos.X());
+        System.out.println("Do we even enter the RemoveLumber function?");
+        for(int YOff = 0; YOff < 2; YOff++){
+            for(int XOff = 0; XOff < 2; XOff++){
+                int XPos = pos.X() + XOff;
+                int YPos = pos.Y() + YOff;
+                int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
+
+                Index |= (bool == 1 && (DPartials.get(YPos).get(XPos) != 0)) ? 1<<(YOff * 2 + XOff) : 0;
+            }
+        }
+
+        if(Index > 0 && 0xF != Index){
+            switch(Index){
+                case 1:     Index = 0;
+                    break;
+                case 2:     Index = 1;
+                    break;
+                case 3:     Index = from.X() > pos.X() ? 1 : 0;
+                    break;
+                case 4:     Index = 2;
+                    break;
+                case 5:     Index = from.Y() < pos.Y() ? 0 : 2;
+                    break;
+                case 6:     Index = from.Y() > pos.Y() ? 2 : 1;
+                    break;
+                case 7:     Index = 2;
+                    break;
+                case 8:     Index = 3;
+                    break;
+                case 9:     Index = from.Y() > pos.Y() ? 0 : 3;
+                    break;
+                case 10:    Index = from.Y() > pos.Y() ? 3 : 1;
+                    break;
+                case 11:    Index = 0;
+                    break;
+                case 12:    Index = from.X() < pos.X() ? 2 : 3;
+                    break;
+                case 13:    Index = 3;
+                    break;
+                case 14:    Index = 1;
+                    break;
+            }
+
+            System.out.println("Index 2: "+ String.valueOf(Index));
+
+            Integer newLumberAmount;
+            Vector<Integer> revisedRow;
+            switch(Index){
+                case 0:
+                    newLumberAmount = DLumberAvailable.get(pos.Y()).get(pos.X()) - amount;
+                    if(0 >= newLumberAmount){
+                        newLumberAmount = 0;
+                        ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
+                    }
+                    revisedRow = DLumberAvailable.get(pos.Y());
+                    revisedRow.set(pos.X(), newLumberAmount);
+                    DLumberAvailable.set(pos.Y(), revisedRow);
+                    break;
+                case 1:
+                    newLumberAmount = DLumberAvailable.get(pos.Y()).get(pos.X()+1) - amount;
+                    if(0 >= newLumberAmount){
+                        newLumberAmount = 0;
+                        ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
+                    }
+                    revisedRow = DLumberAvailable.get(pos.Y());
+                    revisedRow.set(pos.X()+1, newLumberAmount);
+                    DLumberAvailable.set(pos.Y(), revisedRow);
+                    break;
+                case 2:
+                    newLumberAmount = DLumberAvailable.get(pos.Y()+1).get(pos.X()) - amount;
+                    if(0 >= newLumberAmount){
+                        newLumberAmount = 0;
+                        ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
+                    }
+                    revisedRow = DLumberAvailable.get(pos.Y());
+                    revisedRow.set(pos.X(), newLumberAmount);
+                    DLumberAvailable.set(pos.Y()+1, revisedRow);
+                    break;
+                case 3:
+                    newLumberAmount = DLumberAvailable.get(pos.Y()+1).get(pos.X()+1) - amount;
+                    if(0 >= newLumberAmount){
+                        newLumberAmount = 0;
+                        ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
+                    }
+                    revisedRow = DLumberAvailable.get(pos.Y()+1);
+                    revisedRow.set(pos.X()+1, newLumberAmount);
+                    DLumberAvailable.set(pos.Y()+1, revisedRow);
+                    break;
+            }
+        }
+    }
+
+
+    /**
+     * Remove stone from a given tile position and update the partials map
+     *
+     * @param[in] pos The tile to remove stone from
+     * @param[in] from The asset's position that is removing the stone
+     * @param[in] amount The amount of stone to remove
+     *
+     * @return Nothing
+     *
+     */
+
+    void RemoveStone(TilePosition pos, TilePosition from, int amount){
+        int Index = 0;
 
         for(int YOff = 0; YOff < 2; YOff++){
             for(int XOff = 0; XOff < 2; XOff++){
                 int XPos = pos.X() + XOff;
                 int YPos = pos.Y() + YOff;
                 int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
-                Index |= (bool == 1 && ((DPartials.get(YPos).get(XPos) & 0xFF) != 0)) ? 1<<(YOff * 2 + XOff) : 0;
+                Index = Index | ((bool == 1 && (DPartials.get(YPos).get(XPos) != 0)) ? 1<<(YOff * 2 + XOff) : 0);
             }
         }
         if(Index > 0 && 0xF != Index){
@@ -515,40 +620,54 @@ public class AssetDecoratedMap extends TerrainMap {
                 case 14:    Index = 1;
                     break;
             }
+
+            Integer newStoneAmount;
+            Vector<Integer> revisedRow;
+
             switch(Index){
-                case 0: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
-                    if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X())){
-                        DLumberAvailable.get(pos.Y()).set(pos.X(), 0);
+                case 0:
+                    newStoneAmount = DStoneAvailable.get(pos.Y()).get(pos.X()) - amount;
+                    if(0 >= newStoneAmount){
+                        newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
-                        log.info(String.valueOf(pos.X()));
-                        //map.UpdateTile(pos.X(), pos.Y(), terrainLayer);
                     }
+                    revisedRow = DStoneAvailable.get(pos.Y());
+                    revisedRow.set(pos.X(), newStoneAmount);
+                    DStoneAvailable.set(pos.Y(), revisedRow);
                     break;
-                case 1: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
-                    if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X()+1)){
-                        DLumberAvailable.get(pos.Y()).set(pos.X()+1, 0);
+                case 1:
+                    newStoneAmount = DStoneAvailable.get(pos.Y()).get(pos.X()+1) - amount;
+                    if(0 >= newStoneAmount){
+                        newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
-                        //map.UpdateTile(pos.X()+1, pos.Y(), terrainLayer);
                     }
+                    revisedRow = DStoneAvailable.get(pos.Y());
+                    revisedRow.set(pos.X()+1, newStoneAmount);
+                    DStoneAvailable.set(pos.Y(), revisedRow);
                     break;
-                case 2: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
-                    if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X())){
-                        DLumberAvailable.get(pos.Y()+1).set(pos.X(), 0);
+                case 2:
+                    newStoneAmount = DStoneAvailable.get(pos.Y()+1).get(pos.X()) - amount;
+                    if(0 >= newStoneAmount){
+                        newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
-                        //map.UpdateTile(pos.X(), pos.Y()+1, terrainLayer);
                     }
+                    revisedRow = DStoneAvailable.get(pos.Y());
+                    revisedRow.set(pos.X(), newStoneAmount);
+                    DStoneAvailable.set(pos.Y()+1, revisedRow);
                     break;
-                case 3: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
-                    if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X()+1)){
-                        DLumberAvailable.get(pos.Y()+1).set(pos.X()+1, 0);
+                case 3:
+                    newStoneAmount = DStoneAvailable.get(pos.Y()+1).get(pos.X()+1) - amount;
+                    if(0 >= newStoneAmount){
+                        newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
-                        //map.UpdateTile(pos.X()+1, pos.Y()+1, terrainLayer);
                     }
+                    revisedRow = DStoneAvailable.get(pos.Y()+1);
+                    revisedRow.set(pos.X()+1, newStoneAmount);
+                    DStoneAvailable.set(pos.Y()+1, revisedRow);
                     break;
             }
         }
     }
-
 
     /**
      * Fills the asset and resource initialization lists and the available
@@ -569,6 +688,7 @@ public class AssetDecoratedMap extends TerrainMap {
         Vector< String > Tokens;
 
         int ResourceCount, AssetCount, InitialLumber = 400;
+        int InitialStone = 400;
         boolean ReturnStatus = false;
 
         CommentSkipLineDataSource LineSource = new CommentSkipLineDataSource(source, '#');
@@ -585,7 +705,7 @@ public class AssetDecoratedMap extends TerrainMap {
 
             TempString = LineSource.read();
             Tokens = Tokenizer.Tokenize(TempString);
-            if(3 > Tokens.size()){
+            if(4 > Tokens.size()){
                 //Bad stuff!
                 //TODO: Create and throw custom exception
                 //Log.e(ASSETDEC, "Too few tokens for resource %d.\n", Index);
@@ -603,8 +723,11 @@ public class AssetDecoratedMap extends TerrainMap {
 
             TempResourceInit.DGold = Integer.parseInt(Tokens.get(1));
             TempResourceInit.DLumber = Integer.parseInt(Tokens.get(2));
+            TempResourceInit.DStone = Integer.parseInt(Tokens.get(3));
+
             if(EPlayerColor.None == TempResourceInit.DColor){
                 InitialLumber = TempResourceInit.DLumber;
+                InitialStone = TempResourceInit.DStone;
             }
 
             DResourceInitializationList.add(TempResourceInit);
@@ -627,12 +750,12 @@ public class AssetDecoratedMap extends TerrainMap {
             TempAssetInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(1))];
             TempAssetInit.DTilePosition.X(Integer.parseInt((Tokens.get(2))));
             TempAssetInit.DTilePosition.Y(Integer.parseInt((Tokens.get(3))));
-            System.out.println("name is");
-            System.out.println(TempAssetInit.DType);
-            System.out.println("x is");
-            System.out.println(TempAssetInit.DTilePosition.X());
-            System.out.println("y is");
-            System.out.println(TempAssetInit.DTilePosition.Y());
+            log.debug("name is");
+            log.debug(TempAssetInit.DType);
+            log.debug("x is");
+            log.debug(String.valueOf(TempAssetInit.DTilePosition.X()));
+            log.debug("y is");
+            log.debug(String.valueOf(TempAssetInit.DTilePosition.Y()));
 
 
             if((0 > TempAssetInit.DTilePosition.X())||(0 > TempAssetInit.DTilePosition.Y())){
@@ -657,6 +780,7 @@ public class AssetDecoratedMap extends TerrainMap {
 
                     if(DPartials.get(RowIndex).get(ColIndex) > 0) {
                         Initlumb = InitialLumber;
+                        log.info("Lumber at:"+ String.valueOf(RowIndex) + " "+String.valueOf(ColIndex));
                     }
                     else {
                         Initlumb = 0;
@@ -668,6 +792,31 @@ public class AssetDecoratedMap extends TerrainMap {
                 }
             }
             DLumberAvailable.set(RowIndex,TempRow);
+        }
+
+
+        DStoneAvailable = new Vector<Vector<Integer>>();
+        DStoneAvailable.setSize(DTerrainMap.size());
+        for(int RowIndex = 0; RowIndex < DStoneAvailable.size(); RowIndex++){
+            Vector<Integer> TempRow = new Vector<Integer>();
+            TempRow.setSize(DTerrainMap.get(RowIndex).size());
+            for(int ColIndex = 0; ColIndex < DTerrainMap.get(RowIndex).size(); ColIndex++){
+                if(ETerrainTileType.Rock == DTerrainMap.get(RowIndex).get(ColIndex)){
+                    int Initstone;
+
+                    if(DPartials.get(RowIndex).get(ColIndex) > 0) {
+                        Initstone = InitialStone;
+                    }
+                    else {
+                        Initstone = 0;
+                    }
+                    TempRow.set(ColIndex,Initstone);
+                }
+                else{
+                    TempRow.set(ColIndex, 0);
+                }
+            }
+            DStoneAvailable.set(RowIndex,TempRow);
         }
 
         ReturnStatus = true;

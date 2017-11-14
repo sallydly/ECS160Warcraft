@@ -15,4 +15,5 @@ public class SResourceInitialization {
     public EPlayerColor DColor;
     public int DGold;
     public int DLumber;
+    public int DStone;
 }

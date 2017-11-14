@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 
+import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain.TileTypes.*;
 
@@ -274,6 +275,43 @@ public class MapRenderer {
         int YIndex = pos.Y();
         ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
         int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
+
+        if((0 <= TileIndex)&&(16 > TileIndex)){
+            TextureRegion textureRegion = null;
+            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
+            if(AltTileCount >0){
+                int AltIndex = (XIndex + YIndex) % AltTileCount;
+
+                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+            }
+            if(null != textureRegion){
+                // need to invert both y axis:
+                int Xpos =  XIndex;
+                int Ypos = DMapHeight - 1 - YIndex;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                terrainLayer.setCell(Xpos, Ypos, cell);
+            }
+        }
+        else{
+
+            return;
+        }
+        return;
+
+    }
+
+
+    /**
+     * UpdateTile takes in a tile position object, and the tile layer.
+     * and updates the tile at that position
+     * Will be called by RemoveLumber.
+     */
+    public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer, AssetDecoratedMap  map){
+        int XIndex = pos.X();
+        int YIndex = pos.Y();
+        ETileType ThisTileType = map.TileType(XIndex, YIndex);
+        int TileIndex = map.TileTypeIndex(XIndex, YIndex);
 
         if((0 <= TileIndex)&&(16 > TileIndex)){
             TextureRegion textureRegion = null;

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -166,7 +167,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             layers.add(staticAssetsLayer);
         }
 
-
         orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
@@ -175,6 +175,24 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // calculate zoom levels to show entire map height/width
         heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
         widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
+
+        TilePosition tposunit = new TilePosition(12,1);
+        TilePosition tree1 = new TilePosition(11,0);
+        TilePosition tree2 = new TilePosition(12,1);
+        TilePosition tree3 = new TilePosition(13,2);
+        RemoveLumber(tree1,tposunit,400,map,mapRenderer,tiledMap);
+        RemoveLumber(tree2,tposunit,400,map,mapRenderer,tiledMap);
+        RemoveLumber(tree3,tposunit,400,map,mapRenderer,tiledMap);
+    }
+
+    //not sure where to put this function...
+    public void RemoveLumber(TilePosition lumberlocation, TilePosition unitlocation, int amount, AssetDecoratedMap map, MapRenderer maprend,  TiledMap tiledMap)
+    {
+        log.info("Removing lumber from:" + String.valueOf(lumberlocation.X())+ " "+ String.valueOf(lumberlocation.Y()));
+        map.RemoveLumber(lumberlocation, unitlocation, amount);
+        TiledMapTileLayer terrainLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Terrain");
+        maprend.UpdateTile(lumberlocation,terrainLayer, map);
+
     }
 
     @Override
