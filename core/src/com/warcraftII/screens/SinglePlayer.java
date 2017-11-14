@@ -267,7 +267,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb.end();
         stage.act();
         stage.draw();
-        allUnits.UnitStateHandler(elapsedTime);
+        allUnits.UnitStateHandler(elapsedTime, map);
     }
 
     public void specialButtons() {

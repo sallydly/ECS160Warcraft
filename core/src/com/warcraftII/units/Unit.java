@@ -12,6 +12,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.asset.AssetDecoratedMap;
+import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
+import com.warcraftII.terrain.TileTypes;
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;
@@ -129,7 +133,7 @@ public class Unit {
         unitVector.add(newUnit);
     }
 
-    public void UnitStateHandler(float elapsedTime) {
+    public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
         for (int i = 0; i < unitVector.size(); i++) {
             if (unitVector.elementAt(i).curHP <= 0) {
                 unitVector.remove(i);
@@ -138,7 +142,7 @@ public class Unit {
                 case Idle:
                     break;
                 case Move:
-                    UnitMoveState(unitVector.elementAt(i));
+                    UnitMoveState(unitVector.elementAt(i), map);
                     break;
                 case Attack:
                     UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target);
@@ -147,7 +151,7 @@ public class Unit {
                     UnitPatrolState(unitVector.elementAt(i));
                     break;
                 case Mine:
-                    UnitMineState(unitVector.elementAt(i));
+                    UnitMineState(unitVector.elementAt(i), map);
                     break;
                 default:
                     System.out.println("How'd you manage to get to that state?");
@@ -156,12 +160,12 @@ public class Unit {
         }
     }
 
-    private void UnitMineState(IndividualUnit cur) {
+    private void UnitMineState(IndividualUnit cur, AssetDecoratedMap map) {
         if ((cur.sprite.getX()+36 != cur.currentxmove - 1) || (cur.sprite.getY()+36 != cur.currentymove - 1)) {
             // mine
         }
         else
-            UnitMoveState(cur);
+            UnitMoveState(cur, map);
     }
 
     private void UnitPatrolState(IndividualUnit cur) {
@@ -209,8 +213,20 @@ public class Unit {
         }
     }
 
-    private void UnitMoveState(IndividualUnit cur) {
-        if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
+    private void UnitMoveState(IndividualUnit cur, AssetDecoratedMap map) {
+        if ((cur.sprite.getX()+32 != cur.currentxmove) || (cur.sprite.getY()+32 != cur.currentymove)) {
+            //TODO: delete later
+            UnitPosition unitPosition = new UnitPosition(Math.round(cur.sprite.getX()), Math.round(cur.sprite.getY()));
+            TilePosition tilePosition = new TilePosition(unitPosition, map.Height());
+            Vector<Vector<TileTypes.ETileType>> DMap = map.getMap();
+            TileTypes.ETileType nextTile;
+            nextTile = DMap.get(tilePosition.X()).get(tilePosition.Y());
+            if (!map.IsTraversable(nextTile)){
+                cur.curState = GameDataTypes.EUnitState.Idle;
+                Gdx.app.log("Unit", "Stopped moving!");
+                return;
+            }
+
             cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegions("walk-"+cur.getDirection()));
             System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
             if (cur.sprite.getX()+36 < cur.currentxmove)

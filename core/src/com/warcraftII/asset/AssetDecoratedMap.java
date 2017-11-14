@@ -660,6 +660,11 @@ public class AssetDecoratedMap extends TerrainMap {
         return ReturnStatus;
     }
 
+    //TODO: remove later
+    public Vector<Vector<ETileType>> getMap(){
+        return DMap;
+    }
+
     /**
      * Get function, return the list of assets DAssets
      *

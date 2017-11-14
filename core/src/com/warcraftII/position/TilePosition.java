@@ -1,5 +1,6 @@
 package com.warcraftII.position;
 
+import com.badlogic.gdx.Gdx;
 import com.warcraftII.GameDataTypes.*;
 
 /**
@@ -21,11 +22,13 @@ public class TilePosition extends Position{
     }
 
     //SUPER IMPORTANT: Constructor from UnitPosition
-    public TilePosition(UnitPosition upos){
+    public TilePosition(UnitPosition upos, int dMapHeight){
+        DTileWidth = 32; DTileHeight = 32;
+        DMapHeight = dMapHeight;
+        Gdx.app.log("Error: ", "DMapHeight is " + DMapHeight);
         DX = (int) (upos.X() / DTileWidth);
         DY = (int)(DMapHeight - upos.Y() / DTileHeight);
     }
-
 
 
     public void SetFromUnit(UnitPosition upos) {
@@ -40,7 +43,6 @@ public class TilePosition extends Position{
     public void setYFromUnit(int y) {
         DY = DMapHeight - (int) (y / DTileHeight);
     }
-
 
 
     public void SetFromPixel(PixelPosition pos) {
