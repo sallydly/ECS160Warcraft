@@ -399,7 +399,6 @@ public class TerrainMap {
             DPartials.set(i,TempPartialsRow);
         }
         returnStatus = true;
-        System.out.println(DTerrainMap.size());
         return returnStatus;
     }
     /**
@@ -515,6 +514,7 @@ public class TerrainMap {
                 Index = TypeIndex;
             } else {
                 Type = ETileType.Stump;
+                log.debug("I am stump");
                 Index = ((ETerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((ETerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((ETerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((ETerrainTileType.Forest == LR) ? 0x8 : 0x0);
             }
         } else if ((ETerrainTileType.LightDirt == UL) || (ETerrainTileType.LightDirt == UR) || (ETerrainTileType.LightDirt == LL) || (ETerrainTileType.LightDirt == LR)) {

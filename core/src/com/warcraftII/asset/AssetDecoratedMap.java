@@ -467,14 +467,14 @@ public class AssetDecoratedMap extends TerrainMap {
      * @param[in] from Position used to determine which terrain tile to remove lumber from
      * @param[in] amount The amount of lumber to remove
      *
-     * @return Nothing
+     * @return boolean indicating whether a tile partial was changed and we need to update the rendering
      *
      */
 
 
-    public void RemoveLumber(TilePosition pos, TilePosition from, int amount){
+    public boolean RemoveLumber(TilePosition pos, TilePosition from, int amount){
+        boolean tileChange = false;
         int Index = 0;
-        System.out.println("Do we even enter the RemoveLumber function?");
         for(int YOff = 0; YOff < 2; YOff++){
             for(int XOff = 0; XOff < 2; XOff++){
                 int XPos = pos.X() + XOff;
@@ -517,8 +517,6 @@ public class AssetDecoratedMap extends TerrainMap {
                     break;
             }
 
-            System.out.println("Index 2: "+ String.valueOf(Index));
-
             Integer newLumberAmount;
             Vector<Integer> revisedRow;
             switch(Index){
@@ -527,6 +525,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newLumberAmount){
                         newLumberAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
                     revisedRow.set(pos.X(), newLumberAmount);
@@ -537,6 +536,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newLumberAmount){
                         newLumberAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
                     revisedRow.set(pos.X()+1, newLumberAmount);
@@ -547,6 +547,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newLumberAmount){
                         newLumberAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
                     revisedRow.set(pos.X(), newLumberAmount);
@@ -557,6 +558,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newLumberAmount){
                         newLumberAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y()+1);
                     revisedRow.set(pos.X()+1, newLumberAmount);
@@ -564,6 +566,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     break;
             }
         }
+        return tileChange;
     }
 
 
@@ -574,11 +577,13 @@ public class AssetDecoratedMap extends TerrainMap {
      * @param[in] from The asset's position that is removing the stone
      * @param[in] amount The amount of stone to remove
      *
-     * @return Nothing
+     * @return boolean indicating whether a tile partial was changed and we need to update the rendering
      *
      */
 
-    void RemoveStone(TilePosition pos, TilePosition from, int amount){
+    public boolean RemoveStone(TilePosition pos, TilePosition from, int amount){
+        boolean tileChange = false;
+
         int Index = 0;
 
         for(int YOff = 0; YOff < 2; YOff++){
@@ -630,6 +635,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newStoneAmount){
                         newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DStoneAvailable.get(pos.Y());
                     revisedRow.set(pos.X(), newStoneAmount);
@@ -640,6 +646,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newStoneAmount){
                         newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DStoneAvailable.get(pos.Y());
                     revisedRow.set(pos.X()+1, newStoneAmount);
@@ -650,6 +657,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newStoneAmount){
                         newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DStoneAvailable.get(pos.Y());
                     revisedRow.set(pos.X(), newStoneAmount);
@@ -660,6 +668,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= newStoneAmount){
                         newStoneAmount = 0;
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
+                        tileChange = true;
                     }
                     revisedRow = DStoneAvailable.get(pos.Y()+1);
                     revisedRow.set(pos.X()+1, newStoneAmount);
@@ -667,6 +676,7 @@ public class AssetDecoratedMap extends TerrainMap {
                     break;
             }
         }
+        return tileChange;
     }
 
     /**

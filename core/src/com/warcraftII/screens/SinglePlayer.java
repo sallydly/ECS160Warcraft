@@ -33,6 +33,7 @@ import com.warcraftII.asset.player.PlayerData;
 import com.warcraftII.asset.static_assets.StaticAssetParser;
 import com.warcraftII.position.*;
 import com.warcraftII.terrain.MapRenderer;
+import com.warcraftII.terrain.TileTypes;
 import com.warcraftII.units.Unit;
 
 
@@ -53,6 +54,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private AssetDecoratedMap map;
     private TiledMap tiledMap;
+    private MapRenderer mapRenderer;
     private OrthogonalTiledMapRenderer orthomaprenderer;
     private MapProperties properties;
 
@@ -141,7 +143,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         log.info(String.valueOf(MapNum));
         map = AssetDecoratedMap.GetMap(MapNum);
 
-        MapRenderer mapRenderer = new MapRenderer(map);
+        mapRenderer = new MapRenderer(map);
         StaticAssetParser staticAssetParser = new StaticAssetParser();
 
 
@@ -175,25 +177,43 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // calculate zoom levels to show entire map height/width
         heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
         widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
-
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-        RemoveLumber(tree1,tposunit,400,map,mapRenderer,tiledMap);
-        RemoveLumber(tree2,tposunit,400,map,mapRenderer,tiledMap);
-        RemoveLumber(tree3,tposunit,400,map,mapRenderer,tiledMap);
     }
 
     //not sure where to put this function...
+    public void RemoveLumber(TilePosition lumberlocation, TilePosition unitlocation, int amount)
+    /* Original version had this:, but using data members of SinglePlayer instead for cleaner api...
     public void RemoveLumber(TilePosition lumberlocation, TilePosition unitlocation, int amount, AssetDecoratedMap map, MapRenderer maprend,  TiledMap tiledMap)
+    */
     {
         log.info("Removing lumber from:" + String.valueOf(lumberlocation.X())+ " "+ String.valueOf(lumberlocation.Y()));
-        map.RemoveLumber(lumberlocation, unitlocation, amount);
-        TiledMapTileLayer terrainLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Terrain");
-        maprend.UpdateTile(lumberlocation,terrainLayer, map);
 
+        if (map.RemoveLumber(lumberlocation, unitlocation, amount)){
+            TiledMapTileLayer terrainLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Terrain");
+            mapRenderer.UpdateTile(lumberlocation,terrainLayer);
+
+            terrainLayer.getCell(lumberlocation.X(), lumberlocation.Y()).getTile().getTextureRegion();
+
+            if (map.TileType(lumberlocation) == TileTypes.ETileType.Stump)
+                log.debug("I is stump");
+        }
     }
+
+//now for stone...
+    public void RemoveStone(TilePosition stonelocation, TilePosition unitlocation, int amount)
+    {
+        log.info("Removing stone from:" + String.valueOf(stonelocation.X())+ " "+ String.valueOf(stonelocation.Y()));
+
+        if (map.RemoveStone(stonelocation, unitlocation, amount)){
+            TiledMapTileLayer terrainLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Terrain");
+            mapRenderer.UpdateTile(stonelocation,terrainLayer);
+
+            terrainLayer.getCell(stonelocation.X(), stonelocation.Y()).getTile().getTextureRegion();
+
+            if (map.TileType(stonelocation) == TileTypes.ETileType.Rubble)
+                log.debug("I is rubble");
+        }
+    }
+
 
     @Override
     public void render(float delta) {
@@ -249,6 +269,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+
+        //TESTING REMOVELUMBER
+        TilePosition tposunit = new TilePosition(12,1);
+        TilePosition tree1 = new TilePosition(11,0);
+        TilePosition tree2 = new TilePosition(12,1);
+        TilePosition tree3 = new TilePosition(13,2);
+
+        RemoveLumber(tree1,tposunit,400);
+        RemoveLumber(tree2,tposunit,400);
+        RemoveLumber(tree3,tposunit,400);
+
+
+
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = camera.unproject(clickCoordinates);
         int counter = 0;

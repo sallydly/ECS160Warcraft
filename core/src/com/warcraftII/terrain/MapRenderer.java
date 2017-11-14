@@ -13,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain.TileTypes.*;
@@ -27,7 +28,7 @@ import java.util.Vector;
 
 
 public class MapRenderer {
-
+    private static Logger log = new Logger("MapRenderer", 2);
     TextureAtlas DTerrainTextures = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
     TerrainMap DMap;
     Vector<Vector<Vector<TextureRegion> > > DTileTextures;
@@ -271,10 +272,15 @@ public class MapRenderer {
      * Will be called by RemoveLumber.
      */
     public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer){
+
         int XIndex = pos.X();
         int YIndex = pos.Y();
         ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
         int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
+
+
+        if (ThisTileType == TileTypes.ETileType.Stump)
+            System.out.println("I will be stump");
 
         if((0 <= TileIndex)&&(16 > TileIndex)){
             TextureRegion textureRegion = null;
@@ -313,6 +319,9 @@ public class MapRenderer {
         ETileType ThisTileType = map.TileType(XIndex, YIndex);
         int TileIndex = map.TileTypeIndex(XIndex, YIndex);
 
+        if (ThisTileType == TileTypes.ETileType.Stump)
+            log.debug("I will be stump");
+
         if((0 <= TileIndex)&&(16 > TileIndex)){
             TextureRegion textureRegion = null;
             int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
@@ -328,6 +337,7 @@ public class MapRenderer {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                 cell.setTile(new StaticTiledMapTile(textureRegion));
                 terrainLayer.setCell(Xpos, Ypos, cell);
+                System.out.println("We setting cocrrectly?");
             }
         }
         else{
