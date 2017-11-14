@@ -26,23 +26,17 @@ public class StaticAsset {
     private TilePosition DPosition;
     private Vector<SAssetCommand> DCommands = new Vector<SAssetCommand>();
 
-    StaticAsset(PlayerAssetType type) {
-        this.DHitPoints = type.HitPoints();
-        this.DGold = 0;
-        this.DLumber = 0;
-        this.DPosition = new TilePosition(0, 0);
+    public StaticAsset(PlayerAssetType type) {
+        DType = type;
+        DHitPoints = type.HitPoints();
+        DGold = 0;
+        DLumber = 0;
+        DPosition = new TilePosition(0, 0);
+        DCurrentState = EState.INACTIVE; // TODO: have a cycle of building-> inactive, active etc.
     }
 
-    public TilePosition Position() {
-        return DPosition;
-    }
-
-    public EState State(){
+    public EState state(){
         return DCurrentState;
-    }
-
-    public PlayerAssetType Type(){
-        return DType;
     }
 
     public boolean Alive() {

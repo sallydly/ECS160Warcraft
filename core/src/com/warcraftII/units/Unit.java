@@ -3,9 +3,12 @@ package com.warcraftII.units;
 /**
  * Created by Ian on 10/29/2017.
  */
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.warcraftII.GameDataTypes;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
@@ -33,15 +36,18 @@ public class Unit {
         unitVector.add(newUnit);
     }
 
-    public void AddUnit(TilePosition tilePosition, Texture texture) {
+    public void AddUnit(TilePosition tilePosition, GameDataTypes.EAssetType type, GameDataTypes.EPlayerColor player) {
         IndividualUnit newUnit = new IndividualUnit();
-        newUnit.sprite = new Sprite(texture);
-        newUnit.sprite.setSize(72,72);
-        UnitPosition upos = new UnitPosition(tilePosition);
-        newUnit.sprite.setPosition(upos.X(),upos.Y());
-        newUnit.currentxmove = upos.X();
-        newUnit.currentymove = upos.Y();
-        unitVector.add(newUnit);
+        if (type == GameDataTypes.EAssetType.Peasant) {
+            Texture texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
+            newUnit.sprite = new Sprite(texture);
+            newUnit.sprite.setSize(72, 72);
+            UnitPosition upos = new UnitPosition(tilePosition);
+            newUnit.sprite.setPosition(upos.X(), upos.Y());
+            newUnit.currentxmove = upos.X();
+            newUnit.currentymove = upos.Y();
+            unitVector.add(newUnit);
+        }
     }
 
     public void AllMovement() {

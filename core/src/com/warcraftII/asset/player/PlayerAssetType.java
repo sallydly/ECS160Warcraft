@@ -7,8 +7,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.asset.static_assets.StaticAsset;
 import com.warcraftII.data_source.*;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Set;
@@ -45,7 +48,59 @@ public class PlayerAssetType {
     protected int DRange;
     protected static Map<String, PlayerAssetType > DRegistry;
     protected static Vector<String> DTypeStrings;
-    protected static Map<String, EAssetType > DNameTypeTranslation;
+
+    public static Map<String, EAssetType > DNameTypeTranslation;
+
+    static{
+        init();
+    }
+
+    private static void init() {
+        String[] TypeStringsArray = {
+                "None",
+                "Peasant",
+                "Footman",
+                "Archer",
+                "Ranger",
+                "Knight",
+                "GoldMine",
+                "TownHall",
+                "Keep",
+                "Castle",
+                "Farm",
+                "Barracks",
+                "LumberMill",
+                "Blacksmith",
+                "ScoutTower",
+                "GuardTower",
+                "CannonTower",
+                "Wall"};
+        
+        DTypeStrings = new Vector<String>(Arrays.asList(TypeStringsArray));
+
+        DNameTypeTranslation = new HashMap<String, EAssetType>();
+        {
+
+            DNameTypeTranslation.put("None", EAssetType.None);
+            DNameTypeTranslation.put("Peasant", EAssetType.Peasant);
+            DNameTypeTranslation.put("Footman", EAssetType.Footman);
+            DNameTypeTranslation.put("Archer", EAssetType.Archer);
+            DNameTypeTranslation.put("Ranger", EAssetType.Ranger);
+            DNameTypeTranslation.put("Knight", EAssetType.Knight);
+            DNameTypeTranslation.put("GoldMine", EAssetType.GoldMine);
+            DNameTypeTranslation.put("TownHall", EAssetType.TownHall);
+            DNameTypeTranslation.put("Keep", EAssetType.Keep);
+            DNameTypeTranslation.put("Castle", EAssetType.Castle);
+            DNameTypeTranslation.put("Farm", EAssetType.Farm);
+            DNameTypeTranslation.put("Barracks", EAssetType.Barracks);
+            DNameTypeTranslation.put("LumberMill", EAssetType.LumberMill);
+            DNameTypeTranslation.put("Blacksmith", EAssetType.Blacksmith);
+            DNameTypeTranslation.put("ScoutTower", EAssetType.ScoutTower);
+            DNameTypeTranslation.put("GuardTower", EAssetType.GuardTower);
+            DNameTypeTranslation.put("CannonTower", EAssetType.CannonTower);
+            DNameTypeTranslation.put("Wall", EAssetType.Wall);
+        }
+    }
 
     public PlayerAssetType() {
     }
@@ -206,7 +261,7 @@ public class PlayerAssetType {
         int CapabilityCount, AssetRequirementCount;
         boolean ReturnStatus = false;
 
-        Name = LineSource.read();
+        Name = LineSource.read().trim();
         
         AssetType = NameToType(Name);
         
@@ -295,6 +350,12 @@ public class PlayerAssetType {
 
         ReturnStatus = true;
         return ReturnStatus;
+    }
+
+
+    public static StaticAsset ConstructStaticAsset(String type){
+        PlayerAssetType playerAssetType = DRegistry.get(type);
+        return new StaticAsset(playerAssetType);
     }
     /*
     public static int MaxSight(){

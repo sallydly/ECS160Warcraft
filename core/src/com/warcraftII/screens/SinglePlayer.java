@@ -23,9 +23,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
+import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.SAssetInitialization;
+import com.warcraftII.asset.player.PlayerAssetType;
+import com.warcraftII.asset.player.PlayerData;
 import com.warcraftII.asset.static_assets.StaticAssetParser;
 import com.warcraftII.position.*;
 import com.warcraftII.terrain.MapRenderer;
@@ -144,19 +147,25 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // DEBUG
         UnitPosition.setMapDimensions(map);
         Position.setTileDimensions(32,32);
-        for (SAssetInitialization ass : map.AssetInitializationList() )
-        {
-            if (ass.DType.equals("Peasant"))
-            {
-                allUnits.AddUnit(ass.DTilePosition,texture);
-            }
-        }
+
+        PlayerAssetType.LoadTypes();
+
+        Vector<PlayerData> playerData = PlayerData.LoadAllPlayers(map,allUnits);
+
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
-        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets(map);
-        layers.add(staticAssetsLayer);
+        TiledMapTileLayer staticAssetsLayer = null;
+
+
+
+            staticAssetsLayer = staticAssetParser.addStaticAssets(map,playerData);
+
+        if (null != staticAssetsLayer){
+            layers.add(staticAssetsLayer);
+        }
+
 
         orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -278,7 +287,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         float ratio = initialDistance / distance;
         float newZoomLevel = prevZoom * ratio;
         // change zoom level only if above minimum level
-        if (.5f <= newZoomLevel) {
+        if (.25f <= newZoomLevel) {
             camera.zoom = newZoomLevel;
         }
 

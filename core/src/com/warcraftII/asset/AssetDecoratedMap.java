@@ -3,13 +3,13 @@ package com.warcraftII.asset;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.terrain.TerrainMap;
 import com.warcraftII.terrain.TileTypes.*;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.data_source.*;
-import com.warcraftII.asset.static_assets.*;
 import com.warcraftII.Tokenizer;
 
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.Vector;
 
 
 import java.lang.Math;
+import com.warcraftII.asset.static_assets.*;
 
 /**
  * Created by Kimi on 10/29/2017.
@@ -32,18 +33,16 @@ import java.lang.Math;
 
 public class AssetDecoratedMap extends TerrainMap {
     //TODO: Uncomment DAssets when PlayerAsset become available
-    //protected List<PlayerAsset> DAssets;
+    private Logger log = new Logger("AssetDecoratedMap", 2);
+    protected List<StaticAsset> DStaticAssets;
     protected List< SAssetInitialization > DAssetInitializationList;
     protected List< SResourceInitialization > DResourceInitializationList;
     protected Vector< Vector< Integer > > DSearchMap;
     protected Vector< Vector< Integer > > DLumberAvailable;
-
-    protected List<StaticAsset> DStationaryAssets;
+    protected List <EPlayerColor> DPlayers;
 
     protected static Map< String, Integer > DMapNameTranslation;
     protected static Vector < AssetDecoratedMap > DAllMaps;
-
-
 
     /**
      * Constructor
@@ -250,12 +249,11 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 // TODO: uncomment when playerasset is available
-/*
-    boolean AddAsset(PlayerAsset asset){
-        DAssets.add(asset);
-        return true;
+
+    void AddStaticAsset(StaticAsset asset){
+        DStaticAssets.add(asset);
     }
-*/
+
 
     /**
      * Remove an asset from a player's list of assets
@@ -266,12 +264,10 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 // TODO: uncomment when playerasset is available
-/*
-    boolean RemoveAsset(PlayerAsset asset){
-        DAssets.remove(asset);
-        return true;
+
+    void RemoveStaticAsset(StaticAsset asset){
+        DStaticAssets.remove(asset);
     }
-*/
     /**
      * Determine if an asset can be placed at a certain tile position
      *
@@ -524,28 +520,29 @@ public class AssetDecoratedMap extends TerrainMap {
                     if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X())){
                         DLumberAvailable.get(pos.Y()).set(pos.X(), 0);
                         ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
-//                        map.UpdateTile(pos.X(), pos.Y(), terrainLayer); //TODO: adjust Y position
+                        log.info(String.valueOf(pos.X()));
+                        //map.UpdateTile(pos.X(), pos.Y(), terrainLayer);
                     }
                     break;
                 case 1: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()).get(pos.X()+1)){
                         DLumberAvailable.get(pos.Y()).set(pos.X()+1, 0);
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
-//                        map.UpdateTile(pos.X()+1, pos.Y(), terrainLayer);
+                        //map.UpdateTile(pos.X()+1, pos.Y(), terrainLayer);
                     }
                     break;
                 case 2: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X())){
                         DLumberAvailable.get(pos.Y()+1).set(pos.X(), 0);
                         ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
-//                        map.UpdateTile(pos.X(), pos.Y()+1, terrainLayer);
+                        //map.UpdateTile(pos.X(), pos.Y()+1, terrainLayer);
                     }
                     break;
                 case 3: DLumberAvailable.get(pos.Y()).set(pos.X(), currLumber - amount);
                     if(0 >= DLumberAvailable.get(pos.Y()+1).get(pos.X()+1)){
                         DLumberAvailable.get(pos.Y()+1).set(pos.X()+1, 0);
                         ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
-//                        map.UpdateTile(pos.X()+1, pos.Y()+1, terrainLayer);
+                        //map.UpdateTile(pos.X()+1, pos.Y()+1, terrainLayer);
                     }
                     break;
             }
@@ -566,6 +563,7 @@ public class AssetDecoratedMap extends TerrainMap {
     public boolean LoadMap(DataSource source){
         DResourceInitializationList = new ArrayList<SResourceInitialization>();
         DAssetInitializationList = new ArrayList<SAssetInitialization>();
+        DPlayers = new ArrayList<EPlayerColor>();
 
         String TempString;
         Vector< String > Tokens;
@@ -596,6 +594,8 @@ public class AssetDecoratedMap extends TerrainMap {
             // TODO: Deal with player colors
 
             TempResourceInit.DColor = EPlayerColor.values()[Integer.parseInt(Tokens.get(0))];
+            DPlayers.add(TempResourceInit.DColor);
+
             if((0 == Index)&&(EPlayerColor.None != TempResourceInit.DColor)){
                 //Log.e(ASSETDEC, "Expected first resource to be for color None.\n");
                 //goto LoadMapExit;
@@ -689,6 +689,22 @@ public class AssetDecoratedMap extends TerrainMap {
         return DAssets;
     }
 */
+
+    /**
+     * Get function, return the list of player (colors)
+     *
+     * @param[in] Nothing
+     *
+     * @return DPlayers
+     *
+     */
+
+    public List< EPlayerColor > Players(){
+        return DPlayers;
+    }
+
+
+
 
     /**
      * Get function, return the asset initialization list

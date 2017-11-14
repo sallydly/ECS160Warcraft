@@ -88,6 +88,7 @@ public class GameDataTypes {
         Footman,
         Archer,
         Ranger,
+        Knight,
         GoldMine,
         TownHall,
         Keep,
@@ -99,6 +100,7 @@ public class GameDataTypes {
         ScoutTower,
         GuardTower,
         CannonTower,
+        Wall,
         Max
     }
 
@@ -127,6 +129,34 @@ public class GameDataTypes {
             }
         }
         return 0;
+    }
+
+    public static boolean is_static(EAssetType type) {
+        switch(type) {
+            case None:
+            case Max:
+            case Peasant:
+            case Footman:
+            case Archer:
+            case Ranger:
+            case Knight:
+                return false;
+            case GoldMine:
+            case TownHall:
+            case Keep:
+            case Castle:
+            case Farm:
+            case Barracks:
+            case LumberMill:
+            case Blacksmith:
+            case ScoutTower:
+            case GuardTower:
+            case CannonTower:
+            case Wall:
+                return true;
+            default:
+                return false;
+        }
     }
 }
 

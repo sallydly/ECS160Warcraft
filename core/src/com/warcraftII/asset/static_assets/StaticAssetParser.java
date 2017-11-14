@@ -24,10 +24,11 @@ import com.warcraftII.position.TilePosition;
 import com.warcraftII.asset.player.*;
 
 import java.util.Arrays;
+import java.util.Vector;
 import java.util.List;
 
 public class StaticAssetParser {
-    //private static final Logger log = new Logger("StaticAssetParser", 2);
+    private static final Logger log = new Logger("StaticAssetParser", 2);
 
     private TextureAtlas staticAssetTextures;
     private TiledMap tiledMap;
@@ -87,67 +88,85 @@ public class StaticAssetParser {
         return assetLayer;
     }
 
-    // This one takes in the map AND a vector of PlayerData objects, and a tiledMapTileLayer that it edits.
-    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map, PlayerData player) {
+    // This one takes in the map AND PlayerData object, and a tiledMapTileLayer that it edits.
+    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map, Vector<PlayerData> playerData) {
         System.out.println("start render");
 
-        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
+        staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
 
-        if (null == this.assetLayer)
-        {
-            this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
-            this.assetLayer.setName("StationaryAssets");
-        }
+        assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
+        assetLayer.setName("StationaryAssets");
 
-        for (StaticAsset StatAsset: player.StaticAssets()){
-            String tileName, typeName, stateName;
+        for (PlayerData player : playerData) {
+            for (StaticAsset StatAsset : player.StaticAssets()) {
+                String tileName, typeName, stateName;
 
-            switch (StatAsset.Type().Type()){
-                case GoldMine:
-                    typeName = "goldmine-";
-                case TownHall:
-                    typeName = "townhall-";
-                case Keep:
-                    typeName = "keep-";
-                case Castle:
-                    typeName = "castle-";
-                case Farm:
-                    typeName = "farm-";
-                case Barracks:
-                    typeName = "barracks-";
-                case Blacksmith:
-                    typeName = "blacksmith-";
-                case ScoutTower:
-                    typeName = "scouttower-";
-                case GuardTower:
-                    typeName = "guardtower-";
-                case CannonTower:
-                    typeName = "cannontower-";
-                default:
-                    //BAD STUFF
-                    typeName = "badtype-";
+                switch (StatAsset.type()) {
+                    case GoldMine:
+                        typeName = "goldmine-";
+                        break;
+                    case TownHall:
+                        typeName = "townhall-";
+                        break;
+                    case Keep:
+                        typeName = "keep-";
+                        break;
+                    case Castle:
+                        typeName = "castle-";
+                        break;
+                    case Farm:
+                        typeName = "farm-";
+                        break;
+                    case Barracks:
+                        typeName = "barracks-";
+                        break;
+                    case Blacksmith:
+                        typeName = "blacksmith-";
+                        break;
+                    case ScoutTower:
+                        typeName = "scouttower-";
+                        break;
+                    case GuardTower:
+                        typeName = "guardtower-";
+                        break;
+                    case CannonTower:
+                        typeName = "cannontower-";
+                        break;
+                    default:
+                        //BAD STUFF
+                        typeName = "badtype-";
+                        break;
                 }
-            switch (StatAsset.State()){
-                case CONSTRUCT_0:
-                    stateName = "construct-0";
-                case CONSTRUCT_1:
-                    stateName = "construct-1";
-                case ACTIVE:
-                    stateName = "active";
-                case INACTIVE:
-                    stateName = "inactive";
-                case PLACE:
-                    stateName = "place";
-                default:
-                    //BAD STUFF
-                    stateName = "badstate";
-            }
-            tileName = typeName + stateName;
+                switch (StatAsset.state()) {
+                    case CONSTRUCT_0:
+                        stateName = "construct-0";
+                        break;
+                    case CONSTRUCT_1:
+                        stateName = "construct-1";
+                        break;
+                    case ACTIVE:
+                        stateName = "active";
+                        break;
+                    case INACTIVE:
+                        stateName = "inactive";
+                        break;
+                    case PLACE:
+                        stateName = "place";
+                        break;
+                    default:
+                        //BAD STUFF
+                        stateName = "badstate";
+                        break;
+                }
+                tileName = typeName + stateName;
 
-            int XPos = StatAsset.Position().X();
-            //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
-            int YPos = map.Height() - StatAsset.Position().Y() - 1; // -1 to account for 0 index
-            GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
+                log.info("tileName: " + tileName);
+                int XPos = StatAsset.tilePosition().X();
+                //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
+                int YPos = map.Height() - StatAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
+                log.info("placed at: " + String.valueOf(XPos) +" " + String.valueOf(YPos));
+            }
         }
         return assetLayer;
     }

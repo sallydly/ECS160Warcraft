@@ -1,10 +1,14 @@
 package com.warcraftII.asset.player;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.asset.*;
 import com.warcraftII.asset.static_assets.StaticAsset;
+import com.warcraftII.units.Unit;
 
+import java.util.List;
 import java.util.Map;
 import java.util.List;
 import java.util.Vector;
@@ -26,7 +30,7 @@ public class PlayerData {
     protected int DLumber;
     protected int DGameCycle;
 
-    public PlayerData(AssetDecoratedMap map, EPlayerColor color){
+    public PlayerData(AssetDecoratedMap map, EPlayerColor color, Unit allUnits){
         DIsAI = true;
         DGameCycle = 0;
         DColor = color;
@@ -48,16 +52,29 @@ public class PlayerData {
                 DLumber = ResourceInit.DLumber;
             }
         }
+
+        DStaticAssets = new Vector<StaticAsset>();
         for(SAssetInitialization AssetInit: map.AssetInitializationList()){
             if(AssetInit.DColor == color){
                 log.debug(AssetInit.DType);
-                //log.debug(AssetInit.DTilePosition.X());
-                //log.debug(AssetInit.DTilePosition.Y());
-                //PlayerAsset InitAsset = CreateAsset(AssetInit.DType);
-                //InitAsset->TilePosition(AssetInit.DTilePosition);
-                if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
-                    //InitAsset.Gold(DGold);
+                log.debug(String.valueOf(AssetInit.DTilePosition.X()));
+                log.debug(String.valueOf(AssetInit.DTilePosition.Y()));
+                EAssetType assetType = PlayerAssetType.NameToType(AssetInit.DType);
+                if (GameDataTypes.is_static(assetType))
+                {
+                    StaticAsset InitAsset = CreateStaticAsset(AssetInit.DType);
+                    InitAsset.tilePosition(AssetInit.DTilePosition);
+                    if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
+                        InitAsset.gold(DGold);
+                    }
+                    DStaticAssets.add(InitAsset);
                 }
+                else
+                {
+                    // initialize units
+                    allUnits.AddUnit(AssetInit.DTilePosition, assetType, color);
+                }
+
             }
         }
     }
@@ -127,12 +144,15 @@ public class PlayerData {
     public List<StaticAsset> StaticAssets() {
         return DStaticAssets;
     }
-    /*
-    std::shared_ptr< std::unordered_map< std::string, std::shared_ptr< CPlayerAssetType > > > &AssetTypes(){
-        return DAssetTypes;
+
+    public StaticAsset CreateStaticAsset(String name){
+        return PlayerAssetType.ConstructStaticAsset(name);
     }
+
+
+    /*
+
     std::shared_ptr< CPlayerAsset > CreateMarker( CPixelPosition &pos, boolean addtomap);
-    std::shared_ptr< CPlayerAsset > CreateAsset( std::string &assettypename);
     void DeleteAsset(std::shared_ptr< CPlayerAsset > asset);
     boolean AssetRequirementsMet( std::string &assettypename);
     void UpdateVisibility();
@@ -174,4 +194,15 @@ public class PlayerData {
         DGameEvents.insert(DGameEvents.end(), events.begin(), events.end());
     }
     */
+
+    public static Vector<PlayerData> LoadAllPlayers(AssetDecoratedMap map, Unit allUnits)
+    {
+        Vector<PlayerData> PlayerVector = new Vector<PlayerData>();
+        for(EPlayerColor color : map.Players())
+        {
+            PlayerData newPlayer = new PlayerData(map,color, allUnits);
+            PlayerVector.add(newPlayer);
+        }
+        return PlayerVector;
+    }
 }
