@@ -181,6 +181,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });
 
+        attackButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                attack = 1;
+                return true;
+            }
+        });
+
+        patrolButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                patrol = 1;
+                return true;
+            }
+        });
+
         stage.addActor(movementButton);
         stage.addActor(stopButton);
         stage.addActor(patrolButton);
@@ -338,6 +354,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
                     attack = 0;
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
+                    break;
                 }
                 //TODO
                 //if (ability == 1) {
@@ -350,6 +367,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             counter+=1;
         }
+        //if asset is at position.x position.y then assetSelected = 1 and selectedAsset =  asset
         if (unit_selected == 0 && movement == 1) {
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
