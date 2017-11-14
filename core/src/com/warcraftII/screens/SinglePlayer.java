@@ -167,32 +167,37 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         TextButton menuButton = new TextButton("Menu", skin);
         TextButton pauseButton = new TextButton("Pause", skin);
+        TextButton attackButton = new TextButton("Attack", skin);
+        TextButton patrolButton = new TextButton("Patrol", skin);
+        TextButton stopButton = new TextButton("Stop", skin);
+        TextButton moveButton = new TextButton("Move", skin);
 
         // table for layout of sidebar
         sidebarTable = new Table();
         sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
         sidebarTable.setFillParent(true);
-        sidebarTable.align(Align.bottomLeft);
+        sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
         sidebarStage.draw();
 
+        /*
         Label nameLabel = new Label("Name:", skin);
         TextField nameText = new TextField("", skin);
         Label addressLabel = new Label("Address:", skin);
         TextField addressText = new TextField("", skin);
-
-        //align the sidebarTable
-        sidebarTable.top();
+         */
 
         //add buttons to the sidebar menu
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        sidebarTable.add(nameLabel);
-        sidebarTable.add(nameText);
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(addressLabel);
-        sidebarTable.add(addressText);
+        sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
 
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
