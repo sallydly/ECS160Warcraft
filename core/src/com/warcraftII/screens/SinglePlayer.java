@@ -7,10 +7,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -19,9 +21,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -32,6 +36,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.GameDataTypes;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.StaticAssetParser;
@@ -39,6 +48,7 @@ import com.warcraftII.terrain.MapRenderer;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 import static java.lang.Math.round;
+import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -50,7 +60,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Music readySound;
     private SpriteBatch sb;
     private Texture texture;
-    private Stage stage;
     private Skin skin;
     private Table table;
     private float elapsedTime;
@@ -74,7 +83,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private UnitActions unitActions;
     private Unit allUnits;
-    private OrthographicCamera camera;
+
+    private OrthographicCamera mapCamera;
+    private FitViewport mapViewport;
+    private Stage mapStage;
+
+    private OrthographicCamera sidebarCamera;
+    private FitViewport sidebarViewport;
+    private Stage sidebarStage;
+
+    private Table sidebarTable;
 
     // height and width of each map tile in pixels
     // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
@@ -82,11 +100,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private int tileWidth = 32;
 
     private float prevZoom = 1;
-    // camera zoom levels to fit map height/width
+    // mapCamera zoom levels to fit map height/width
     private float heightZoomRatio;
     private float widthZoomRatio;
-
-    float prevScale = 1; //initial scale for zoom
 
     private double prevDistance = 0;
     SinglePlayer(com.warcraftII.Warcraft game) {
@@ -98,16 +114,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // adjust pointer drag amount by camera zoom level
-        deltaX *= camera.zoom;
-        deltaY *= camera.zoom;
+        // adjust pointer drag amount by mapCamera zoom level
+        deltaX *= mapCamera.zoom;
+        deltaY *= mapCamera.zoom;
 
-        // move camera based on distance of pointer drag
-        camera.translate(-deltaX, deltaY);
+        // move mapCamera based on distance of pointer drag
+        mapCamera.translate(-deltaX, deltaY);
 
         // limit panning to edge of map
         calculateCameraBounds();
-        camera.update();
+        mapCamera.update();
 
         return true;
     }
@@ -135,7 +151,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
         tile.setScale(5);
         tile.setPosition(300, 300);
-
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.align(Align.bottomLeft);
@@ -201,6 +216,87 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stage.addActor(stopButton);
         stage.addActor(patrolButton);
         stage.addActor(attackButton);
+        
+	mapCamera = new OrthographicCamera();
+        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
+        mapStage = new Stage(mapViewport);
+
+        mapStage.getViewport().apply();
+        mapStage.act();
+        mapStage.draw();
+        // set size of map viewport to 75% of the screen width and 100% height
+        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight(), false);
+        // position map viewport on right 75% of the screen
+        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight());
+        mapStage.getViewport().apply();
+
+        sidebarCamera = new OrthographicCamera();
+//        sidebarCamera.setToOrtho(false, Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight());
+        sidebarViewport = new FitViewport(Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight(), sidebarCamera);
+        sidebarStage = new Stage(sidebarViewport);
+
+        sidebarStage.getViewport().apply();
+        sidebarStage.act();
+        sidebarStage.draw();
+        // set size of sidebar viewport to 25% of the screen width and 100% height
+        sidebarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight(), false);
+        // position sidebar viewport on left 25% of the screen
+        sidebarStage.getViewport().setScreenBounds(0, 0, Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight());
+        sidebarStage.getViewport().apply();
+
+        // set background texture image for sidebar menu
+        // code adapted from https://libgdx.info/basic_image/
+        Texture backgroundImageTexture = new Texture("img/Texture.png");
+        backgroundImageTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        TextureRegion backgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
+        backgroundImageTextureRegion.setRegion(0, 0, sidebarStage.getWidth(), sidebarStage.getHeight());
+
+        //backgroundImage.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Image backgroundImage = new Image(backgroundImageTextureRegion);
+        backgroundImage.setPosition(0, 0);
+        sidebarStage.addActor(backgroundImage);
+
+        //add the menu and pause buttons
+        TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
+        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
+
+        TextButton menuButton = new TextButton("Menu", skin);
+        TextButton pauseButton = new TextButton("Pause", skin);
+        TextButton attackButton = new TextButton("Attack", skin);
+        TextButton patrolButton = new TextButton("Patrol", skin);
+        TextButton stopButton = new TextButton("Stop", skin);
+        TextButton moveButton = new TextButton("Move", skin);
+
+        // table for layout of sidebar
+        sidebarTable = new Table();
+        sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
+        sidebarTable.setFillParent(true);
+        sidebarTable.align(Align.top);
+        sidebarStage.addActor(sidebarTable);
+        sidebarStage.draw();
+
+        /*
+        Label nameLabel = new Label("Name:", skin);
+        TextField nameText = new TextField("", skin);
+        Label addressLabel = new Label("Address:", skin);
+        TextField addressText = new TextField("", skin);
+         */
+
+        //add buttons to the sidebar menu
+        sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
+        sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
+        sidebarTable.row();
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarStage.draw();
+
+//        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
+//        sidebarStage.getViewport().getCamera().update();
 
         // Loading the map:
         tiledMap = new TiledMap();
@@ -241,16 +337,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         elapsedTime += Gdx.graphics.getDeltaTime();
         batch.begin();
-        camera.update();
-        orthomaprenderer.setView(camera);
+        mapStage.getViewport().apply();
+        mapStage.act();
+        mapStage.draw();
+        orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
         batch.end();
-        sb.setProjectionMatrix(camera.combined);
+        sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         Texture selected = new Texture(Gdx.files.internal("img/select.png"));
         int counter = 0;
@@ -267,6 +365,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb.end();
         stage.act();
         stage.draw();
+	sidebarStage.getViewport().apply();
+        sidebarStage.act();
+        sidebarStage.draw();
         allUnits.UnitStateHandler(elapsedTime, map);
     }
 
@@ -328,7 +429,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void dispose() {
         terrain.dispose();
-        stage.dispose();
+        mapStage.dispose();
+        sidebarStage.dispose();
         skin.dispose();
         tiledMap.dispose();
         orthomaprenderer.dispose();
@@ -338,7 +440,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = camera.unproject(clickCoordinates);
-        System.out.println(String.format("Press location: %f, %f", position.x, position.y));
         int counter = 0;
         int unit_selected = 0;
         while(counter < allUnits.unitVector.size()){
@@ -421,19 +522,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         if (initialDistance != prevDistance) {
             prevDistance = initialDistance;
-            prevZoom = camera.zoom;
+            prevZoom = mapCamera.zoom;
         }
 
         float ratio = initialDistance / distance;
         float newZoomLevel = prevZoom * ratio;
         // change zoom level only if above minimum level
         if (.5f <= newZoomLevel) {
-            camera.zoom = newZoomLevel;
+            mapCamera.zoom = newZoomLevel;
         }
 
         // limit zoom to showing full map
         calculateCameraBounds();
-        camera.update();
+        mapCamera.update();
 
         return true;
     }
@@ -449,60 +550,60 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // The top boundary of the map (y + height)
         int mapTop = map.Height() * tileHeight;
 
-        // The camera dimensions, halved
-        float cameraHalfWidth = camera.viewportWidth * camera.zoom * .5f;
-        float cameraHalfHeight = camera.viewportHeight * camera.zoom * .5f;
+        // The mapCamera dimensions, halved
+        float cameraHalfWidth = mapCamera.viewportWidth * mapCamera.zoom * .5f;
+        float cameraHalfHeight = mapCamera.viewportHeight * mapCamera.zoom * .5f;
 
-        // calculate positions of boundaries of camera
-        float cameraLeft = camera.position.x - cameraHalfWidth;
-        float cameraRight = camera.position.x + cameraHalfWidth;
-        float cameraBottom = camera.position.y - cameraHalfHeight;
-        float cameraTop = camera.position.y + cameraHalfHeight;
+        // calculate positions of boundaries of mapCamera
+        float cameraLeft = mapCamera.position.x - cameraHalfWidth;
+        float cameraRight = mapCamera.position.x + cameraHalfWidth;
+        float cameraBottom = mapCamera.position.y - cameraHalfHeight;
+        float cameraTop = mapCamera.position.y + cameraHalfHeight;
 
         // Horizontal axis
         // if map width is smaller than viewport width
-        if (map.Width() * tileWidth / camera.zoom < camera.viewportWidth) {
+        if (map.Width() * tileWidth / mapCamera.zoom < mapCamera.viewportWidth) {
             // if can zoom out more to show entire map height
             if (widthZoomRatio < heightZoomRatio) {
-                // position camera at center of map horizontally
-                camera.position.x = mapRight / 2;
+                // position mapCamera at center of map horizontally
+                mapCamera.position.x = mapRight / 2;
             } else {
                 // limit zoom to fit width of map
-                camera.zoom = widthZoomRatio;
+                mapCamera.zoom = widthZoomRatio;
             }
         }
-        // else if left boundary of camera is outside of map's left boundary
+        // else if left boundary of mapCamera is outside of map's left boundary
         else if (cameraLeft <= mapLeft) {
-            // align camera and map's left edge
-            camera.position.x = mapLeft + cameraHalfWidth;
+            // align mapCamera and map's left edge
+            mapCamera.position.x = mapLeft + cameraHalfWidth;
         }
-        // else if right boundary of camera is outside of map's right boundary
+        // else if right boundary of mapCamera is outside of map's right boundary
         else if (cameraRight >= mapRight) {
-            // align camera and map's right edge
-            camera.position.x = mapRight - cameraHalfWidth;
+            // align mapCamera and map's right edge
+            mapCamera.position.x = mapRight - cameraHalfWidth;
         }
 
         // Vertical axis
         // if map height is smaller than viewport height
-        if (map.Height() * tileHeight / camera.zoom < camera.viewportHeight) {
+        if (map.Height() * tileHeight / mapCamera.zoom < mapCamera.viewportHeight) {
             // if can zoom out more to show entire map width
             if (widthZoomRatio > heightZoomRatio) {
-                // position camera at center of map vertically
-                camera.position.y = mapTop / 2;
+                // position mapCamera at center of map vertically
+                mapCamera.position.y = mapTop / 2;
             } else {
                 // limit zoom to fit height of map
-                camera.zoom = heightZoomRatio;
+                mapCamera.zoom = heightZoomRatio;
             }
         }
-        // else if bottom boundary of camera is outside of map's bottom boundary
+        // else if bottom boundary of mapCamera is outside of map's bottom boundary
         else if (cameraBottom <= mapBottom) {
-            // align camera and map's bottom edge
-            camera.position.y = mapBottom + cameraHalfHeight;
+            // align mapCamera and map's bottom edge
+            mapCamera.position.y = mapBottom + cameraHalfHeight;
         }
-        // else if top boundary of camera is outside of map's top boundary
+        // else if top boundary of mapCamera is outside of map's top boundary
         else if (cameraTop >= mapTop) {
-            // align camera and map's top edge
-            camera.position.y = mapTop - cameraHalfHeight;
+            // align mapCamera and map's top edge
+            mapCamera.position.y = mapTop - cameraHalfHeight;
         }
 
     }
