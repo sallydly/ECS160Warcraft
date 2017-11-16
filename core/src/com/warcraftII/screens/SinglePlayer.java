@@ -331,7 +331,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         Vector<PlayerData> playerData = PlayerData.LoadAllPlayers(map,allUnits);
 
-
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
@@ -502,7 +501,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
 
-        //TESTING REMOVELUMBER
+/*        //TESTING REMOVELUMBER
         TilePosition tposunit = new TilePosition(12,1);
         TilePosition tree1 = new TilePosition(11,0);
         TilePosition tree2 = new TilePosition(12,1);
@@ -511,7 +510,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         RemoveLumber(tree1,tposunit,400);
         RemoveLumber(tree2,tposunit,400);
         RemoveLumber(tree3,tposunit,400);
-
+*/
 
 
         Vector3 clickCoordinates = new Vector3(x,y,0);
@@ -522,7 +521,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
             if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
-                // TODO Play Peasant Sound here
+                // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
                 // PEASANT SELECTED ==
                 if (attack == 1) {
                     unit_selected = 1;

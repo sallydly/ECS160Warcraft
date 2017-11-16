@@ -134,6 +134,12 @@ public class Unit {
         unitVector.add(newUnit);
     }
 
+    public void AddUnit(TilePosition tpos, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor color){
+        UnitPosition upos = new UnitPosition(tpos);
+        AddUnit((float)upos.X(), (float)upos.Y(), inUnit);
+    }
+
+
 
     public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
         for (int i = 0; i < unitVector.size(); i++) {

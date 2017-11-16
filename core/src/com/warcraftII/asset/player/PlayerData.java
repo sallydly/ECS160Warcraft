@@ -72,8 +72,7 @@ public class PlayerData {
                 else
                 {
                     // initialize units
-                    //TODO: un-comment later
-//                    allUnits.AddUnit(AssetInit.DTilePosition, assetType, color);
+                    allUnits.AddUnit(AssetInit.DTilePosition, GameDataTypes.to_unitType(assetType), color);
                 }
 
             }

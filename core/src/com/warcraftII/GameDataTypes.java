@@ -118,6 +118,7 @@ public class GameDataTypes {
         ScoutTower,
         GuardTower,
         CannonTower,
+        Wall,
         Max
     }
 
@@ -127,6 +128,7 @@ public class GameDataTypes {
         Footman,
         Archer,
         Ranger,
+        Knight,
         Max
     }
 
@@ -203,6 +205,56 @@ public class GameDataTypes {
                 return false;
         }
     }
+
+    public static EUnitType to_unitType(EAssetType type) {
+        switch(type) {
+            case Peasant:
+                return EUnitType.Peasant;
+            case Footman:
+                return EUnitType.Footman;
+            case Archer:
+                return EUnitType.Archer;
+            case Ranger:
+                return EUnitType.Ranger;
+            case Knight:
+                return EUnitType.Knight;
+            default:
+                return EUnitType.None;
+        }
+    }
+
+    public static EStaticAssetType to_staticAssetType(EAssetType type) {
+        switch(type) {
+            case GoldMine:
+                return EStaticAssetType.GoldMine;
+            case TownHall:
+                return EStaticAssetType.TownHall;
+            case Keep:
+                return EStaticAssetType.Keep;
+            case Castle:
+                return EStaticAssetType.Castle;
+            case Farm:
+                return EStaticAssetType.Farm;
+            case Barracks:
+                return EStaticAssetType.Barracks;
+            case LumberMill:
+                return EStaticAssetType.LumberMill;
+            case Blacksmith:
+                return EStaticAssetType.Blacksmith;
+            case ScoutTower:
+                return EStaticAssetType.ScoutTower;
+            case GuardTower:
+                return EStaticAssetType.GuardTower;
+            case CannonTower:
+                return EStaticAssetType.CannonTower;
+            case Wall:
+                return EStaticAssetType.Wall;
+            default:
+                return EStaticAssetType.None;
+        }
+
+    }
+
 }
 
 // TODO: redefine DirectionOpposite function
