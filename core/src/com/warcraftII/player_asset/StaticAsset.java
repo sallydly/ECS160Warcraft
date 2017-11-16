@@ -1,11 +1,10 @@
-package com.warcraftII.asset.static_assets;
+package com.warcraftII.player_asset;
 
 import com.warcraftII.GameDataTypes;
-import com.warcraftII.asset.SAssetCommand;
-import com.warcraftII.asset.player.PlayerAssetType;
+import com.warcraftII.player_asset.SAssetCommand;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.position.TilePosition;
 
-import java.util.List;
 import java.util.Vector;
 
 public class StaticAsset {

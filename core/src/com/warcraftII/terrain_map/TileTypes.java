@@ -1,4 +1,4 @@
-package com.warcraftII.terrain;
+package com.warcraftII.terrain_map;
 
 /**
  * Created by Kimi on 10/28/2017.

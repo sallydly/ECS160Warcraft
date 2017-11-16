@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.player_asset;
 
 import com.warcraftII.GameDataTypes;
 

@@ -1,16 +1,15 @@
-package com.warcraftII.asset.player;
+package com.warcraftII.player_asset;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
-import com.warcraftII.asset.*;
-import com.warcraftII.asset.static_assets.StaticAsset;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.terrain_map.initialization.SAssetInitialization;
+import com.warcraftII.terrain_map.initialization.SResourceInitialization;
 import com.warcraftII.units.Unit;
 
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 import java.util.Vector;
 //import com.warcraftII.asset.VisibilityMap;
 

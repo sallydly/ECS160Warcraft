@@ -1,20 +1,16 @@
-package com.warcraftII.asset.player;
+package com.warcraftII.player_asset;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
-import com.warcraftII.asset.static_assets.StaticAsset;
 import com.warcraftII.data_source.*;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
-import java.util.Set;
 import java.util.Map;
 
 /**

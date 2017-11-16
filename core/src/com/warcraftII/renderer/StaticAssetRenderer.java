@@ -1,4 +1,4 @@
-package com.warcraftII.asset.static_assets;
+package com.warcraftII.renderer;
 
 
 /*
@@ -7,28 +7,21 @@ package com.warcraftII.asset.static_assets;
  */
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Logger;
-import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.asset.GraphicTileset;
-import com.warcraftII.asset.SAssetInitialization;
-import com.warcraftII.position.TilePosition;
+import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.terrain_map.initialization.SAssetInitialization;
+import com.warcraftII.player_asset.StaticAsset;
 
-import com.warcraftII.asset.player.*;
-
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.List;
 
-public class StaticAssetParser {
-    private static final Logger log = new Logger("StaticAssetParser", 2);
+public class StaticAssetRenderer {
+    private static final Logger log = new Logger("StaticAssetRenderer", 2);
 
     private TextureAtlas staticAssetTextures;
     private TiledMap tiledMap;
@@ -39,10 +32,10 @@ public class StaticAssetParser {
     private static final String GOLDMINE = "GoldMine";
     private static final String PEASANT = "Peasant";
 
-    public StaticAssetParser(TiledMap tiledMap,
-                             int mapWidth,
-                             int mapHeight,
-                             String mapName) {
+    public StaticAssetRenderer(TiledMap tiledMap,
+                               int mapWidth,
+                               int mapHeight,
+                               String mapName) {
         this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
@@ -54,7 +47,7 @@ public class StaticAssetParser {
 
     }
 
-    public StaticAssetParser() {
+    public StaticAssetRenderer() {
 
     }
 

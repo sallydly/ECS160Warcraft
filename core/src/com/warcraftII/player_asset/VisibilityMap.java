@@ -1,9 +1,7 @@
-package com.warcraftII.asset;
+package com.warcraftII.player_asset;
 
 //import com.warcraftII.asset.player.PlayerAsset;
-import com.warcraftII.position.TilePosition;
 
-import java.util.List;
 import java.util.Vector;
 
 public class VisibilityMap{

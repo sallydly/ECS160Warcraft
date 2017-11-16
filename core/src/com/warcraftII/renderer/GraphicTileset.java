@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.renderer;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

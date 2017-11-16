@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.terrain_map.initialization;
 
 import com.warcraftII.GameDataTypes.*;
 

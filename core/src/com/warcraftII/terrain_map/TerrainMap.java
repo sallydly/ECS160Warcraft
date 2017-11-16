@@ -1,16 +1,13 @@
-package com.warcraftII.terrain;
+package com.warcraftII.terrain_map;
 
 
-import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
 import com.warcraftII.position.TilePosition;
-import com.warcraftII.terrain.TileTypes.*;
+import com.warcraftII.terrain_map.TileTypes.*;
 
-import com.badlogic.gdx.Gdx;
-import java.io.IOException;
 import java.util.Vector;
 
 public class TerrainMap {

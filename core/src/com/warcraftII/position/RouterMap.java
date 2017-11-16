@@ -1,13 +1,11 @@
 package com.warcraftII.position;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.asset.SAssetInitialization;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.units.Unit;
 import com.warcraftII.GameDataTypes;
-import com.warcraftII.terrain.TileTypes;
-import com.warcraftII.terrain.TerrainMap;
+import com.warcraftII.terrain_map.TileTypes;
+import com.warcraftII.terrain_map.TerrainMap;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

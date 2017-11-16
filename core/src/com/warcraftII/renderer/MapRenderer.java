@@ -1,4 +1,4 @@
-package com.warcraftII.terrain;
+package com.warcraftII.renderer;
 
 /**
  * Created by Kimi on 11/3/2017.
@@ -6,7 +6,6 @@ package com.warcraftII.terrain;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -14,9 +13,11 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 
 import com.badlogic.gdx.utils.Logger;
-import com.warcraftII.asset.AssetDecoratedMap;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.position.TilePosition;
-import com.warcraftII.terrain.TileTypes.*;
+import com.warcraftII.terrain_map.TerrainMap;
+import com.warcraftII.terrain_map.TileTypes;
+import com.warcraftII.terrain_map.TileTypes.*;
 
 import java.util.Vector;
 

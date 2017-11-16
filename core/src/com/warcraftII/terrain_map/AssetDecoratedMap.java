@@ -1,20 +1,19 @@
 
-package com.warcraftII.asset;
+package com.warcraftII.terrain_map;
 
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Logger;
-import com.warcraftII.terrain.MapRenderer;
-import com.warcraftII.terrain.TerrainMap;
-import com.warcraftII.terrain.TileTypes.*;
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.data_source.*;
 import com.warcraftII.Tokenizer;
+import com.warcraftII.terrain_map.initialization.SAssetInitialization;
+import com.warcraftII.terrain_map.initialization.SResourceInitialization;
 
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +24,6 @@ import java.util.Vector;
 // TODO: add Android logging
 
 
-import java.lang.Math;
-import com.warcraftII.asset.static_assets.*;
-
 /**
  * Created by Kimi on 10/29/2017.
  */
@@ -36,8 +32,8 @@ public class AssetDecoratedMap extends TerrainMap {
     //TODO: Uncomment DAssets when PlayerAsset become available
     private static Logger log = new Logger("AssetDecoratedMap", 2);
     protected List<StaticAsset> DStaticAssets;
-    protected List< SAssetInitialization > DAssetInitializationList;
-    protected List< SResourceInitialization > DResourceInitializationList;
+    protected List<SAssetInitialization> DAssetInitializationList;
+    protected List<SResourceInitialization> DResourceInitializationList;
     protected Vector< Vector< Integer > > DSearchMap;
     protected Vector< Vector< Integer > > DLumberAvailable;
     protected Vector< Vector< Integer > > DStoneAvailable;

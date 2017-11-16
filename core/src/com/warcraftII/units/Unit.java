@@ -7,7 +7,7 @@ package com.warcraftII.units;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.position.TilePosition;
@@ -15,8 +15,8 @@ import com.warcraftII.position.UnitPosition;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.terrain.TileTypes;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.terrain_map.TileTypes;
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;

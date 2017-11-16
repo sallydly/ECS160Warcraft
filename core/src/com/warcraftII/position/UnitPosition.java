@@ -1,9 +1,7 @@
 
 package com.warcraftII.position;
 
-import com.warcraftII.asset.AssetDecoratedMap;
-
-import java.util.Vector;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
 
 /**
  * Created by Kimi on 11/10/2017.
