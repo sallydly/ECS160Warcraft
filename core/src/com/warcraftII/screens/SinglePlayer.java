@@ -155,7 +155,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.align(Align.bottomLeft);
 
-        stage = new Stage(new ScreenViewport());
+//        stage = new Stage(new ScreenViewport());
         sb = new SpriteBatch();
 
         allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
@@ -163,7 +163,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
         allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // Make Buttons for the Unit Actions
         unitActions.createBasicSkin();
@@ -212,10 +212,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });
 
-        stage.addActor(movementButton);
-        stage.addActor(stopButton);
-        stage.addActor(patrolButton);
-        stage.addActor(attackButton);
+//        stage.addActor(movementButton);
+//        stage.addActor(stopButton);
+//        stage.addActor(patrolButton);
+//        stage.addActor(attackButton);
         
 	mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
@@ -320,18 +320,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
+//        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
 
         multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(stage);
+//        multiplexer.addProcessor(stage);
         multiplexer.addProcessor(new GestureDetector(this));
         Gdx.input.setInputProcessor(multiplexer);
         // Gdx.input.setInputProcessor(stage);
         //Gdx.input.setInputProcessor(new GestureDetector(this));
 
         // calculate zoom levels to show entire map height/width
-        heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
-        widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
+//        heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
+//        widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
         elapsedTime = 0;
     }
 
@@ -363,8 +363,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
-        stage.act();
-        stage.draw();
+//        stage.act();
+//        stage.draw();
 	sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
@@ -373,11 +373,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     public void specialButtons() {
         int counter = 0;
-        for (Actor actor : stage.getActors()) {
-            if (counter > 3)
-                actor.remove();
-            counter = counter + 1;
-        }
+//        for (Actor actor : stage.getActors()) {
+//            if (counter > 3)
+//                actor.remove();
+//            counter = counter + 1;
+//        }
         for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
             if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
                 newAbility = new TextButton("Mine", unitActions.skin);
@@ -389,7 +389,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         return true;
                     }
                 });
-                stage.addActor(newAbility);
+//                stage.addActor(newAbility);
             }
             if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.RangerScouting) {
                 newAbility = new TextButton("Ranger Scouting", unitActions.skin);
@@ -401,7 +401,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         return true;
                     }
                 });
-                stage.addActor(newAbility);
+//                stage.addActor(newAbility);
             }
         }
     }
@@ -439,7 +439,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
-        Vector3 position = camera.unproject(clickCoordinates);
+        Vector3 position = mapCamera.unproject(clickCoordinates);
         int counter = 0;
         int unit_selected = 0;
         while(counter < allUnits.unitVector.size()){
