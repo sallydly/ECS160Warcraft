@@ -24,6 +24,9 @@ public class Splash implements Screen {
      * @param game contains game parameters passed in from the caller using setScreen()
      */
     public Splash(Warcraft game) {
+        // disable continuous rendering
+        Gdx.graphics.setContinuousRendering(false);
+
         this.game = game;
         this.batch = game.batch;
     }
@@ -51,6 +54,7 @@ public class Splash implements Screen {
         //  make splash draw itself onto the screen
         splash.draw(batch);
         batch.end();
+        Gdx.graphics.requestRendering();
         currentDuration += delta;
         if(currentDuration > SCREEN_DURATION) {
             game.setScreen(new MainMenu(game));

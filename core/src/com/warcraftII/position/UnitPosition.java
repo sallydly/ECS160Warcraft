@@ -1,3 +1,4 @@
+
 package com.warcraftII.position;
 
 import com.warcraftII.asset.AssetDecoratedMap;

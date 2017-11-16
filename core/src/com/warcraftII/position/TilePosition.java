@@ -1,3 +1,4 @@
+
 package com.warcraftII.position;
 
 import com.warcraftII.GameDataTypes.*;
@@ -81,3 +82,4 @@ public class TilePosition extends Position{
         }
     }
 }
+

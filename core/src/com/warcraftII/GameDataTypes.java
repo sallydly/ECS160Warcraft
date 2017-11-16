@@ -82,6 +82,7 @@ public class GameDataTypes {
         Max
     }
 
+    // This can disappear at some point, to be replaced by the two below
     public enum EAssetType {
         None,
         Peasant,
@@ -104,6 +105,31 @@ public class GameDataTypes {
         Max
     }
 
+    public enum EStaticAssetType {
+        None,
+        GoldMine,
+        TownHall,
+        Keep,
+        Castle,
+        Farm,
+        Barracks,
+        LumberMill,
+        Blacksmith,
+        ScoutTower,
+        GuardTower,
+        CannonTower,
+        Max
+    }
+
+    public enum EUnitType {
+        None,
+        Peasant,
+        Footman,
+        Archer,
+        Ranger,
+        Max
+    }
+
     public enum EDirection {
         North,
         NorthEast,
@@ -114,6 +140,25 @@ public class GameDataTypes {
         West,
         NorthWest,
         Max
+    }
+
+    public enum EUnitState {
+        Idle,
+        Move,
+        Mine,
+        Convey,
+        Repair,
+        Attack,
+        StandGround,
+        BuildSimple,
+        BuildTownHall,
+        BuildFarm,
+        BuildBarracks,
+        BuildLumberMill,
+        BuildScoutTower,
+        BuildBlacksmith,
+        BuildWall,
+        Patrol
     }
 
     public static int to_underlying(Enum enumerator) {
