@@ -72,7 +72,8 @@ public class PlayerData {
                 else
                 {
                     // initialize units
-                    allUnits.AddUnit(AssetInit.DTilePosition, assetType, color);
+                    //TODO: un-comment later
+//                    allUnits.AddUnit(AssetInit.DTilePosition, assetType, color);
                 }
 
             }

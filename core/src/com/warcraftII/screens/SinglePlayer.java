@@ -32,9 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.math.Vector3;
-<<<<<<< HEAD
 import com.warcraftII.GameDataTypes;
-=======
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.InputMultiplexer;
@@ -45,7 +43,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
->>>>>>> sprite_buttons_TBM
 import com.warcraftII.Warcraft;
 import com.warcraftII.asset.AssetDecoratedMap;
 import com.warcraftII.asset.SAssetInitialization;
@@ -168,23 +165,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
 //        stage = new Stage(new ScreenViewport());
         sb = new SpriteBatch();
-<<<<<<< HEAD
-        texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-/*      allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(9,4,texture);
-        allUnits.AddUnit(121,40,texture);
-        allUnits.AddUnit(47,68,texture);
-        allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(91,123,texture);
 
-        allUnits.AddUnit(5,123,texture);*/
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-=======
 
         allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
         allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman);
         allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
         allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
+
 
 //        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -218,7 +205,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 return true;
             }
         });
->>>>>>> sprite_buttons_TBM
 
         attackButton.addListener(new InputListener() {
             @Override
@@ -618,13 +604,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         float ratio = initialDistance / distance;
         float newZoomLevel = prevZoom * ratio;
         // change zoom level only if above minimum level
-<<<<<<< HEAD
-        if (.25f <= newZoomLevel) {
-            camera.zoom = newZoomLevel;
-=======
+
         if (.5f <= newZoomLevel) {
             mapCamera.zoom = newZoomLevel;
->>>>>>> sprite_buttons_TBM
         }
 
         // limit zoom to showing full map

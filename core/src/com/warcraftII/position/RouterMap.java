@@ -79,7 +79,7 @@ public class RouterMap {
         //TODO: Can LinkedLists work??
         Queue< SSearchTarget > SearchQueue = new LinkedList<SSearchTarget>();
 
-        TargetTile.SetFromPixel(target);
+        TargetTile.setFromPixel(target);
         if((DMap.size() != MapHeight + 2)||(DMap.get(0).size() != MapWidth + 2)){
             int LastYIndex = MapHeight + 1;
             int LastXIndex = MapWidth + 1;

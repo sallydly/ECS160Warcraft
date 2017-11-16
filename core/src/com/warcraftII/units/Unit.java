@@ -5,7 +5,6 @@ package com.warcraftII.units;
  * Is the basis for all units.
  */
 import com.badlogic.gdx.Gdx;
-<<<<<<< HEAD
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,19 +12,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
-=======
+
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import java.util.*;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.warcraftII.GameDataTypes;
 import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.position.TilePosition;
-import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain.TileTypes;
->>>>>>> sprite_buttons_TBM
 
 public class Unit {
     public Vector<IndividualUnit> unitVector;
@@ -143,25 +134,8 @@ public class Unit {
         unitVector.add(newUnit);
     }
 
-<<<<<<< HEAD
-    public void AddUnit(TilePosition tilePosition, GameDataTypes.EAssetType type, GameDataTypes.EPlayerColor player) {
-        IndividualUnit newUnit = new IndividualUnit();
-        if (type == GameDataTypes.EAssetType.Peasant) {
-            Texture texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-            newUnit.sprite = new Sprite(texture);
-            newUnit.sprite.setSize(72, 72);
-            UnitPosition upos = new UnitPosition(tilePosition);
-            newUnit.sprite.setPosition(upos.X(), upos.Y());
-            newUnit.currentxmove = upos.X();
-            newUnit.currentymove = upos.Y();
-            unitVector.add(newUnit);
-        }
-    }
 
-    public void AllMovement() {
-=======
     public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
->>>>>>> sprite_buttons_TBM
         for (int i = 0; i < unitVector.size(); i++) {
             if (unitVector.elementAt(i).curHP <= 0) {
                 unitVector.remove(i);
@@ -245,10 +219,11 @@ public class Unit {
         if ((cur.sprite.getX()+32 != cur.currentxmove) || (cur.sprite.getY()+32 != cur.currentymove)) {
             //TODO: delete later
             UnitPosition unitPosition = new UnitPosition(Math.round(cur.sprite.getX()), Math.round(cur.sprite.getY()));
-            TilePosition tilePosition = new TilePosition(unitPosition, map.Height());
-            Vector<Vector<TileTypes.ETileType>> DMap = map.getMap();
+            TilePosition tilePosition = new TilePosition(unitPosition);
+//            Vector<Vector<TileTypes.ETileType>> DMap = map.GetMap(0);
             TileTypes.ETileType nextTile;
-            nextTile = DMap.get(tilePosition.X()).get(tilePosition.Y());
+//            nextTile = DMap.get(tilePosition.X()).get(tilePosition.Y());
+            nextTile = map.TileType(tilePosition);
             if (!map.IsTraversable(nextTile)){
                 cur.curState = GameDataTypes.EUnitState.Idle;
                 Gdx.app.log("Unit", "Stopped moving!");
