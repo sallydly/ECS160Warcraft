@@ -1,5 +1,6 @@
 package com.warcraftII.screens;
 
+import java.lang.String;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -20,41 +22,59 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.GameData;
+import com.warcraftII.GameDataTypes;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
-import com.warcraftII.asset.AssetDecoratedMap;
-import com.warcraftII.asset.StaticAssetParser;
-import com.warcraftII.terrain.MapRenderer;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.player_asset.PlayerAssetType;
+import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.renderer.StaticAssetRenderer;
+import com.warcraftII.position.*;
+import com.warcraftII.renderer.MapRenderer;
+import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
+import com.warcraftII.units.UnitActions;
 
+import static com.warcraftII.GameData.TILE_WIDTH;
+import static java.lang.Math.round;
 import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
-    private TextureAtlas terrain;
-    private SpriteBatch batch;
-    private Sprite tile;
-    private Music readySound;
-    private SpriteBatch sb;
-    private Texture texture;
-    private Skin skin;
-    private Vector<Sprite> peasantVector;
 
-    private AssetDecoratedMap map;
-    private TiledMap tiledMap;
-    private OrthogonalTiledMapRenderer orthomaprenderer;
-    private MapProperties properties;
-
+    private GameData gameData;
+    // More concise access to data members of gameData:
     private Unit allUnits;
+    private SpriteBatch batch;
+    private SpriteBatch sb;
 
+
+    private Music readySound;
+
+    private int movement;
+    public int attack;
+    public int patrol;
+    public int mine;
+    public int ability;
+    private InputMultiplexer multiplexer;
+
+    private TextButton movementButton;
+    private TextButton stopButton;
+    private TextButton patrolButton;
+    private TextButton attackButton;
+    private TextButton newAbility;
+
+
+    public OrthogonalTiledMapRenderer orthomaprenderer;
     private OrthographicCamera mapCamera;
     private FitViewport mapViewport;
     private Stage mapStage;
@@ -65,10 +85,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private Table sidebarTable;
 
-    // height and width of each map tile in pixels
-    // TODO: may want to put these in a constants file or get MapParser.getTileHeight/getTileWidth working
-    private int tileHeight = 32;
-    private int tileWidth = 32;
 
     private float prevZoom = 1;
     // mapCamera zoom levels to fit map height/width
@@ -76,12 +92,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float widthZoomRatio;
 
     private double prevDistance = 0;
-    private float currentXMove;
-    private float currentYMove;
-    private int movementFlag;
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
-        this.batch = game.batch;
+        gameData = new GameData(game.DMapName); // IMPORTANT
+        // initialize easy-access reference variables.
+        batch = gameData.batch = game.batch;
+        allUnits = gameData.allUnits;
+        sb = gameData.sb;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -104,25 +122,94 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void show() {
-        allUnits = new Unit();
-        terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
-        skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
+        movement = 0;
+        attack = 0;
+        patrol = 0;
+        ability = 0;
+        mine = 0;
+/*
+        TextureAtlas[] unitTextures = {
+                new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
+                new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
+        };
+*/
 
+/* Do we need this code???
         tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
         tile.setScale(5);
         tile.setPosition(300, 300);
+        table = new Table(skin);
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        table.align(Align.bottomLeft);
+        */
 
-        sb = new SpriteBatch();
-        texture = new Texture(Gdx.files.internal("img/PeasantStatic.png"));
-        allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(9,4,texture);
-        allUnits.AddUnit(121,40,texture);
-        allUnits.AddUnit(47,68,texture);
-        allUnits.AddUnit(67,3,texture);
-        allUnits.AddUnit(91,123,texture);
-        allUnits.AddUnit(5,123,texture);
+//        stage = new Stage(new ScreenViewport());
 
-        mapCamera = new OrthographicCamera();
+
+        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
+        gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman);
+        gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
+        gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
+
+
+//        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Make Buttons for the Unit Actions
+        gameData.unitActions.createBasicSkin();
+
+        movementButton = new TextButton("Move", gameData.unitActions.skin);
+        stopButton = new TextButton("Stop", gameData.unitActions.skin);
+        patrolButton = new TextButton("Patrol", gameData.unitActions.skin);
+        attackButton = new TextButton("Attack", gameData.unitActions.skin);
+        movementButton.setPosition(5 , 10);
+        stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
+        patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
+        attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
+        movementButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                movement = 1;
+                return true;
+            }
+        });
+
+        stopButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                allUnits.stopMovement();
+                movement = 0;
+                patrol = 0;
+                attack = 0;
+                mine = 0;
+                ability = 0;
+                return true;
+            }
+        });
+
+        attackButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                attack = 1;
+                return true;
+            }
+        });
+
+        patrolButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                patrol = 1;
+                return true;
+            }
+        });
+
+//        stage.addActor(movementButton);
+//        stage.addActor(stopButton);
+//        stage.addActor(patrolButton);
+//        stage.addActor(attackButton);
+        
+	    mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
         mapStage = new Stage(mapViewport);
 
@@ -203,42 +290,32 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
 //        sidebarStage.getViewport().getCamera().update();
 
-        // Loading the map:
-        tiledMap = new TiledMap();
-        MapLayers layers = tiledMap.getLayers();
 
+        gameData.RenderMap(); // renders the map.
+        orthomaprenderer = new OrthogonalTiledMapRenderer(gameData.tiledMap);
 
-        /* This section reads in from the terrainmap,
-        feeds it to the map renderer, and adds a layer to the tilemap */
-        int MapNum = AssetDecoratedMap.FindMapIndex(game.DMapName);
-        log.info(String.valueOf(MapNum));
-        map = AssetDecoratedMap.GetMap(MapNum);
+//        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
 
-        MapRenderer mapRenderer = new MapRenderer(map);
-        StaticAssetParser staticAssetParser = new StaticAssetParser();
-
-        TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
-        layers.add(tileLayerBase);
-
-        TiledMapTileLayer staticAssetsLayer = staticAssetParser.addStaticAssets(map);
-        layers.add(staticAssetsLayer);
-
-        orthomaprenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
-        mapCamera.position.set(mapCamera.viewportWidth, mapCamera.viewportHeight, 0);
-
-        Gdx.input.setInputProcessor(new GestureDetector(this));
+        multiplexer = new InputMultiplexer();
+//        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(new GestureDetector(this));
+        Gdx.input.setInputProcessor(multiplexer);
+        // Gdx.input.setInputProcessor(stage);
+        //Gdx.input.setInputProcessor(new GestureDetector(this));
 
         // calculate zoom levels to show entire map height/width
-        heightZoomRatio = map.Height() * tileHeight / mapCamera.viewportHeight;
-        widthZoomRatio = map.Width() * tileWidth / mapCamera.viewportWidth;
+//        heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
+//        widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
+        gameData.elapsedTime = 0;
     }
+
+
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        gameData.elapsedTime += Gdx.graphics.getDeltaTime();
         batch.begin();
         mapStage.getViewport().apply();
         mapStage.act();
@@ -249,18 +326,60 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch.end();
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
+        Texture selected = new Texture(Gdx.files.internal("img/select.png"));
         int counter = 0;
         while(counter < allUnits.unitVector.size()){
-            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
-            temp_peasant.draw(sb);
+            Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
+            //temp_peasant.draw(sb);
+            // TODO: This isn't a good way of doing the selection and should be improved
+            if (temp_peasant.selected) {
+                sb.draw(selected,temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
+            }
+            sb.draw(temp_peasant.curAnim.getKeyFrame(gameData.elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
         }
         sb.end();
-        allUnits.AllMovement();
-
-        sidebarStage.getViewport().apply();
+//        stage.act();
+//        stage.draw();
+	    sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
+        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+    }
+
+    public void specialButtons() {
+        int counter = 0;
+//        for (Actor actor : stage.getActors()) {
+//            if (counter > 3)
+//                actor.remove();
+//            counter = counter + 1;
+//        }
+        for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
+            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
+                newAbility = new TextButton("Mine", gameData.unitActions.skin);
+                newAbility.setPosition(5, 70+(20*(i+1))+((3+i+1)*Gdx.graphics.getHeight() / 10));
+                newAbility.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        mine = 1;
+                        return true;
+                    }
+                });
+//                stage.addActor(newAbility);
+            }
+            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.RangerScouting) {
+                newAbility = new TextButton("Ranger Scouting", gameData.unitActions.skin);
+                newAbility.setPosition(5, 70 + (20 * (i + 1)) + ((3 + i + 1) * Gdx.graphics.getHeight() / 10));
+                newAbility.addListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        ability = 1;
+                        return true;
+                    }
+                });
+//                stage.addActor(newAbility);
+            }
+        }
     }
 
     @Override
@@ -285,16 +404,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void dispose() {
-        terrain.dispose();
+        gameData.dispose();
         mapStage.dispose();
         sidebarStage.dispose();
-        skin.dispose();
-        tiledMap.dispose();
         orthomaprenderer.dispose();
     }
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapCamera.unproject(clickCoordinates);
         int counter = 0;
@@ -303,17 +421,51 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
             if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
-                // TODO Play Peasant Sound here
+                // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
                 // PEASANT SELECTED ==
+                if (attack == 1) {
+                    unit_selected = 1;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
+                    attack = 0;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
+                    break;
+                }
+                //TODO
+                //if (ability == 1) {
+                //}
                 allUnits.selectedUnitIndex = counter;
                 unit_selected = 1;
+                allUnits.unitVector.elementAt(counter).selected = true;
+            } else {
+                allUnits.unitVector.elementAt(counter).selected = false;
             }
             counter+=1;
         }
-        if (unit_selected == 0) {
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = position.y;
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = position.x;
+        specialButtons();
+        //if asset is at position.x position.y then assetSelected = 1 and selectedAsset =  asset
+        if (unit_selected == 0 && movement == 1) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+	        movement = 0;
         }
+        if (unit_selected == 0 && patrol == 1) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Patrol;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX();
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY();
+            patrol = 0;
+        }
+        //TODO
+        //if (unit_selected == 0 && assetSelected == 1){
+          //  if (assetSelected == Goldmine && mine == 1) {
+            //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
+              //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+               // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+                //mine = 1;
+            //}
+        //}
         return true;
     }
 
@@ -351,7 +503,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         float ratio = initialDistance / distance;
         float newZoomLevel = prevZoom * ratio;
         // change zoom level only if above minimum level
-        if (.5f <= newZoomLevel) {
+
+        if (.25f <= newZoomLevel) {
             mapCamera.zoom = newZoomLevel;
         }
 
@@ -367,11 +520,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // The left boundary of the map (x)
         int mapLeft = 0;
         // The right boundary of the map (x + width)
-        int mapRight = map.Width() * tileWidth;
+        int mapRight = gameData.map.Width() * gameData.TILE_WIDTH;
         // The bottom boundary of the map (y)
         int mapBottom = 0;
         // The top boundary of the map (y + height)
-        int mapTop = map.Height() * tileHeight;
+        int mapTop = gameData.map.Height() * gameData.TILE_HEIGHT;
 
         // The mapCamera dimensions, halved
         float cameraHalfWidth = mapCamera.viewportWidth * mapCamera.zoom * .5f;
@@ -385,7 +538,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // Horizontal axis
         // if map width is smaller than viewport width
-        if (map.Width() * tileWidth / mapCamera.zoom < mapCamera.viewportWidth) {
+        if (gameData.map.Width() *  GameData.TILE_HEIGHT / mapCamera.zoom < mapCamera.viewportWidth) {
             // if can zoom out more to show entire map height
             if (widthZoomRatio < heightZoomRatio) {
                 // position mapCamera at center of map horizontally
@@ -408,7 +561,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // Vertical axis
         // if map height is smaller than viewport height
-        if (map.Height() * tileHeight / mapCamera.zoom < mapCamera.viewportHeight) {
+        if (gameData.map.Height() * gameData.TILE_HEIGHT / mapCamera.zoom < mapCamera.viewportHeight) {
             // if can zoom out more to show entire map width
             if (widthZoomRatio > heightZoomRatio) {
                 // position mapCamera at center of map vertically

@@ -1,15 +1,13 @@
-package com.warcraftII.terrain;
+package com.warcraftII.terrain_map;
 
 
-import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.Tokenizer;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
 import com.warcraftII.position.TilePosition;
-import com.warcraftII.terrain.TileTypes.*;
+import com.warcraftII.terrain_map.TileTypes.*;
 
-import com.badlogic.gdx.Gdx;
-import java.io.IOException;
 import java.util.Vector;
 
 public class TerrainMap {
@@ -28,13 +26,18 @@ public class TerrainMap {
     };
     protected Vector<Vector<ETileType>> DMap;
     protected Vector<Vector<ETerrainTileType>> DTerrainMap;
-    protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed
+    protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed (and it with 0xFF to get unsigned val)
     protected Vector<Vector<Integer>> DMapIndices;
     protected boolean DRendered;
     protected String DMapName;
+    protected String DMapDescription;
+
+    protected Logger log;
 
     public TerrainMap() {
         this.DRendered = false;
+
+        log = new Logger("TerrainMap", 2);
     }
 
     public TerrainMap(final TerrainMap map) {
@@ -44,8 +47,9 @@ public class TerrainMap {
         this.DMap = map.DMap;
         this.DMapIndices = map.DMapIndices;
         this.DRendered = map.DRendered;
-    }
 
+        log = new Logger("TerrainMap", 2);
+    }
 
 
     /*  The important get() functions of TerrainMap: */
@@ -234,6 +238,7 @@ public class TerrainMap {
         DTerrainMap = new Vector<Vector<ETerrainTileType>>();
         DTerrainMap.clear();
 
+        //read map name
         DMapName = LineSource.read();
         if(DMapName.isEmpty()) {
             return returnStatus;
@@ -255,6 +260,39 @@ public class TerrainMap {
         if ((8 > mapWidth) || (8 > mapHeight)) {
             return returnStatus;
         }
+
+        /*
+         * HM: expecting map's description here
+         * TODO: may want to have some code to check for error while reading map description
+         */
+        tempString = LineSource.read();
+        if(tempString.isEmpty()) {
+            return returnStatus;
+        }
+        if(LineSource.isDIsAfterComment()) {
+            //first line of map description
+            DMapDescription = tempString;
+        }
+        tempString = LineSource.read();
+        if(tempString.isEmpty()) {
+            return returnStatus;
+        }
+        /*
+         * HM: expecting that there's no comments in map description
+         * if encounters a comment, expect the next field be map tileset (path to Terrain.dat)
+         */
+        while(LineSource.isDIsAfterComment() == false) {
+            DMapDescription += ("\n" + tempString);
+            tempString = LineSource.read();
+            if(tempString.isEmpty()) {
+                return returnStatus;
+            }
+        }
+        log.info("Map Description: " + DMapDescription + " END OF MAP DESCRIPTION");
+        //IMPORTANT: at this point tempString should already contain map tileset (path to Terrain.dat)
+
+        //TODO: codes related to Map Tileset goes here, if necessary
+
         while (StringMap.size() < mapHeight + 1) {
             tempString = LineSource.read();
             if(tempString.isEmpty()) {
@@ -358,7 +396,6 @@ public class TerrainMap {
             DPartials.set(i,TempPartialsRow);
         }
         returnStatus = true;
-        System.out.println(DTerrainMap.size());
         return returnStatus;
     }
     /**
@@ -474,6 +511,7 @@ public class TerrainMap {
                 Index = TypeIndex;
             } else {
                 Type = ETileType.Stump;
+                log.debug("I am stump");
                 Index = ((ETerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((ETerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((ETerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((ETerrainTileType.Forest == LR) ? 0x8 : 0x0);
             }
         } else if ((ETerrainTileType.LightDirt == UL) || (ETerrainTileType.LightDirt == UR) || (ETerrainTileType.LightDirt == LL) || (ETerrainTileType.LightDirt == LR)) {
@@ -533,4 +571,45 @@ public class TerrainMap {
         DMapIndices.set(y, changeVec2);
     }
 
+
+    /**
+     * This function changes the tile to match the surrounding terrain,
+     * for example used when lumber is removed from forest tile
+     *
+     * @param[in] xindex The x coordinate of the tile
+     * @param[in] yindex The y coordinate of the tile
+     * @param[in] val New value of partial at the coordinate
+     *
+     * @return Nothing
+     *
+     */
+
+    public void ChangeTerrainTilePartial(int xindex, int yindex, byte val){
+        log.info("Changing Terrain Tile Partial");
+        if((0 > yindex)||(0 > xindex)){
+            return;
+        }
+        if(yindex >= DPartials.size()){
+            return;
+        }
+        if(xindex >= DPartials.get(0).size()){
+            return;
+        }
+        Vector<Byte> modRow = DPartials.get(yindex);
+        modRow.set(xindex, Byte.valueOf(val));
+        DPartials.set(yindex,modRow);
+        for(int YOff = 0; YOff < 2; YOff++){
+            for(int XOff = 0; XOff < 2; XOff++){
+                if(DRendered){
+                    int XPos = xindex + XOff;
+                    int YPos = yindex + YOff;
+                    if((0 < XPos)&&(0 < YPos)){
+                        if((YPos + 1 < DMap.size())&&(XPos + 1 < DMap.get(YPos).size())){
+                            SetTileTypeAndIndex(XPos-1, YPos-1);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

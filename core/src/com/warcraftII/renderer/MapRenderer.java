@@ -1,4 +1,4 @@
-package com.warcraftII.terrain;
+package com.warcraftII.renderer;
 
 /**
  * Created by Kimi on 11/3/2017.
@@ -6,14 +6,18 @@ package com.warcraftII.terrain;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 
-import com.warcraftII.terrain.TileTypes.*;
+import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.position.TilePosition;
+import com.warcraftII.terrain_map.TerrainMap;
+import com.warcraftII.terrain_map.TileTypes;
+import com.warcraftII.terrain_map.TileTypes.*;
 
 import java.util.Vector;
 
@@ -25,13 +29,18 @@ import java.util.Vector;
 
 
 public class MapRenderer {
-
+    private static Logger log = new Logger("MapRenderer", 2);
     TextureAtlas DTerrainTextures = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
     TerrainMap DMap;
     Vector<Vector<Vector<TextureRegion> > > DTileTextures;
+    int DMapHeight;
+    int DMapWidth;
 
     public MapRenderer(TerrainMap map) {
         DMap = map;
+
+        DMapWidth = DMap.Width();
+        DMapHeight = DMap.Height();
 
         // Resize DTileTextures with the terrain map
         DTileTextures = new Vector<Vector<Vector<TextureRegion> > >();
@@ -221,15 +230,12 @@ public class MapRenderer {
             DMap.RenderTerrain();
         }
 
-        int Width = DMap.Width();
-        int Height = DMap.Height();
-
-        TiledMapTileLayer tileLayerBase = new TiledMapTileLayer(Width, Height, 32, 32);
-
+        TiledMapTileLayer tileLayerBase = new TiledMapTileLayer(DMapWidth, DMapHeight, 32, 32);
+        tileLayerBase.setName("Terrain");
         // Draw map based on TileWidth and TileHeight
 
-        for(int YIndex = 0; YIndex < Height; YIndex++){
-            for(int XIndex = 0; XIndex < Width; XIndex++ ){
+        for(int YIndex = 0; YIndex < DMapHeight; YIndex++){
+            for(int XIndex = 0; XIndex < DMapWidth; XIndex++ ){
                 ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
                 int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
 
@@ -244,7 +250,7 @@ public class MapRenderer {
                     if(null != textureRegion){
                         // need to invert both y axis:
                         int Xpos =  XIndex;
-                        int Ypos = Height - 1 - YIndex;
+                        int Ypos = DMapHeight - 1 - YIndex;
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                         cell.setTile(new StaticTiledMapTile(textureRegion));
                         tileLayerBase.setCell(Xpos, Ypos, cell);
@@ -260,4 +266,86 @@ public class MapRenderer {
         return tileLayerBase;
 
     } // end DrawMap() function
+
+    /**
+     * UpdateTile takes in a tile position object, and the tile layer.
+     * and updates the tile at that position
+     * Will be called by RemoveLumber.
+     */
+    public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer){
+
+        int XIndex = pos.X();
+        int YIndex = pos.Y();
+        ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
+        int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
+
+
+        if (ThisTileType == TileTypes.ETileType.Stump)
+            System.out.println("I will be stump");
+
+        if((0 <= TileIndex)&&(16 > TileIndex)){
+            TextureRegion textureRegion = null;
+            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
+            if(AltTileCount >0){
+                int AltIndex = (XIndex + YIndex) % AltTileCount;
+
+                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+            }
+            if(null != textureRegion){
+                // need to invert both y axis:
+                int Xpos =  XIndex;
+                int Ypos = DMapHeight - 1 - YIndex;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                terrainLayer.setCell(Xpos, Ypos, cell);
+            }
+        }
+        else{
+
+            return;
+        }
+        return;
+
+    }
+
+
+    /**
+     * UpdateTile takes in a tile position object, and the tile layer.
+     * and updates the tile at that position
+     * Will be called by RemoveLumber.
+     */
+    public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer, AssetDecoratedMap  map){
+        int XIndex = pos.X();
+        int YIndex = pos.Y();
+        ETileType ThisTileType = map.TileType(XIndex, YIndex);
+        int TileIndex = map.TileTypeIndex(XIndex, YIndex);
+
+        if (ThisTileType == TileTypes.ETileType.Stump)
+            log.debug("I will be stump");
+
+        if((0 <= TileIndex)&&(16 > TileIndex)){
+            TextureRegion textureRegion = null;
+            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
+            if(AltTileCount >0){
+                int AltIndex = (XIndex + YIndex) % AltTileCount;
+
+                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+            }
+            if(null != textureRegion){
+                // need to invert both y axis:
+                int Xpos =  XIndex;
+                int Ypos = DMapHeight - 1 - YIndex;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                terrainLayer.setCell(Xpos, Ypos, cell);
+                System.out.println("We setting cocrrectly?");
+            }
+        }
+        else{
+
+            return;
+        }
+        return;
+
+    }
 } // end MapRenderer Class

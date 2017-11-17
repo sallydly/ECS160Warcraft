@@ -82,12 +82,14 @@ public class GameDataTypes {
         Max
     }
 
+    // This can disappear at some point, to be replaced by the two below
     public enum EAssetType {
         None,
         Peasant,
         Footman,
         Archer,
         Ranger,
+        Knight,
         GoldMine,
         TownHall,
         Keep,
@@ -99,6 +101,34 @@ public class GameDataTypes {
         ScoutTower,
         GuardTower,
         CannonTower,
+        Wall,
+        Max
+    }
+
+    public enum EStaticAssetType {
+        None,
+        GoldMine,
+        TownHall,
+        Keep,
+        Castle,
+        Farm,
+        Barracks,
+        LumberMill,
+        Blacksmith,
+        ScoutTower,
+        GuardTower,
+        CannonTower,
+        Wall,
+        Max
+    }
+
+    public enum EUnitType {
+        None,
+        Peasant,
+        Footman,
+        Archer,
+        Ranger,
+        Knight,
         Max
     }
 
@@ -112,6 +142,25 @@ public class GameDataTypes {
         West,
         NorthWest,
         Max
+    }
+
+    public enum EUnitState {
+        Idle,
+        Move,
+        Mine,
+        Convey,
+        Repair,
+        Attack,
+        StandGround,
+        BuildSimple,
+        BuildTownHall,
+        BuildFarm,
+        BuildBarracks,
+        BuildLumberMill,
+        BuildScoutTower,
+        BuildBlacksmith,
+        BuildWall,
+        Patrol
     }
 
     public static int to_underlying(Enum enumerator) {
@@ -128,6 +177,84 @@ public class GameDataTypes {
         }
         return 0;
     }
+
+    public static boolean is_static(EAssetType type) {
+        switch(type) {
+            case None:
+            case Max:
+            case Peasant:
+            case Footman:
+            case Archer:
+            case Ranger:
+            case Knight:
+                return false;
+            case GoldMine:
+            case TownHall:
+            case Keep:
+            case Castle:
+            case Farm:
+            case Barracks:
+            case LumberMill:
+            case Blacksmith:
+            case ScoutTower:
+            case GuardTower:
+            case CannonTower:
+            case Wall:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static EUnitType to_unitType(EAssetType type) {
+        switch(type) {
+            case Peasant:
+                return EUnitType.Peasant;
+            case Footman:
+                return EUnitType.Footman;
+            case Archer:
+                return EUnitType.Archer;
+            case Ranger:
+                return EUnitType.Ranger;
+            case Knight:
+                return EUnitType.Knight;
+            default:
+                return EUnitType.None;
+        }
+    }
+
+    public static EStaticAssetType to_staticAssetType(EAssetType type) {
+        switch(type) {
+            case GoldMine:
+                return EStaticAssetType.GoldMine;
+            case TownHall:
+                return EStaticAssetType.TownHall;
+            case Keep:
+                return EStaticAssetType.Keep;
+            case Castle:
+                return EStaticAssetType.Castle;
+            case Farm:
+                return EStaticAssetType.Farm;
+            case Barracks:
+                return EStaticAssetType.Barracks;
+            case LumberMill:
+                return EStaticAssetType.LumberMill;
+            case Blacksmith:
+                return EStaticAssetType.Blacksmith;
+            case ScoutTower:
+                return EStaticAssetType.ScoutTower;
+            case GuardTower:
+                return EStaticAssetType.GuardTower;
+            case CannonTower:
+                return EStaticAssetType.CannonTower;
+            case Wall:
+                return EStaticAssetType.Wall;
+            default:
+                return EStaticAssetType.None;
+        }
+
+    }
+
 }
 
 // TODO: redefine DirectionOpposite function

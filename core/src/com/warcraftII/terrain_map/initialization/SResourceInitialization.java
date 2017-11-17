@@ -1,4 +1,4 @@
-package com.warcraftII.asset;
+package com.warcraftII.terrain_map.initialization;
 
 import com.warcraftII.GameDataTypes.*;
 
@@ -15,4 +15,5 @@ public class SResourceInitialization {
     public EPlayerColor DColor;
     public int DGold;
     public int DLumber;
+    public int DStone;
 }

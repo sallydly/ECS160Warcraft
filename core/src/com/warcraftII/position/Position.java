@@ -1,3 +1,4 @@
+
 package com.warcraftII.position;
 
 import com.warcraftII.GameDataTypes.*;
@@ -31,15 +32,23 @@ public class Position {
     protected static int DHalfTileWidth;
     protected static int DHalfTileHeight;
 
+    protected static int DMapHeight;
+    protected static int DMapWidth;
+    
+
     /*
      * Should call initVectors once a Position object is instantiated
      */
+        /*
+    * Should call initVectors once a Position object is instantiated
+    */
     static {
         initVectors();
     }
 
     protected static Vector<Vector<EDirection>> DOctant;
     protected static Vector<Vector<EDirection>> DTileDirections;
+
 
     /*
      * Fills the direction vectors in DOctant and DTileDirections
@@ -128,8 +137,8 @@ public class Position {
     protected EDirection directionTo(Position pos) {
         //divX and dixY get the change in X and Y in terms of halfTileWidth
         Position deltaPosition = new Position((pos.DX - DX), (pos.DY - DY));
-        int divX = deltaPosition.DX / halfTileWidth();
-        int divY = deltaPosition.DY / halfTileHeight();
+        int divX = deltaPosition.DX / DHalfTileWidth;
+        int divY = deltaPosition.DY / DHalfTileHeight;
         int div;
 
         //make sure they're positive
@@ -143,19 +152,19 @@ public class Position {
             deltaPosition.DX /= div;
             deltaPosition.DY /= div;
         }
-        deltaPosition.DX += halfTileWidth();
-        deltaPosition.DY += halfTileHeight();
+        deltaPosition.DX += DHalfTileWidth;
+        deltaPosition.DY += DHalfTileHeight;
         if (0 > deltaPosition.DX) {
             deltaPosition.DX = 0;
         }
         if (0 > deltaPosition.DY) {
             deltaPosition.DY = 0;
         }
-        if (tileWidth() <= deltaPosition.DX) {
-            deltaPosition.DX = tileWidth() - 1;
+        if (DTileWidth <= deltaPosition.DX) {
+            deltaPosition.DX = DTileWidth - 1;
         }
-        if (tileHeight() <= deltaPosition.DY) {
-            deltaPosition.DY = tileHeight() - 1;
+        if (DTileHeight <= deltaPosition.DY) {
+            deltaPosition.DY = DTileHeight - 1;
         }
         return deltaPosition.tileOctant();
     }
@@ -164,7 +173,7 @@ public class Position {
      *
      */
     protected EDirection tileOctant() {
-        return DOctant.get(DY % DTileHeight).get(DX % DTileWidth);
+        return DOctant.get((int)DY % DTileHeight).get((int)DX % DTileWidth);
     }
 
     /*
@@ -246,29 +255,32 @@ public class Position {
         return DY;
     }
 
+
     /*
      * sets DTileWidth, DTileHeight, DHalfTileWidth, and DHalfTileHeight
      *
      */
     public static void setTileDimensions(int width, int height) {
+        initVectors();
+
         if ((0 < width) && (0 < height)) {
             DTileWidth = width;
             DTileHeight = height;
             DHalfTileWidth = width / 2;
             DHalfTileHeight = height / 2;
 
-            DOctant.setSize(DTileHeight);
 
             //iterate through the vector, resize each inner row
+            DOctant.setSize(DTileHeight);
             for (int i = 0; i < DOctant.size(); i++) {
-                for (int j = 0; j < DOctant.get(i).size(); j++) {
-                    //FIXME: This might be done incorrectly, DOctant.get(j) might return a copy...
-                    DOctant.get(j).setSize(DTileWidth);
-                }
+                Vector<EDirection> modRow =  new Vector<EDirection>();
+                modRow.setSize(DTileWidth);
+                DOctant.set(i,modRow);
             }
 
 
             for (int Y = 0; Y < DTileHeight; Y++) {
+                Vector<EDirection> modRow = DOctant.get(Y);
                 for (int X = 0; X < DTileWidth; X++) {
                     int xDistance = X - DHalfTileWidth;
                     int yDistance = Y - DHalfTileHeight;
@@ -280,7 +292,7 @@ public class Position {
                     yDistance *= yDistance;
 
                     if (0 == (xDistance + yDistance)) {
-                        DOctant.get(Y).set(X, EDirection.Max);
+                        modRow.set(X, EDirection.Max);
                         continue;
                     }
                     sinSquared = (double) yDistance / (xDistance + yDistance);
@@ -288,34 +300,35 @@ public class Position {
                     if (0.1464466094 > sinSquared) {
                         // East or West
                         if (negativeX) {
-                            DOctant.get(Y).set(X, EDirection.West); // West
+                            modRow.set(X, EDirection.West); // West
                         } else {
-                            DOctant.get(Y).set(X, EDirection.East); // East
+                            modRow.set(X, EDirection.East); // East
                         }
                     } else if (0.85355339059 > sinSquared) {
                         // NE, SE, SW, NW
                         if (negativeY) {
                             if (negativeX) {
-                                DOctant.get(Y).set(X, EDirection.SouthWest); // SW
+                                modRow.set(X, EDirection.SouthWest); // SW
                             } else {
-                                DOctant.get(Y).set(X, EDirection.SouthEast); // SE
+                                modRow.set(X, EDirection.SouthEast); // SE
                             }
                         } else {
                             if (negativeX) {
-                                DOctant.get(Y).set(X, EDirection.NorthWest); // NW
+                                modRow.set(X, EDirection.NorthWest); // NW
                             } else {
-                                DOctant.get(Y).set(X, EDirection.NorthEast); // NE
+                                modRow.set(X, EDirection.NorthEast); // NE
                             }
                         }
                     } else {
                         // North or South
                         if (negativeY) {
-                            DOctant.get(Y).set(X, EDirection.South); // South
+                            modRow.set(X, EDirection.South); // South
                         } else {
-                            DOctant.get(Y).set(X, EDirection.North); // North
+                            modRow.set(X, EDirection.North); // North
                         }
                     }
                 }
+                DOctant.set(Y,modRow);
             }
         }
     }
@@ -324,7 +337,7 @@ public class Position {
         return DTileWidth;
     }
 
-    public static int tileHeight() {
+    public  static int tileHeight() {
         return DTileHeight;
     }
 
@@ -337,3 +350,4 @@ public class Position {
     }
 
 }
+

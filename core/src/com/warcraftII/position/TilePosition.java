@@ -1,3 +1,4 @@
+
 package com.warcraftII.position;
 
 import com.warcraftII.GameDataTypes.*;
@@ -20,7 +21,30 @@ public class TilePosition extends Position{
         super(pos);
     }
 
-    public void SetFromPixel(PixelPosition pos) {
+    //SUPER IMPORTANT: Constructor from UnitPosition
+    public TilePosition(UnitPosition upos){
+        DX = (int) (upos.X() / DTileWidth);
+        DY = (int)(DMapHeight - upos.Y() / DTileHeight);
+    }
+
+
+
+    public void SetFromUnit(UnitPosition upos) {
+        DX = (int) (upos.X() / DTileWidth);
+        DY = DMapHeight - (int) (upos.Y() / DTileHeight);
+    }
+
+    public void setXFromUnit(int x) {
+        DX = (int) (x / DTileWidth);
+    }
+
+    public void setYFromUnit(int y) {
+        DY = DMapHeight - (int) (y / DTileHeight);
+    }
+
+
+
+    public void setFromPixel(PixelPosition pos) {
         DX = pos.X() / DTileWidth;
         DY = pos.Y() / DTileHeight;
     }
@@ -52,9 +76,10 @@ public class TilePosition extends Position{
             thisPixelPosition.setFromTile(this);
             targetPixelPosition.setFromTile(pos);
 
-            targetTilePosition.SetFromPixel( thisPixelPosition.closestPosition(targetPixelPosition,
+            targetTilePosition.setFromPixel( thisPixelPosition.closestPosition(targetPixelPosition,
                                                                                 objSize) );
             return adjacentTileDirection(targetTilePosition, 1);
         }
     }
 }
+

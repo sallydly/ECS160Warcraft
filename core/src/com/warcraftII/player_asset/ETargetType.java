@@ -1,4 +1,4 @@
-package com.warcraftII.asset.player;
+package com.warcraftII.player_asset;
 
 /**
  * Created by Kevin on 10/29/2017.
