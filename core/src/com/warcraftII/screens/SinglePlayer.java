@@ -1,7 +1,7 @@
 package com.warcraftII.screens;
 
-import java.lang.String;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,40 +12,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
-import com.warcraftII.terrain_map.AssetDecoratedMap;
-import com.warcraftII.player_asset.PlayerAssetType;
-import com.warcraftII.player_asset.PlayerData;
-import com.warcraftII.renderer.StaticAssetRenderer;
-import com.warcraftII.position.*;
-import com.warcraftII.renderer.MapRenderer;
-import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
-import com.warcraftII.units.UnitActions;
 
-import static com.warcraftII.GameData.TILE_WIDTH;
 import static java.lang.Math.round;
-import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -304,8 +289,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //Gdx.input.setInputProcessor(new GestureDetector(this));
 
         // calculate zoom levels to show entire map height/width
-//        heightZoomRatio = map.Height() * tileHeight / camera.viewportHeight;
-//        widthZoomRatio = map.Width() * tileWidth / camera.viewportWidth;
+        heightZoomRatio = gameData.map.Height() * gameData.TILE_HEIGHT / mapCamera.viewportHeight;
+        widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
     }
 
@@ -538,7 +523,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // Horizontal axis
         // if map width is smaller than viewport width
-        if (gameData.map.Width() *  GameData.TILE_HEIGHT / mapCamera.zoom < mapCamera.viewportWidth) {
+        if (gameData.map.Width() * gameData.TILE_HEIGHT / mapCamera.zoom < mapCamera.viewportWidth) {
             // if can zoom out more to show entire map height
             if (widthZoomRatio < heightZoomRatio) {
                 // position mapCamera at center of map horizontally
