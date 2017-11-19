@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -78,6 +79,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private double prevDistance = 0;
 
+    // for multi-selection rectangle
+    private ShapeRenderer shapeRenderer;
+    private float touchStartX = 0;
+    private float touchStartY = 0;
+    private float touchEndX = 0;
+    private float touchEndY = 0;
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
@@ -87,20 +95,31 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sb = gameData.sb;
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
+        this.shapeRenderer = new ShapeRenderer();
     }
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // adjust pointer drag amount by mapCamera zoom level
-        deltaX *= mapCamera.zoom;
-        deltaY *= mapCamera.zoom;
+        // TODO: add if statement for if multi-select button is activated
+        // get current finger position for drag select rectangle
+        // convert x and y from screen coordinates to world coordinates
+        Vector3 screenCoordinates = new Vector3(x, y, 0);
+        Vector3 worldCoordinates = mapCamera.unproject(screenCoordinates, mapViewport.getScreenX(),
+                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
+        touchEndX = worldCoordinates.x;
+        touchEndY = worldCoordinates.y;
 
-        // move mapCamera based on distance of pointer drag
-        mapCamera.translate(-deltaX, deltaY);
-
-        // limit panning to edge of map
-        calculateCameraBounds();
-        mapCamera.update();
+        // TODO: uncomment following lines to enable panning when multi select button is not activated (else statement)
+//        // adjust pointer drag amount by mapCamera zoom level
+//        deltaX *= mapCamera.zoom;
+//        deltaY *= mapCamera.zoom;
+//
+//        // move mapCamera based on distance of pointer drag
+//        mapCamera.translate(-deltaX, deltaY);
+//
+//        // limit panning to edge of map
+//        calculateCameraBounds();
+//        mapCamera.update();
 
         return true;
     }
@@ -193,7 +212,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(stopButton);
 //        stage.addActor(patrolButton);
 //        stage.addActor(attackButton);
-        
+
 	    mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
         mapStage = new Stage(mapViewport);
@@ -301,14 +320,25 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
-        batch.begin();
+
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
+
+        batch.begin();
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
+        // draw multi-selection rectangle
+        mapCamera.update();
+        shapeRenderer.setProjectionMatrix(mapCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(0, 1, 0, 1);
+        shapeRenderer.rect(touchStartX, touchStartY, touchEndX - touchStartX, touchEndY - touchStartY);
+        shapeRenderer.end();
+
         batch.end();
+
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         Texture selected = new Texture(Gdx.files.internal("img/select.png"));
@@ -324,9 +354,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
-//        stage.act();
-//        stage.draw();
-	    sidebarStage.getViewport().apply();
+
+        sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
         allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
@@ -393,11 +422,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.dispose();
         sidebarStage.dispose();
         orthomaprenderer.dispose();
+        shapeRenderer.dispose();
     }
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapCamera.unproject(clickCoordinates);
         int counter = 0;
@@ -451,6 +480,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //mine = 1;
             //}
         //}
+
+        // set start position of multi-selection rectangle
+        Vector3 screenCoordinates = new Vector3(x, y, 0);
+        Vector3 worldCoordinates = mapCamera.unproject(screenCoordinates, mapViewport.getScreenX(),
+                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
+        touchEndX = worldCoordinates.x;
+        touchEndY = worldCoordinates.y;
+        touchStartX = worldCoordinates.x;
+        touchStartY = worldCoordinates.y;
+
         return true;
     }
 
