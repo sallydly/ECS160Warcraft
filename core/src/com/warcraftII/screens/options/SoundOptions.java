@@ -13,9 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
@@ -91,21 +91,21 @@ public class SoundOptions implements Screen {
         Label fxVolumeLabel = new Label("FX Volume:", skin);
         fxVolumeLabel.setStyle(optionsStyle);
         fxVolumeLabel.setFontScale(2);
-        // TODO: change to slider
-        final TextField fxVolumeText = new TextField(Integer.toString(Volume.getFxVolume()), skin);
+        final Slider fxVolumeSlider = new Slider(0, 100, 1, false, skin);
+        fxVolumeSlider.setValue(Volume.getFxVolume());
 
         Label musicVolumeLabel = new Label("Music Volume:", skin);
         musicVolumeLabel.setStyle(optionsStyle);
         musicVolumeLabel.setFontScale(2);
-        // TODO: change to slider
-        final TextField musicVolumeText = new TextField(Integer.toString(Volume.getMusicVolume()), skin);
+        final Slider musicVolumeSlider = new Slider(0, 100, 1, false, skin);
+        musicVolumeSlider.setValue(Volume.getMusicVolume());
 
         optionsTable.add(fxVolumeLabel);
-        optionsTable.add(fxVolumeText).prefWidth(200).expandY();
+        optionsTable.add(fxVolumeSlider).prefWidth(200).expandY();
         optionsTable.row();
 
         optionsTable.add(musicVolumeLabel);
-        optionsTable.add(musicVolumeText).prefWidth(200).expandY();
+        optionsTable.add(musicVolumeSlider).prefWidth(200).expandY();
         optionsTable.row();
 
         table.add(optionsTable).expandY();
@@ -125,8 +125,8 @@ public class SoundOptions implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 log.info("OK button clicked.");
-                Volume.setFxVolume(Integer.valueOf(fxVolumeText.getText()));
-                Volume.setMusicVolume(Integer.valueOf(musicVolumeText.getText()));
+                Volume.setFxVolume(Math.round(fxVolumeSlider.getValue()));
+                Volume.setMusicVolume(Math.round(musicVolumeSlider.getValue()));
                 game.setScreen(new Options(game));
             }
         });
