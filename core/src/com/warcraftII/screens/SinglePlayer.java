@@ -1,7 +1,6 @@
 package com.warcraftII.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -21,6 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -335,13 +335,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                if(!selectButton.isPressed()) {
-                    touchEndX = 0;
-                    touchEndY = 0;
-                    touchStartX = 0;
-                    touchStartY = 0;
-                    return false;
-                }
                 // get start finger position for drag select rectangle
                 // convert x and y from screen coordinates to viewport coordinates
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
@@ -358,21 +351,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                if(!selectButton.isPressed()) {
-                    touchEndX = 0;
-                    touchEndY = 0;
-                    touchStartX = 0;
-                    touchStartY = 0;
-                    return false;
-                }
                 // get end finger position for drag select rectangle
                 // convert x and y from screen coordinates to viewport coordinates
                 Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
                 Vector3 position = mapViewport.unproject(clickCoordinates);
                 touchEndX = position.x;
                 touchEndY = position.y;
-
-                selectUnits(position);
+                if (selectButton.isPressed()) {
+                    selectUnits(position);
+                }
 
                 return true;
             }
@@ -426,6 +413,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.setColor(0, 1, 0, 1);
             shapeRenderer.rect(touchStartX, touchStartY, touchEndX - touchStartX, touchEndY - touchStartY);
             shapeRenderer.end();
+        } else {
+            touchEndX = 0;
+            touchEndY = 0;
+            touchStartY = 0;
+            touchStartX = 0;
         }
 
         batch.end();
@@ -614,6 +606,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        if (selectButton.isPressed()) {
+
+            return false;
+        }
         if (Math.abs(distance) <= 1) {
             return false;
         }
@@ -708,6 +704,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        if (selectButton.isPressed()) {
+            Vector3 clickCoordinates = new Vector3(pointer2.x, pointer2.y, 0);
+            Vector3 position = mapViewport.unproject(clickCoordinates);
+            touchEndX = position.x;
+            touchEndY = position.y;
+        }
         return false;
     }
 
