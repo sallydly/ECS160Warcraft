@@ -2,6 +2,7 @@ package com.warcraftII.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -102,12 +103,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         // TODO: add if statement for if multi-select button is activated
         // get current finger position for drag select rectangle
-        // convert x and y from screen coordinates to world coordinates
-        Vector3 screenCoordinates = new Vector3(x, y, 0);
-        Vector3 worldCoordinates = mapCamera.unproject(screenCoordinates, mapViewport.getScreenX(),
-                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
-        touchEndX = worldCoordinates.x;
-        touchEndY = worldCoordinates.y;
+        // convert x and y from screen coordinates to viewport coordinates
+        Vector3 clickCoordinates = new Vector3(x, y, 0);
+        Vector3 position = mapViewport.unproject(clickCoordinates);
+        touchEndX = position.x;
+        touchEndY = position.y;
 
         // TODO: uncomment following lines to enable panning when multi select button is not activated (else statement)
 //        // adjust pointer drag amount by mapCamera zoom level
@@ -303,6 +303,67 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         multiplexer = new InputMultiplexer();
 //        multiplexer.addProcessor(stage);
         multiplexer.addProcessor(new GestureDetector(this));
+        multiplexer.addProcessor(new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                // get start finger position for drag select rectangle
+                // convert x and y from screen coordinates to viewport coordinates
+                Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = mapViewport.unproject(clickCoordinates);
+
+                // set start position of multi-selection rectangle
+                touchEndX = position.x;
+                touchEndY = position.y;
+                touchStartX = position.x;
+                touchStartY = position.y;
+
+                return true;
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                // get end finger position for drag select rectangle
+                // convert x and y from screen coordinates to viewport coordinates
+                Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = mapViewport.unproject(clickCoordinates);
+                touchEndX = position.x;
+                touchEndY = position.y;
+
+                selectUnits(position);
+
+                return true;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(int amount) {
+                return false;
+            }
+        });
         Gdx.input.setInputProcessor(multiplexer);
         // Gdx.input.setInputProcessor(stage);
         //Gdx.input.setInputProcessor(new GestureDetector(this));
@@ -427,14 +488,31 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        Vector3 clickCoordinates = new Vector3(x,y,0);
-        Vector3 position = mapCamera.unproject(clickCoordinates, mapViewport.getScreenX(),
-                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
+        return false;
+    }
+
+    private void selectUnits(Vector3 position) {
         int counter = 0;
         int unit_selected = 0;
+
+        // determine position of each edge of multi-select rectangle
+        float leftX = Math.min(touchStartX, position.x);
+        float rightX = Math.max(touchStartX, position.x);
+        float topY = Math.min(touchStartY, position.y);
+        float bottomY = Math.max(touchStartY, position.y);
+
         while(counter < allUnits.unitVector.size()){
             Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
-            if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getWidth() >= position.y) {
+            // if (clicked within peasant || part of peasant within multi-select rectangle)
+            if ((temp_peasant.getX() <= position.x
+                    && temp_peasant.getX() + temp_peasant.getWidth() >= position.x
+                    && temp_peasant.getY() <= position.y
+                    && temp_peasant.getY() + temp_peasant.getHeight() >= position.y)
+                    ||
+                    (temp_peasant.getX() <= rightX
+                            && temp_peasant.getX() + temp_peasant.getWidth() >= leftX
+                            && temp_peasant.getY() <= bottomY
+                            && temp_peasant.getY() + temp_peasant.getHeight() >= topY)) {
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
                 // PEASANT SELECTED ==
@@ -474,21 +552,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         //TODO
         //if (unit_selected == 0 && assetSelected == 1){
-          //  if (assetSelected == Goldmine && mine == 1) {
-            //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
-              //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
-               // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
-                //mine = 1;
-            //}
+        //  if (assetSelected == Goldmine && mine == 1) {
+        //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
+        //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+        // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+        //mine = 1;
         //}
-
-        // set start position of multi-selection rectangle
-        touchEndX = position.x;
-        touchEndY = position.y;
-        touchStartX = position.x;
-        touchStartY = position.y;
-
-        return true;
+        //}
     }
 
     @Override
