@@ -1,6 +1,5 @@
 package com.warcraftII.screens;
 
-import java.lang.String;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -12,11 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -33,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
+
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.PlayerAssetType;
@@ -41,12 +37,15 @@ import com.warcraftII.renderer.StaticAssetRenderer;
 import com.warcraftII.position.*;
 import com.warcraftII.renderer.MapRenderer;
 import com.warcraftII.terrain_map.TileTypes;
-import com.warcraftII.units.Unit;
-import com.warcraftII.units.UnitActions;
 
-import static com.warcraftII.GameData.TILE_WIDTH;
+import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.PixelPosition;
+import com.warcraftII.position.Position;
+import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
+import com.warcraftII.units.Unit;
+
 import static java.lang.Math.round;
-import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -57,7 +56,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Unit allUnits;
     private SpriteBatch batch;
     private SpriteBatch sb;
-
 
     private Music readySound;
 
@@ -471,7 +469,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play(
+
+//        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+//        TilePosition tilePosition = camerePosition.getTilePosition();
+//        int xi = tilePosition.X();
+//        int yi = tilePosition.Y();
+//        log.info("Tile position: " + xi +" " + yi);
+//        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
+
         return false;
     }
 
