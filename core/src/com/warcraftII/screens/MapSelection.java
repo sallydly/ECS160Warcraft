@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -65,9 +66,15 @@ public class MapSelection implements Screen {
         final String NWHR2RN_GAME_NAME = "Nowhere to run, nowhere to hide";
 
         Table menuTable = new Table();
-        menuTable.setFillParent(true);
+        Table container = new Table();
+        container.setFillParent(true);
+        ScrollPane scrollPane = new ScrollPane(menuTable);
+        container.add(scrollPane).width(Gdx.graphics.getWidth()).height(Gdx.graphics.getHeight());
+
+
+        //menuTable.setFillParent(true);
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
-        Vector<TextButton> MapButtons = new Vector<TextButton>();
+        Vector<TextButton> textButtons = new Vector<TextButton>();
         Vector<ImageButton> imageButtons = new Vector<ImageButton>();
 
         FileHandle dirHandle;
@@ -87,15 +94,17 @@ public class MapSelection implements Screen {
         }
 
         for (final String MapName : AssetDecoratedMap.GetMapNames()) {
-            TextButton Button = new TextButton(MapName, skin);
-            Button.getLabel().setFontScale(1, 1);
-            Button.addListener(new ClickListener(){
+            TextButton textButton = new TextButton(MapName, skin);
+            textButton.getLabel().setFontScale(1, 1);
+            textButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     game.DMapName = MapName;
                     game.setScreen(new SinglePlayer(game));
                 }
             });
+
+            textButtons.add(textButton);
 
             //When switch statements can't handle strings, you get this shit >:(
             if(MapName.trim().equals(BAY_GAME_NAME)) {
@@ -131,9 +140,9 @@ public class MapSelection implements Screen {
                     }
                 });
             }
-            MapButtons.add(Button);
-        }
 
+        }
+        /*
         //TODO: Recheck after zoom
         menuTable.add(MapButtons.get(0)).expandX();
         menuTable.add(MapButtons.get(1)).expandX();
@@ -146,8 +155,19 @@ public class MapSelection implements Screen {
         menuTable.row().pad(10, 0 ,0 ,0);
         menuTable.add(imageButtons.get(3)).uniformX();
         menuTable.add(imageButtons.get(1)).uniformX();
+        */
 
-        return menuTable;
+        for (TextButton text : textButtons) {
+            menuTable.add(text).pad(0,50,100,50);
+        }
+
+        menuTable.row().pad(20);
+
+        for (ImageButton img : imageButtons) {
+            menuTable.add(img);
+        }
+
+        return container;
     }
 
     @Override
@@ -158,7 +178,7 @@ public class MapSelection implements Screen {
         stage.act();
         stage.draw();
         game.batch.begin();
-        game.batch.draw(texture, 0, 0);
+        //game.batch.draw(texture, 0, 0);
         game.batch.end();
     }
 
