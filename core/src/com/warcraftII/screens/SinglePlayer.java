@@ -32,6 +32,7 @@ import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.PixelPosition;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
 import com.warcraftII.units.Unit;
 
 import static java.lang.Math.round;
@@ -459,17 +460,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
-//        PixelPosition pixelPosition = new PixelPosition((int)x, (int)y);
-//        TilePosition tilePosition = new TilePosition((int)x, (int)y);
-//        Vector3 clickCoordinates = new Vector3(x,y,0);
-//        Vector3 position = mapCamera.unproject(clickCoordinates);
-//        log.info("Tap Pos: " + position.x + " " + position.y);
-//        log.info("Pix Pos: " + pixelPosition.X() + " " + pixelPosition.Y());
-//        log.info("Tile Pos: " + tilePosition.X() + " " + tilePosition.Y());
-
-        CameraPosition camerePosition = new CameraPosition((int)(x - Gdx.graphics.getWidth()*.25f), (int)y, mapCamera);
-        log.info("Clicked Tile: " + camerePosition.getTilePosition().X() + " " +camerePosition.getTilePosition().Y());
+//        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+//        TilePosition tilePosition = camerePosition.getTilePosition();
+//        int xi = tilePosition.X();
+//        int yi = tilePosition.Y();
+//        log.info("Tile position: " + xi +" " + yi);
+//        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
         return false;
     }
 
