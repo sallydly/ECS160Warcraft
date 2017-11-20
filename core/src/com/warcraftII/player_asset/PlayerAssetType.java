@@ -26,7 +26,7 @@ public class PlayerAssetType {
     protected EPlayerColor DColor;
     //protected Vector< Boolean > DCapabilities;
     //protected Vector< EAssetType > DAssetRequirements;
-    //protected Vector< PlayerUpgrade > DAssetUpgrades;
+    protected Vector< PlayerUpgrade > DAssetUpgrades;
     protected int DHitPoints;
     protected int DArmor;
     protected int DSight;
@@ -176,14 +176,53 @@ public class PlayerAssetType {
     public int Range() {
         return DRange;
     }
-/*
-    public int ArmorUpgrade(){}
-    public int SightUpgrade(){}
-    public int SpeedUpgrade(){}
-    public int BasicDamageUpgrade(){}
-    public int PiercingDamageUpgrade(){}
-    public int RangeUpgrade(){}
-*/
+
+    public int SightUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getSight();
+        }
+        return ReturnValue;
+    }
+
+    public int ArmorUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getArmor();
+        }
+        return ReturnValue;
+    }
+
+    public int SpeedUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getSpeed();
+        }
+        return ReturnValue;
+    }
+
+    public int BasicDamageUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getBasicDamage();
+        }
+        return ReturnValue;
+    }
+    public int PiercingDamageUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getPiercingDamage();
+        }
+        return ReturnValue;
+    }
+    public int RangeUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getRange();
+        }
+        return ReturnValue;
+    }
+
     /*public boolean HasCapability(EAssetCapabilityType capability) {
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return false;

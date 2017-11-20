@@ -7,7 +7,7 @@ import com.warcraftII.position.TilePosition;
 
 import java.util.Vector;
 
-public class StaticAsset {
+public class StaticAsset extends PlayerAsset{
     public enum EState {
         CONSTRUCT_0,
         CONSTRUCT_1,
@@ -256,12 +256,21 @@ public class StaticAsset {
             return DCommands.lastElement().DAction;
         }
         return GameDataTypes.EAssetAction.None;
-    };
+    }
+
 
 //TODO: add this
-//    public int Sight() {
-//        return GameDataTypes.EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
-//    };
+    public int Sight() {
+        return GameDataTypes.EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
+    }
+
+    public int SightUpgrade() {
+        return DType.SightUpgrade();
+    }
+
+    public int EffectiveSight() {
+        return Sight() + SightUpgrade();
+    }
 
     public int GoldCost() {
         return DType.GoldCost();

@@ -239,34 +239,6 @@ public class AssetDecoratedMap extends TerrainMap {
 */
 
     /**
-     * Add an asset to the list of a player's assets
-     *
-     * @param[in] asset Asset to add
-     *
-     * @return true if asset added
-     *
-     */
-// TODO: uncomment when playerasset is available
-
-    void AddStaticAsset(StaticAsset asset){
-        DStaticAssets.add(asset);
-    }
-
-
-    /**
-     * Remove an asset from a player's list of assets
-     *
-     * @param[in] asset Asset to remove
-     *
-     * @return true if asset removed
-     *
-     */
-// TODO: uncomment when playerasset is available
-
-    void RemoveStaticAsset(StaticAsset asset){
-        DStaticAssets.remove(asset);
-    }
-    /**
      * Determine if an asset can be placed at a certain tile position
      *
      * @param[in] pos TilePosition object of the position where you want to place the asset
@@ -690,6 +662,7 @@ public class AssetDecoratedMap extends TerrainMap {
         DResourceInitializationList = new ArrayList<SResourceInitialization>();
         DAssetInitializationList = new ArrayList<SAssetInitialization>();
         DPlayers = new ArrayList<EPlayerColor>();
+        DStaticAssets = new ArrayList<StaticAsset>();
 
         String TempString;
         Vector< String > Tokens;
@@ -1126,6 +1099,48 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 */
 
+    public StaticAsset StaticAssetAt(TilePosition tpos){
+        for (StaticAsset statAsset : DStaticAssets){
+            boolean inXlimits, inYlimits;
+            int Size = statAsset.assetType().Size();
+            inXlimits = tpos.X() >= statAsset.tilePositionX() && tpos.X() < statAsset.tilePositionX() + Size;
+            inYlimits = tpos.Y() >= statAsset.tilePositionY() && tpos.Y() < statAsset.tilePositionY() + Size;
+            if (inXlimits && inYlimits) {
+                return statAsset;
+            }
+
+        }
+        return null;
+    }
+
+
+
+    /**
+     * Add an asset to the list of a player's assets
+     *
+     * @param[in] asset Asset to add
+     *
+     * @return nothing
+     *
+     *
+     */
+// TODO: uncomment when playerasset is available
+
+    public void AddStaticAsset(StaticAsset asset){
+        DStaticAssets.add(asset);
+    }
+
+    /**
+     * Remove an asset from a player's list of assets
+     *
+     * @param[in] asset Asset to remove
+     *
+     * @return nothing
+     *
+     */
+    public void RemoveStaticAsset(StaticAsset asset){
+        DStaticAssets.remove(asset);
+    }
 
 
 }

@@ -67,6 +67,7 @@ public class PlayerData {
                         InitAsset.gold(DGold);
                     }
                     DStaticAssets.add(InitAsset);
+                    map.AddStaticAsset(InitAsset);
                 }
                 else
                 {
