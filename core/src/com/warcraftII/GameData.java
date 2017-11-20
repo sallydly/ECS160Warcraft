@@ -138,16 +138,6 @@ public class GameData {
         }
     }
 
-/*        //TESTING REMOVELUMBER
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-
-        RemoveLumber(tree1,tposunit,400);
-        RemoveLumber(tree2,tposunit,400);
-        RemoveLumber(tree3,tposunit,400);
-*/
 
 
 

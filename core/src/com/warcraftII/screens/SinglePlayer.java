@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
+import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
@@ -412,7 +413,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapCamera.unproject(clickCoordinates);
         int counter = 0;
@@ -592,5 +592,54 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    private void KimisTestFunction(){
+      //TESTING REMOVELUMBER
+        TilePosition tposunit = new TilePosition(12,1);
+        TilePosition tree1 = new TilePosition(11,0);
+        TilePosition tree2 = new TilePosition(12,1);
+        TilePosition tree3 = new TilePosition(13,2);
+
+        gameData.RemoveLumber(tree1,tposunit,400);
+        gameData.RemoveLumber(tree2,tposunit,400);
+        gameData.RemoveLumber(tree3,tposunit,400);
+
+        // TESTING STATICASSETAT
+        TilePosition sassetAt = new TilePosition(0,0);
+        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
+        if (sasset != null){
+            System.out.println(sasset.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset here");
+        }
+
+        TilePosition sassetAt1 = new TilePosition(0,1);
+        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
+        if (sasset1 != null){
+            System.out.println(sasset1.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 1 here");
+        }
+
+        TilePosition sassetAt2 = new TilePosition(15,1);
+        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
+        if (sasset2 != null){
+            System.out.println(sasset2.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 2 here");
+        }
+
+        TilePosition sassetAt3 = new TilePosition(1,30);
+        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
+        if (sasset3 != null){
+            System.out.println(sasset3.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 3 here");
+        }
     }
 }
