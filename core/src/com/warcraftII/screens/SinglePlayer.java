@@ -428,7 +428,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
-        Vector3 position = mapCamera.unproject(clickCoordinates);
+        Vector3 position = mapCamera.unproject(clickCoordinates, mapViewport.getScreenX(),
+                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
         int counter = 0;
         int unit_selected = 0;
         while(counter < allUnits.unitVector.size()){
@@ -482,13 +483,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //}
 
         // set start position of multi-selection rectangle
-        Vector3 screenCoordinates = new Vector3(x, y, 0);
-        Vector3 worldCoordinates = mapCamera.unproject(screenCoordinates, mapViewport.getScreenX(),
-                mapViewport.getScreenY(), mapViewport.getScreenWidth(), mapViewport.getScreenHeight());
-        touchEndX = worldCoordinates.x;
-        touchEndY = worldCoordinates.y;
-        touchStartX = worldCoordinates.x;
-        touchStartY = worldCoordinates.y;
+        touchEndX = position.x;
+        touchEndY = position.y;
+        touchStartX = position.x;
+        touchStartY = position.y;
 
         return true;
     }
