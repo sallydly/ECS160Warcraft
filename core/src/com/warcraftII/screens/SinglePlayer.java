@@ -470,16 +470,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean tap(float x, float y, int count, int button) {
 
-//        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
-//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-//        TilePosition tilePosition = camerePosition.getTilePosition();
-//        int xi = tilePosition.X();
-//        int yi = tilePosition.Y();
-//        log.info("Tile position: " + xi +" " + yi);
-//        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
-//        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
-//        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
-//        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
+        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        log.info("Tile position: " + xi +" " + yi);
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
 
         return false;
     }
