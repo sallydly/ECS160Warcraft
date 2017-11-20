@@ -471,7 +471,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
+        // readySound.play(
         return false;
     }
 
