@@ -550,7 +550,10 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
+
+    //TODO: for now Rock-0-0 is used for Rubble; should be changed to use textures in stone file on canvas later
     public boolean RemoveStone(TilePosition pos, TilePosition from, int amount){
+        log.info("RemoveStone");
         boolean tileChange = false;
 
         int Index = 0;
@@ -559,7 +562,7 @@ public class AssetDecoratedMap extends TerrainMap {
             for(int XOff = 0; XOff < 2; XOff++){
                 int XPos = pos.X() + XOff;
                 int YPos = pos.Y() + YOff;
-                int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
+                int bool = (ETerrainTileType.Rock == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
                 Index = Index | ((bool == 1 && (DPartials.get(YPos).get(XPos) != 0)) ? 1<<(YOff * 2 + XOff) : 0);
             }
         }

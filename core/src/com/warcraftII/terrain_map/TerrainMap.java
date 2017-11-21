@@ -464,6 +464,13 @@ public class TerrainMap {
         ETerrainTileType UR = DTerrainMap.get(y).get(x + 1);
         ETerrainTileType LL = DTerrainMap.get(y + 1).get(x);
         ETerrainTileType LR = DTerrainMap.get(y + 1).get(x + 1);
+
+//        //HM: added to update Partial map
+//        Byte ULP = DPartials.get(y).get(x);
+//        Byte URP = DPartials.get(y).get(x + 1);
+//        Byte LLP = DPartials.get(y + 1).get(x);
+//        Byte LRP = DPartials.get(y + 1).get(x + 1);
+
         int TypeIndex = ((DPartials.get(y).get(x) & 0x8) >> 3) | ((DPartials.get(y).get(x + 1) & 0x4) >> 1) | ((DPartials.get(y + 1).get(x) & 0x2) << 1) | ((DPartials.get(y + 1).get(x + 1) & 0x1) << 3);
 
         if ((ETerrainTileType.DarkGrass == UL) || (ETerrainTileType.DarkGrass == UR) || (ETerrainTileType.DarkGrass == LL) || (ETerrainTileType.DarkGrass == LR)) {
@@ -506,6 +513,10 @@ public class TerrainMap {
             TypeIndex &= (ETerrainTileType.Forest == UR) ? 0xF : 0xD;
             TypeIndex &= (ETerrainTileType.Forest == LL) ? 0xF : 0xB;
             TypeIndex &= (ETerrainTileType.Forest == LR) ? 0xF : 0x7;
+//            TypeIndex &= (ETerrainTileType.Forest == UL && !ULP.equals(new Byte((byte)0))) ? 0xF : 0xE;
+//            TypeIndex &= (ETerrainTileType.Forest == UR && !URP.equals(new Byte((byte)0))) ? 0xF : 0xD;
+//            TypeIndex &= (ETerrainTileType.Forest == LL && !LLP.equals(new Byte((byte)0))) ? 0xF : 0xB;
+//            TypeIndex &= (ETerrainTileType.Forest == LR && !LRP.equals(new Byte((byte)0))) ? 0xF : 0x7;
             if (TypeIndex != 0) {
                 Type = ETileType.Forest;
                 Index = TypeIndex;

@@ -282,6 +282,8 @@ public class MapRenderer {
 
         if (ThisTileType == TileTypes.ETileType.Stump)
             System.out.println("I will be stump");
+        if (ThisTileType == ETileType.Rock)
+            System.out.println("I will be Rubble");
 
         if((0 <= TileIndex)&&(16 > TileIndex)){
             TextureRegion textureRegion = null;
@@ -291,6 +293,7 @@ public class MapRenderer {
 
                 textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
             }
+
             if(null != textureRegion){
                 // need to invert both y axis:
                 int Xpos =  XIndex;

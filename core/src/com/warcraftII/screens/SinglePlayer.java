@@ -470,22 +470,40 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean tap(float x, float y, int count, int button) {
 
-        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
         CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camerePosition.getTilePosition();
         int xi = tilePosition.X();
         int yi = tilePosition.Y();
         log.info("Tile position: " + xi +" " + yi);
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
-
+        int resourceRemove = 200;
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
     @Override
     public boolean longPress(float x, float y) {
+//        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
+//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+//        TilePosition tilePosition = camerePosition.getTilePosition();
+//        int xi = tilePosition.X();
+//        int yi = tilePosition.Y();
+//        log.info("Tile position: " + xi +" " + yi);
+//        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+//        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, 100);
+//        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, 100);
+//        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, 100);
+//        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, 100);
+//        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, 100);
         return false;
     }
 
