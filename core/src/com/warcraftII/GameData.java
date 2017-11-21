@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -26,6 +27,7 @@ import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -84,7 +86,7 @@ public class GameData {
         UnitPosition.setMapDimensions(map);
 
         mapRenderer = new MapRenderer(map);
-        staticAssetRenderer = new StaticAssetRenderer();
+        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
 
@@ -139,6 +141,43 @@ public class GameData {
     }
 
 
+    //Naive timestep.
+    public void TimeStep(){
+
+        Iterator<StaticAsset> iter = map.StaticAssets().iterator();
+
+        while(iter.hasNext())
+        {
+            StaticAsset sasset = iter.next();
+            if(GameDataTypes.EAssetAction.None == sasset.Action()){
+                //Do nothing. for now.
+            }
+            if(GameDataTypes.EAssetAction.Construct == sasset.Action()){
+                if(sasset.Step() < 2) {
+                    sasset.IncrementStep();
+                }
+                else
+                {
+                    sasset.PopCommand();
+                }
+                //Do nothing. for now.
+            }
+            if(GameDataTypes.EAssetAction.Death == sasset.Action()){
+                if(sasset.Step() < 15){
+                    sasset.IncrementStep();
+                }
+                else
+                {
+                    playerData.get(GameDataTypes.to_underlying(sasset.DOwner)).DeleteStaticAsset(sasset);
+                    iter.remove();
+                }
+            }
+
+            staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
+
+
+        }
+    }
 
 
     public void dispose() {

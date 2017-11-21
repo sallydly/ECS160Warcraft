@@ -45,7 +45,10 @@ import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
 import static com.warcraftII.GameData.TILE_WIDTH;
+import static java.lang.Math.random;
 import static java.lang.Math.round;
+
+import java.util.Random;
 import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
@@ -93,6 +96,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float widthZoomRatio;
 
     private double prevDistance = 0;
+
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -471,7 +475,32 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
+        gameData.TimeStep();
+
+        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        log.info("Tile position: " + xi +" " + yi);
+        /*gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
+        */
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
+        if (chosenStatAsset == null){
+            System.out.println("No asset here...building");
+            PlayerData player0 = gameData.playerData.get(0);
+            Random rand = new Random();
+            player0.ConstructStaticAsset(tilePosition, GameDataTypes.EAssetType.values()[rand.nextInt(11) + 6 ], gameData.map);
+        }
+        else {
+            System.out.println("Asset found." + chosenStatAsset.assetType().Name());
+            System.out.println(chosenStatAsset.hitPoints());
+            chosenStatAsset.decrementHitPoints(10000);
+
+        }
         return false;
     }
 

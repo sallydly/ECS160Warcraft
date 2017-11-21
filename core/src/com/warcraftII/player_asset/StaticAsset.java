@@ -23,7 +23,10 @@ public class StaticAsset extends PlayerAsset{
     private int DLumber;
     private PlayerAssetType DType;
     private TilePosition DPosition;
-    private Vector<SAssetCommand> DCommands = new Vector<SAssetCommand>();
+    private Vector<SAssetCommand> DCommands;
+    private int DStep;
+
+    public GameDataTypes.EPlayerColor DOwner;
 
     public StaticAsset(PlayerAssetType type) {
         DType = type;
@@ -32,6 +35,7 @@ public class StaticAsset extends PlayerAsset{
         DLumber = 0;
         DPosition = new TilePosition(0, 0);
         DCurrentState = EState.INACTIVE; // TODO: have a cycle of building-> inactive, active etc.
+        DCommands = new Vector<SAssetCommand>();
     }
 
     public EState state(){
@@ -70,6 +74,9 @@ public class StaticAsset extends PlayerAsset{
         DHitPoints -= hitPoints;
         if(0 > DHitPoints){
             DHitPoints = 0;
+            SAssetCommand deathcommand = new SAssetCommand();
+            deathcommand.DAction = GameDataTypes.EAssetAction.Death;
+            DCommands.add(deathcommand);
         }
         return DHitPoints;
     }
@@ -283,5 +290,11 @@ public class StaticAsset extends PlayerAsset{
     int BuildTime() {
         return DType.BuildTime();
     }
+
+    public int Step(){ return DStep; }
+    public int Step(int step){ return DStep = step; }
+    public  int IncrementStep() { return DStep = DStep + 1;}
+
+
 }
 
