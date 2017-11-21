@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -54,6 +55,18 @@ public class MapSelection implements Screen {
         Gdx.input.setInputProcessor(stage);
         Table menuTable = createMenuTable();
         //music.play();
+        // set background texture image
+        // code adapted from https://libgdx.info/basic_image/
+        Texture backgroundImageTexture = new Texture("img/Texture.png");
+        backgroundImageTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        TextureRegion backgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
+        backgroundImageTextureRegion.setRegion(0, 0, stage.getWidth(), stage.getHeight());
+
+        //backgroundImage.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Image backgroundImage = new Image(backgroundImageTextureRegion);
+        backgroundImage.setPosition(0, 0);
+
+        stage.addActor(backgroundImage);
         stage.addActor(menuTable);
     }
 
