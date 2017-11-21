@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -37,7 +38,6 @@ import static java.lang.Math.round;
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
-
     private GameData gameData;
     // More concise access to data members of gameData:
     private Unit allUnits;
@@ -54,11 +54,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public int ability;
     private InputMultiplexer multiplexer;
 
-    private TextButton movementButton;
     private TextButton stopButton;
     private TextButton patrolButton;
     private TextButton attackButton;
     private TextButton newAbility;
+    private TextButton menuButton;
+    private TextButton pauseButton;
+    private TextButton moveButton;
+    private TextButton selectButton;
 
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -97,6 +100,27 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
         this.shapeRenderer = new ShapeRenderer();
+        //add the menu and pause buttons
+        TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
+        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
+        moveButton = new TextButton("Move", skin);
+        stopButton = new TextButton("Stop", skin);
+        patrolButton = new TextButton("Patrol", skin);
+        attackButton = new TextButton("Attack", skin);
+        menuButton = new TextButton("Menu", skin);
+        pauseButton = new TextButton("Pause", skin);
+        selectButton = new TextButton("Select", skin);
+        stopButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                allUnits.stopMovement();
+                movement = 0;
+                patrol = 0;
+                attack = 0;
+                mine = 0;
+                ability = 0;
+            }
+        });
     }
 
     @Override
@@ -110,16 +134,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndY = position.y;
 
         // TODO: uncomment following lines to enable panning when multi select button is not activated (else statement)
-//        // adjust pointer drag amount by mapCamera zoom level
-//        deltaX *= mapCamera.zoom;
-//        deltaY *= mapCamera.zoom;
-//
-//        // move mapCamera based on distance of pointer drag
-//        mapCamera.translate(-deltaX, deltaY);
-//
-//        // limit panning to edge of map
-//        calculateCameraBounds();
-//        mapCamera.update();
+        // adjust pointer drag amount by mapCamera zoom level
+        if(!selectButton.isPressed()) {
+            deltaX *= mapCamera.zoom;
+            deltaY *= mapCamera.zoom;
+
+            // move mapCamera based on distance of pointer drag
+            mapCamera.translate(-deltaX, deltaY);
+
+            // limit panning to edge of map
+            calculateCameraBounds();
+            mapCamera.update();
+        }
 
         return true;
     }
@@ -163,15 +189,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
 
-        movementButton = new TextButton("Move", gameData.unitActions.skin);
-        stopButton = new TextButton("Stop", gameData.unitActions.skin);
-        patrolButton = new TextButton("Patrol", gameData.unitActions.skin);
-        attackButton = new TextButton("Attack", gameData.unitActions.skin);
-        movementButton.setPosition(5 , 10);
+
+        moveButton.setPosition(5 , 10);
         stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
         patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
         attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
-        movementButton.addListener(new InputListener() {
+        /*moveButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 movement = 1;
@@ -179,16 +202,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });
 
-        stopButton.addListener(new InputListener() {
+        stopButton.addListener(new ClickListener() {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            public void clicked(InputEvent event, float x, float y) {
                 allUnits.stopMovement();
                 movement = 0;
                 patrol = 0;
                 attack = 0;
                 mine = 0;
                 ability = 0;
-                return true;
             }
         });
 
@@ -206,7 +228,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 patrol = 1;
                 return true;
             }
-        });
+        });*/
 
 //        stage.addActor(movementButton);
 //        stage.addActor(stopButton);
@@ -252,16 +274,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         backgroundImage.setPosition(0, 0);
         sidebarStage.addActor(backgroundImage);
 
-        //add the menu and pause buttons
-        TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
-        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
-
-        TextButton menuButton = new TextButton("Menu", skin);
-        TextButton pauseButton = new TextButton("Pause", skin);
-        TextButton attackButton = new TextButton("Attack", skin);
-        TextButton patrolButton = new TextButton("Patrol", skin);
-        TextButton stopButton = new TextButton("Stop", skin);
-        TextButton moveButton = new TextButton("Move", skin);
 
         // table for layout of sidebar
         sidebarTable = new Table();
@@ -289,6 +301,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
 
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
@@ -300,23 +314,23 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
 //        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
 
-        multiplexer = new InputMultiplexer();
+        multiplexer = new InputMultiplexer(sidebarStage);
 //        multiplexer.addProcessor(stage);
         multiplexer.addProcessor(new GestureDetector(this));
         multiplexer.addProcessor(new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean keyUp(int keycode) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean keyTyped(char character) {
-                return false;
+                return true;
             }
 
             @Override
@@ -343,25 +357,26 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 Vector3 position = mapViewport.unproject(clickCoordinates);
                 touchEndX = position.x;
                 touchEndY = position.y;
-
-                selectUnits(position);
+                if (selectButton.isPressed()) {
+                    selectUnits(position);
+                }
 
                 return true;
             }
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean mouseMoved(int screenX, int screenY) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean scrolled(int amount) {
-                return false;
+                return true;
             }
         });
         Gdx.input.setInputProcessor(multiplexer);
@@ -392,11 +407,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // draw multi-selection rectangle
         mapCamera.update();
-        shapeRenderer.setProjectionMatrix(mapCamera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(0, 1, 0, 1);
-        shapeRenderer.rect(touchStartX, touchStartY, touchEndX - touchStartX, touchEndY - touchStartY);
-        shapeRenderer.end();
+        if(selectButton.isPressed()) {
+            shapeRenderer.setProjectionMatrix(mapCamera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.rect(touchStartX, touchStartY, touchEndX - touchStartX, touchEndY - touchStartY);
+            shapeRenderer.end();
+        } else {
+            touchEndX = 0;
+            touchEndY = 0;
+            touchStartY = 0;
+            touchStartX = 0;
+        }
 
         batch.end();
 
@@ -584,6 +606,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        if (selectButton.isPressed()) {
+
+            return false;
+        }
         if (Math.abs(distance) <= 1) {
             return false;
         }
@@ -678,6 +704,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        if (selectButton.isPressed()) {
+            Vector3 clickCoordinates = new Vector3(pointer2.x, pointer2.y, 0);
+            Vector3 position = mapViewport.unproject(clickCoordinates);
+            touchEndX = position.x;
+            touchEndY = position.y;
+        }
         return false;
     }
 
