@@ -274,7 +274,10 @@ public class StaticAssetRenderer {
                         break;
 
                     case Death:
-                        effectsLayer.setCell(XPos,YPos,null);
+                        TiledMapTileLayer.Cell nofirecell = new TiledMapTileLayer.Cell();
+                        nofirecell.setTile(null);
+                        effectsLayer.setCell(XPos, YPos , nofirecell);
+
                         if(StatAsset.Step() <= BuildingDeathMaxIndex){
                             TextureRegion deathtexture = animationTextures.findRegion("buildingdeath",StatAsset.Step());
                             TiledMapTileLayer.Cell deathcell = new TiledMapTileLayer.Cell();

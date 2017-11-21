@@ -35,6 +35,7 @@ public class PlayerAssetType {
     protected int DSpeed;
     protected int DGoldCost;
     protected int DLumberCost;
+    protected int DStoneCost;
     protected int DFoodConsumption;
     protected int DBuildTime;
     protected int DAttackSteps;
@@ -147,6 +148,10 @@ public class PlayerAssetType {
 
     public int LumberCost() {
         return DLumberCost;
+    }
+
+    public int StoneCost() {
+        return DStoneCost;
     }
 
     public int FoodConsumption() {
@@ -341,6 +346,9 @@ public class PlayerAssetType {
 
         TempString = LineSource.read().trim();
         PAssetType.DLumberCost  = Integer.parseInt(TempString);
+
+        TempString = LineSource.read().trim();
+        PAssetType.DStoneCost  = Integer.parseInt(TempString);
 
         TempString = LineSource.read().trim();
         PAssetType.DFoodConsumption = Integer.parseInt(TempString);

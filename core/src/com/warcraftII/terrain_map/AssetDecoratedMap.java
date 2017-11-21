@@ -1096,7 +1096,7 @@ public class AssetDecoratedMap extends TerrainMap {
         return TilePosition(-1, -1);
     }
 */
-    RemoveTiles(TilePosition pos, int size)
+
     public StaticAsset StaticAssetAt(TilePosition tpos){
         for (StaticAsset statAsset : DStaticAssets){
             boolean inXlimits, inYlimits;
