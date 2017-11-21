@@ -60,22 +60,30 @@ public class MapSelection implements Screen {
     private Table createMenuTable() {
         //Maps the .png filename to the image button
         final Map<String, ImageButton> fileNameToImageButtonMap = new HashMap<String, ImageButton>();
+        final Map<String, String> mapNameToFileName = new HashMap<String, String>();
+        Vector<TextButton> textButtons = new Vector<TextButton>();
+        Vector<ImageButton> imageButtons = new Vector<ImageButton>();
+        Vector<String> orderedMapNames = new Vector<String>();
+
+        //Map names
         final String BAY_GAME_NAME = "Three ways to cross";
         final String MOUNTAINS_GAME_NAME = "One way in one way out";
         final String HEDGES_GAME_NAME = "No way out of this maze";
         final String NWHR2RN_GAME_NAME = "Nowhere to run, nowhere to hide";
 
+        mapNameToFileName.put(BAY_GAME_NAME, "bay.PNG");
+        mapNameToFileName.put(MOUNTAINS_GAME_NAME, "mountain.PNG");
+        mapNameToFileName.put(HEDGES_GAME_NAME, "hedges.PNG");
+        mapNameToFileName.put(NWHR2RN_GAME_NAME, "nwhr2rn.PNG");
+
         Table menuTable = new Table();
-        Table container = new Table();
+        Table container = new Table(skin);
         container.setFillParent(true);
         ScrollPane scrollPane = new ScrollPane(menuTable);
         container.add(scrollPane).width(Gdx.graphics.getWidth()).height(Gdx.graphics.getHeight());
 
-
-        //menuTable.setFillParent(true);
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
-        Vector<TextButton> textButtons = new Vector<TextButton>();
-        Vector<ImageButton> imageButtons = new Vector<ImageButton>();
+
 
         FileHandle dirHandle;
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
@@ -84,16 +92,21 @@ public class MapSelection implements Screen {
             dirHandle = Gdx.files.internal("./bin/map_previews");
         }
 
+        //Map the filenames to their ImageButton
         for (FileHandle entry : dirHandle.list()) {
             Texture mapPreview = new Texture(entry);
             TextureRegion myTextureRegion= new TextureRegion(mapPreview);
             TextureRegionDrawable drawable = new TextureRegionDrawable(myTextureRegion);
             ImageButton button = new ImageButton(drawable);
             imageButtons.add(button);
-            fileNameToImageButtonMap.put(String.valueOf(entry).split("/")[1], button);
+            String splitFileName = String.valueOf(entry).split("/")[1];
+            fileNameToImageButtonMap.put(splitFileName, button);
         }
 
+
         for (final String MapName : AssetDecoratedMap.GetMapNames()) {
+            orderedMapNames.add(MapName);
+
             TextButton textButton = new TextButton(MapName, skin);
             textButton.getLabel().setFontScale(1, 1);
             textButton.addListener(new ClickListener(){
@@ -106,65 +119,29 @@ public class MapSelection implements Screen {
 
             textButtons.add(textButton);
 
-            //When switch statements can't handle strings, you get this shit >:(
-            if(MapName.trim().equals(BAY_GAME_NAME)) {
-                fileNameToImageButtonMap.get("bay.PNG").addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.DMapName = MapName;
-                        game.setScreen(new SinglePlayer(game));
-                    }
-                });
-            } else if (MapName.trim().equals(HEDGES_GAME_NAME)) {
-                fileNameToImageButtonMap.get("hedges.PNG").addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.DMapName = MapName;
-                        game.setScreen(new SinglePlayer(game));
-                    }
-                });
-            } else if (MapName.trim().equals(MOUNTAINS_GAME_NAME)) {
-                fileNameToImageButtonMap.get("mountain.PNG").addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.DMapName = MapName;
-                        game.setScreen(new SinglePlayer(game));
-                    }
-                });
-            } else if (MapName.trim().equals(NWHR2RN_GAME_NAME)) {
-                fileNameToImageButtonMap.get("nwhr2rn.PNG").addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.DMapName = MapName;
-                        game.setScreen(new SinglePlayer(game));
-                    }
-                });
-            }
+            //This block sets ClickListeners on the images
+            //`mapNameToFileName.get(MapName))` returns a the filename e.g. "bay.PNG"
+            fileNameToImageButtonMap.get(mapNameToFileName.get(MapName)).addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    game.DMapName = MapName;
+                    game.setScreen(new SinglePlayer(game));
+                }
+            });
+
 
         }
-        /*
-        //TODO: Recheck after zoom
-        menuTable.add(MapButtons.get(0)).expandX();
-        menuTable.add(MapButtons.get(1)).expandX();
-        menuTable.row().pad(10, 0 ,0 ,0);
-        menuTable.add(imageButtons.get(2)).uniformX();
-        menuTable.add(imageButtons.get(0)).uniformX();
-        menuTable.row().pad(20, 0 ,0 ,0);
-        menuTable.add(MapButtons.get(2)).uniformX();
-        menuTable.add(MapButtons.get(3)).uniformX();
-        menuTable.row().pad(10, 0 ,0 ,0);
-        menuTable.add(imageButtons.get(3)).uniformX();
-        menuTable.add(imageButtons.get(1)).uniformX();
-        */
 
-        for (TextButton text : textButtons) {
-            menuTable.add(text).pad(0,50,100,50);
+        for (TextButton textButton : textButtons) {
+            menuTable.add(textButton).pad(0,50,100,50).uniformX();
         }
 
         menuTable.row().pad(20);
 
-        for (ImageButton img : imageButtons) {
-            menuTable.add(img);
+        for (String mapName : orderedMapNames) {
+            String fileName =  mapNameToFileName.get(mapName);
+            ImageButton imageButton = fileNameToImageButtonMap.get(fileName);
+            menuTable.add(imageButton);
         }
 
         return container;
