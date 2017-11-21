@@ -22,12 +22,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
+import com.warcraftII.terrain_map.AssetDecoratedMap;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import com.warcraftII.terrain_map.AssetDecoratedMap;
 
 public class MapSelection implements Screen {
     private Logger log = new Logger("MapSelection", 2);
@@ -134,7 +133,9 @@ public class MapSelection implements Screen {
 
             //This block sets ClickListeners on the images
             //`mapNameToFileName.get(MapName))` returns a the filename e.g. "bay.PNG"
-            fileNameToImageButtonMap.get(mapNameToFileName.get(MapName)).addListener(new ClickListener(){
+            String fileName = mapNameToFileName.get(MapName.replace("\r", ""));
+            ImageButton temp = fileNameToImageButtonMap.get(fileName);
+            temp.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     game.DMapName = MapName;
@@ -142,7 +143,7 @@ public class MapSelection implements Screen {
                 }
             });
 
-
+            fileNameToImageButtonMap.put(fileName, temp);
         }
 
         for (TextButton textButton : textButtons) {
