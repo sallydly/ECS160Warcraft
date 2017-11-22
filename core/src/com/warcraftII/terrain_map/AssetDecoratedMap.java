@@ -141,9 +141,6 @@ public class AssetDecoratedMap extends TerrainMap {
      * @return true if iterated through file
      *
      */
-// TODO: implement this function
-
-
     public static boolean LoadMaps(FileHandle directory) {
         DMapNameTranslation = new HashMap<String, Integer>();
         DAllMaps = new Vector<AssetDecoratedMap>();
