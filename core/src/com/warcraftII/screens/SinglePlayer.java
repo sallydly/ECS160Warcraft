@@ -60,6 +60,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Unit allUnits;
     private SpriteBatch batch;
     private SpriteBatch sb;
+    private SpriteBatch buildingSB;
 
 
     private Music readySound;
@@ -97,6 +98,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private double prevDistance = 0;
 
+    private int lastbuiltasset = 0; //DEBUG
+
+
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -105,6 +109,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
         sb = gameData.sb;
+        buildingSB = gameData.buildingSB;
+
+        Gdx.graphics.setContinuousRendering(true);
+
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -215,6 +223,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(attackButton);
         
 	    mapCamera = new OrthographicCamera();
+	    gameData.mapCamera = mapCamera;
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
         mapStage = new Stage(mapViewport);
 
@@ -321,14 +330,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
+        gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
+
+        gameData.TimeStep();
+
         batch.begin();
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
-
         batch.end();
+
+
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         Texture selected = new Texture(Gdx.files.internal("img/select.png"));
@@ -344,6 +358,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
+
 //        stage.act();
 //        stage.draw();
 	    sidebarStage.getViewport().apply();
@@ -475,8 +490,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        gameData.TimeStep();
-
         //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
         CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camerePosition.getTilePosition();
@@ -492,13 +505,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (chosenStatAsset == null){
             System.out.println("No asset here...building");
             PlayerData player0 = gameData.playerData.get(0);
-            Random rand = new Random();
-            player0.ConstructStaticAsset(tilePosition, GameDataTypes.EAssetType.values()[rand.nextInt(11) + 6 ], gameData.map);
+            player0.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1]), gameData.map);
+            lastbuiltasset++;
         }
         else {
             System.out.println("Asset found." + chosenStatAsset.assetType().Name());
             System.out.println(chosenStatAsset.hitPoints());
-            chosenStatAsset.decrementHitPoints(10000);
+            chosenStatAsset.decrementHitPoints(1000);
 
         }
         return false;

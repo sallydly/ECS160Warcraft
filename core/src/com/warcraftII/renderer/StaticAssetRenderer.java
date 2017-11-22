@@ -7,19 +7,31 @@ package com.warcraftII.renderer;
  */
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Logger;
+
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.Vector;
 import java.util.List;
 
@@ -28,13 +40,20 @@ import javax.xml.soap.Text;
 public class StaticAssetRenderer {
     private static final Logger log = new Logger("StaticAssetRenderer", 2);
 
+
     private TextureAtlas staticAssetTextures;
     private TextureAtlas animationTextures;
     private TiledMap tiledMap;
     private TiledMapTileLayer assetLayer;
     private String[] staticAssetsArray;
 
-    private static final int BuildingDeathMaxIndex = 15;
+    private static int DUpdateFrequency;
+    private static int[] DConstructionStages; // Gives the max construction stage # for each type.
+    private static int BuildingDeathMaxIndex = 15;
+
+
+    private static Animation<TextureRegion> LargeFireAnim,SmallFireAnim, BuildingDeathAnim;
+    private Map<StaticAsset, SpriteAnimation> DEffectSpriteMapping;
 
     //private final String mapName;
     private static final String TOWNHALL = "TownHall";
@@ -49,46 +68,86 @@ public class StaticAssetRenderer {
         this.animationTextures = new TextureAtlas(Gdx.files.internal("atlas/animations.atlas"));
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
+
+        DEffectSpriteMapping = new HashMap<StaticAsset, SpriteAnimation>();
+
+        LargeFireAnim = new Animation<TextureRegion>(0.5f,animationTextures.findRegions("large-fire"));
+        SmallFireAnim = new Animation<TextureRegion>(0.5f, animationTextures.findRegions("small-fire"));
+        BuildingDeathAnim = new Animation<TextureRegion>(0.5f, animationTextures.findRegions("buildingdeath"));
+
+        DConstructionStages = new int[EAssetType.values().length];
+        for (EAssetType sassettype : EAssetType.values())
+        {
+            DConstructionStages[GameDataTypes.to_underlying(sassettype)] = -1;
+
+            String typeName;
+
+            switch (sassettype) {
+                case GoldMine:
+                    typeName = "goldmine-construct-";
+                    break;
+                case TownHall:
+                    typeName = "townhall-construct-";
+                    break;
+                case Keep:
+                    typeName = "keep-construct-";
+                    break;
+                case Castle:
+                    typeName = "castle-construct-";
+                    break;
+                case Farm:
+                    typeName = "farm-construct-";
+                    break;
+                case Barracks:
+                    typeName = "barracks-construct-";
+                    break;
+                case LumberMill:
+                    typeName = "lumbermill-construct-";
+                    break;
+                case Blacksmith:
+                    typeName = "blacksmith-construct-";
+                    break;
+                case ScoutTower:
+                    typeName = "scouttower-construct-";
+                    break;
+                case GuardTower:
+                    typeName = "guardtower-construct-";
+                    break;
+                case CannonTower:
+                    typeName = "cannontower-construct-";
+                    break;
+                default:
+                    typeName = "bad-";
+                    break;
+            }
+
+            int i = 0;
+
+            while(true){
+                TextureRegion text = staticAssetTextures.findRegion(typeName + String.valueOf(i));
+                if (text != null){
+                    DConstructionStages[GameDataTypes.to_underlying(sassettype)] = i;
+                    i++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //log.debug(typeName+String.valueOf(DConstructionStages[to_underlying(sassettype)] ));
+        }
+
         //this.mapName = mapName;
         /*
-        * Unsure if textures larger than 32x32 can be placed on layer easily
+        * Unsure if textures larger than 32x32 can be m on layer easily
         * May have to separate atlas into 32x32, 64x64, 128x128 pages and create separate layers for those
          */
 
     }
 
-
-    // takes in an AssetDecoratedMap instead
-    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map) {
-        List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
-        System.out.println("start render");
-
-        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
-        this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
-        this.assetLayer.setName("StationaryAssets");
-
-        for(SAssetInitialization AssetInit : AssetInitializationList) {
-            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-            TextureRegion textureRegion = new TextureRegion();
-
-            int XPos = AssetInit.DTilePosition.X();
-            //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
-            int YPos = map.Height() - AssetInit.DTilePosition.Y() - 1; // -1 to account for 0 index
-
-            String AssetType = AssetInit.DType;
-
-
-            if (GOLDMINE.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "goldmine-inactive");
-            } else if (TOWNHALL.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "townhall-inactive");
-            }
-        }
-
-        return assetLayer;
-    }
-
     // This one takes in the map AND PlayerData object, and a tiledMapTileLayer that it edits.
+    // ONLY USED FOR INITIAL PLACEMENT...
     public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map, Vector<PlayerData> playerData) {
         System.out.println("start render");
 
@@ -99,84 +158,69 @@ public class StaticAssetRenderer {
 
         for (PlayerData player : playerData) {
             for (StaticAsset StatAsset : player.StaticAssets()) {
-                String tileName, typeName, stateName;
+                String tileName, typeName, colorName;
+
+                colorName = "";
 
                 switch (StatAsset.type()) {
                     case GoldMine:
-                        typeName = "goldmine-";
+                        typeName = "goldmine-inactive";
                         break;
                     case TownHall:
-                        typeName = "townhall-";
+                        typeName = "townhall-inactive";
                         break;
                     case Keep:
-                        typeName = "keep-";
+                        typeName = "keep-inactive";
                         break;
                     case Castle:
-                        typeName = "castle-";
+                        typeName = "castle-inactive";
                         break;
                     case Farm:
-                        typeName = "farm-";
+                        typeName = "farm-inactive";
                         break;
                     case Barracks:
-                        typeName = "barracks-";
+                        typeName = "barracks-inactive";
+                        break;
+                    case LumberMill:
+                        typeName = "lumbermill-inactive";
                         break;
                     case Blacksmith:
-                        typeName = "blacksmith-";
+                        typeName = "blacksmith-inactive";
                         break;
                     case ScoutTower:
-                        typeName = "scouttower-";
+                        typeName = "scouttower-inactive";
                         break;
                     case GuardTower:
-                        typeName = "guardtower-";
+                        typeName = "guardtower-inactive";
                         break;
                     case CannonTower:
-                        typeName = "cannontower-";
+                        typeName = "cannontower-inactive";
                         break;
                     default:
                         //BAD STUFF
-                        typeName = "badtype-";
+                        typeName = "badtype-inactive";
                         break;
                 }
-                switch (StatAsset.state()) {
-                    case CONSTRUCT_0:
-                        stateName = "construct-0";
-                        break;
-                    case CONSTRUCT_1:
-                        stateName = "construct-1";
-                        break;
-                    case ACTIVE:
-                        stateName = "active";
-                        break;
-                    case INACTIVE:
-                        stateName = "inactive";
-                        break;
-                    case PLACE:
-                        stateName = "place";
-                        break;
-                    default:
-                        //BAD STUFF
-                        stateName = "badstate";
-                        break;
-                }
-                tileName = typeName + stateName;
+                tileName = colorName + typeName;
 
-                log.info("tileName: " + tileName);
+                //log.info("tileName: " + tileName);
                 int XPos = StatAsset.tilePosition().X();
                 //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
                 int YPos = map.Height() - StatAsset.tilePosition().Y() - 1; // -1 to account for 0 index
                 GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
-                log.info("placed at: " + String.valueOf(XPos) +" " + String.valueOf(YPos));
             }
         }
         return assetLayer;
     }
 
     public void UpdateStaticAssets(TiledMap tmap, AssetDecoratedMap map, Vector<PlayerData> playerData) {
+
         TiledMapTileLayer assetLayer =  (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
         TiledMapTileLayer effectsLayer = (TiledMapTileLayer) tmap.getLayers().get("BuildingEffects");
 
         if (effectsLayer == null){
             effectsLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
+            effectsLayer.setName("BuildingEffects") ;
             tmap.getLayers().add(effectsLayer);
         }
 
@@ -202,6 +246,9 @@ public class StaticAssetRenderer {
                         break;
                     case Barracks:
                         typeName = "barracks-";
+                        break;
+                    case LumberMill:
+                        typeName = "lumbermill-";
                         break;
                     case Blacksmith:
                         typeName = "blacksmith-";
@@ -234,34 +281,33 @@ public class StaticAssetRenderer {
                         tileName = typeName + stateName;
 
                         GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
-                        log.info("placed at: " + String.valueOf(XPos) +" " + String.valueOf(YPos));
 
                         if (StatAsset.hitPoints() < StatAsset.maxHitPoints()/2){
-                            Random random = new Random();
-                            int fireindex = random.nextInt(9);
-                            TextureRegion firetexture = animationTextures.findRegion("large-fire", fireindex);
-                            TiledMapTileLayer.Cell firecell = new TiledMapTileLayer.Cell();
-                            firecell.setTile(new StaticTiledMapTile(firetexture));
-                            effectsLayer.setCell(XPos, YPos , firecell);
+                            UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
+                            Sprite newSprite = new Sprite();
+                            newSprite.setPosition(newUPos.X(),newUPos.Y());
+                            newSprite.setSize(Position.tileWidth()*StatAsset.assetType().Size(), Position.tileWidth()*StatAsset.assetType().Size());
+                            DEffectSpriteMapping.put(StatAsset, new SpriteAnimation(newSprite, LargeFireAnim));
                         }
-
                         break;
 
 
 
                     case Construct:
-                        //ActionSteps = DConstructIndices[to_underlying(TempRenderData.DType)].size();
-                        int  ActionSteps = 2; // TODO: This was hard-coded.  please fix.
+                        int ActionSteps = DConstructionStages[GameDataTypes.to_underlying(StatAsset.assetType().Type())] + 1;
+
                         if(ActionSteps > 0){
-                            //int TotalSteps = StatAsset.assetType().BuildTime() * CPlayerAsset::UpdateFrequency();
-                            int TotalSteps = 10; //TODO: This was hard-coded.  please fix.
-                            //int TotalSteps = StatAsset.assetType().BuildTime() / 10; // TODO: This was hard-coded.  please fix.
+                            int TotalSteps = StatAsset.assetType().BuildTime() * UpdateFrequency();
                             int CurrentStep = StatAsset.Step() * ActionSteps / TotalSteps;
-                            /*
-                            if(CurrentStep == DConstructIndices[to_underlying(TempRenderData.DType)].size()){
+
+
+                            //log.debug( StatAsset.assetType().Name() +" Current step: " + String.valueOf(CurrentStep));
+                            //log.debug( String.valueOf(StatAsset.Step())+ "/" + String.valueOf(TotalSteps));
+
+                            if(CurrentStep == ActionSteps){
                                 CurrentStep--;
                             }
-                            */
+
                             int ConstructTileIndex = CurrentStep;
 
                             stateName = "construct-" + String.valueOf(ConstructTileIndex);
@@ -269,7 +315,13 @@ public class StaticAssetRenderer {
                             tileName = typeName + stateName;
 
                             GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
-                            log.info("placed at: " + String.valueOf(XPos) +" " + String.valueOf(YPos));
+                        }
+                        else
+                        {
+                            stateName = "inactive";
+                            tileName = typeName + stateName;
+
+                            GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, tileName);
                         }
                         break;
 
@@ -279,10 +331,11 @@ public class StaticAssetRenderer {
                         effectsLayer.setCell(XPos, YPos , nofirecell);
 
                         if(StatAsset.Step() <= BuildingDeathMaxIndex){
-                            TextureRegion deathtexture = animationTextures.findRegion("buildingdeath",StatAsset.Step());
-                            TiledMapTileLayer.Cell deathcell = new TiledMapTileLayer.Cell();
-                            deathcell.setTile(new StaticTiledMapTile(deathtexture));
-                            assetLayer.setCell(XPos, YPos , deathcell);
+                            UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
+                            Sprite newSprite = new Sprite();
+                            newSprite.setPosition(newUPos.X(),newUPos.Y());
+                            newSprite.setSize(Position.tileWidth()*StatAsset.assetType().Size(), Position.tileWidth()*StatAsset.assetType().Size());
+                            DEffectSpriteMapping.put(StatAsset,new SpriteAnimation(newSprite,BuildingDeathAnim));
                         }
                         break;
 
@@ -290,5 +343,37 @@ public class StaticAssetRenderer {
             }
         }
     }
+
+    protected class SpriteAnimation {
+        Sprite DSprite;
+        Animation<TextureRegion> DAnim;
+
+        protected SpriteAnimation(Sprite sprite, Animation<TextureRegion> anim){
+            DSprite = sprite;
+            DAnim = anim;
+        }
+    }
+
+    public void DrawEffects(SpriteBatch sb, OrthographicCamera cam, float elapsedTime){
+        System.out.println("drawing effects");
+        sb.setProjectionMatrix(cam.combined);
+        sb.begin();
+        for(SpriteAnimation  spa : DEffectSpriteMapping.values()){
+            boolean looping = spa.DAnim.equals(LargeFireAnim);
+            System.out.println(String.valueOf(looping) );
+
+            sb.draw(spa.DAnim.getKeyFrame(elapsedTime, looping), spa.DSprite.getX(), spa.DSprite.getY());
+        }
+        sb.end();
+    }
+
+    public static int UpdateFrequency(){
+        return DUpdateFrequency;
+    }
+
+    public static int UpdateFrequency(int freq){
+        return DUpdateFrequency  = freq;
+    }
+
 }
 

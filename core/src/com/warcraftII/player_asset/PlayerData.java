@@ -172,6 +172,7 @@ public class PlayerData {
         SAssetCommand constructCommand = new SAssetCommand();
         constructCommand.DAction = GameDataTypes.EAssetAction.Construct;
         ConsAsset.EnqueueCommand(constructCommand);
+        ConsAsset.Step(0);
 
         DStaticAssets.add(ConsAsset);
         map.AddStaticAsset(ConsAsset);

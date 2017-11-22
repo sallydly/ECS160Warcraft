@@ -397,6 +397,7 @@ public class PlayerAssetType {
 
 
     public static StaticAsset ConstructStaticAsset(String type){
+        log.info("Constructing: " + type);
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }

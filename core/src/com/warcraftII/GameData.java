@@ -2,6 +2,7 @@ package com.warcraftII;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -41,6 +42,9 @@ public class GameData {
     // height and width of each map tile in pixels
     public static final int TILE_HEIGHT = 32;
     public static final int TILE_WIDTH = 32;
+    public static final float UPDATE_INTERVAL = (float) 0.001;
+    public static final float UPDATE_FREQUENCY = 1/UPDATE_INTERVAL;
+    public static final int SPEEDUP_FACTOR = 50;
 
     public TextureAtlas terrain;
     public TextureAtlas peasant;
@@ -56,17 +60,22 @@ public class GameData {
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
+    public SpriteBatch buildingSB;
 
     public MapProperties properties;
+
+    public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
     public UnitActions unitActions;
     public Unit allUnits;
 
     public float elapsedTime;
+    public float cumulativeTime = 0; // for slowing down timestep a bit.
 
     public GameData(){
         sb = new SpriteBatch();
+        buildingSB = new SpriteBatch();
         allUnits = new Unit();
         unitActions = new UnitActions();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
@@ -87,6 +96,7 @@ public class GameData {
 
         mapRenderer = new MapRenderer(map);
         staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
+        staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
 
@@ -144,6 +154,15 @@ public class GameData {
     //Naive timestep.
     public void TimeStep(){
 
+        staticAssetRenderer.DrawEffects(buildingSB, mapCamera, elapsedTime);
+
+        if (cumulativeTime < UPDATE_INTERVAL){
+            return;
+        }
+        else{
+            cumulativeTime = 0;
+        }
+
         Iterator<StaticAsset> iter = map.StaticAssets().iterator();
 
         while(iter.hasNext())
@@ -153,7 +172,7 @@ public class GameData {
                 //Do nothing. for now.
             }
             if(GameDataTypes.EAssetAction.Construct == sasset.Action()){
-                if(sasset.Step() < 2) {
+                if(sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
                     sasset.IncrementStep();
                 }
                 else
@@ -172,11 +191,9 @@ public class GameData {
                     iter.remove();
                 }
             }
-
-            staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
-
-
         }
+
+        staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
     }
 
 
