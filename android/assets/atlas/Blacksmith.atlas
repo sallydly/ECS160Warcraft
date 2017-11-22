@@ -1,0 +1,342 @@
+
+Blacksmith.png
+size: 1024,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+black-construct
+  rotate: false
+  xy: 492, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+black-construct
+  rotate: false
+  xy: 394, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+black-inactive
+  rotate: false
+  xy: 100, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+black-place
+  rotate: false
+  xy: 590, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blue-construct
+  rotate: false
+  xy: 492, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+blue-construct
+  rotate: false
+  xy: 590, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+blue-inactive
+  rotate: false
+  xy: 590, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+blue-place
+  rotate: false
+  xy: 394, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+building-construct
+  rotate: false
+  xy: 2, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+building-construct
+  rotate: false
+  xy: 100, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+building-inactive
+  rotate: false
+  xy: 198, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+building-place
+  rotate: false
+  xy: 2, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+enemy-construct
+  rotate: false
+  xy: 296, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+enemy-construct
+  rotate: false
+  xy: 688, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+enemy-inactive
+  rotate: false
+  xy: 688, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+enemy-place
+  rotate: false
+  xy: 884, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+green-construct
+  rotate: false
+  xy: 296, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+green-construct
+  rotate: false
+  xy: 688, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+green-inactive
+  rotate: false
+  xy: 100, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+green-place
+  rotate: false
+  xy: 198, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+none-construct
+  rotate: false
+  xy: 198, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+none-construct
+  rotate: false
+  xy: 2, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+none-inactive
+  rotate: false
+  xy: 100, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+none-place
+  rotate: false
+  xy: 786, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+orange-construct
+  rotate: false
+  xy: 100, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+orange-construct
+  rotate: false
+  xy: 884, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+orange-inactive
+  rotate: false
+  xy: 394, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+orange-place
+  rotate: false
+  xy: 786, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+purple-construct
+  rotate: false
+  xy: 296, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+purple-construct
+  rotate: false
+  xy: 2, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+purple-inactive
+  rotate: false
+  xy: 198, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+purple-place
+  rotate: false
+  xy: 296, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+red-construct
+  rotate: false
+  xy: 786, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+red-construct
+  rotate: false
+  xy: 884, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+red-inactive
+  rotate: false
+  xy: 688, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+red-place
+  rotate: false
+  xy: 688, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+self-construct
+  rotate: false
+  xy: 786, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+self-construct
+  rotate: false
+  xy: 786, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+self-inactive
+  rotate: false
+  xy: 198, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+self-place
+  rotate: false
+  xy: 492, 394
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+white-construct
+  rotate: false
+  xy: 296, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+white-construct
+  rotate: false
+  xy: 492, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+white-inactive
+  rotate: false
+  xy: 492, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+white-place
+  rotate: false
+  xy: 394, 296
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+yellow-construct
+  rotate: false
+  xy: 2, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 1
+yellow-construct
+  rotate: false
+  xy: 590, 100
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: 0
+yellow-inactive
+  rotate: false
+  xy: 590, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+yellow-place
+  rotate: false
+  xy: 394, 198
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1

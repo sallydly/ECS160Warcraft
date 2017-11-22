@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import java.util.*;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -18,22 +21,31 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.TileTypes;
 
+import org.omg.CORBA.UNKNOWN;
+
 public class Unit {
     public Vector<IndividualUnit> unitVector;
     public int selectedUnitIndex;
-    private TextureAtlas[] unitTextures = {
+    /*private TextureAtlas[] unitTextures = {
         new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
         new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
         new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
         new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
-    };
+    };*/
+
+    private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures = new HashMap<GameDataTypes.EUnitType, TextureAtlas>();
 
     public Unit() {
         unitVector = new Vector<IndividualUnit>(50);
         selectedUnitIndex = 0;
+        unitTextures.put(GameDataTypes.EUnitType.Archer, new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")));
+        unitTextures.put(GameDataTypes.EUnitType.Footman, new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")));
+        unitTextures.put(GameDataTypes.EUnitType.Peasant, new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")));
+        unitTextures.put(GameDataTypes.EUnitType.Ranger, new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas")));
+        unitTextures.put(GameDataTypes.EUnitType.Knight, new TextureAtlas(Gdx.files.internal("atlas/Knight.atlas")));
     }
 
-    public class IndividualUnit {
+    public class IndividualUnit extends Actor {
         public Sprite sprite;
         public GameDataTypes.EUnitType unitClass;
         public int unitTexInd;
@@ -51,31 +63,33 @@ public class Unit {
         public GameDataTypes.EUnitState curState;
         public Animation<TextureRegion> curAnim;
         public Vector<GameDataTypes.EAssetCapabilityType> abilities;
+        public GameDataTypes.EPlayerColor color;
+        public GameDataTypes.EDirection direction;
 
         public String getDirection() {
-            boolean west = false;
-            boolean north = false;
-            if (currentxmove > sprite.getX()+36) {
-                west = false;
-            } else {
-                west = true;
-            }
-            if (currentymove > sprite.getY()+36) {
-                north = true;
-            } else {
-                north = false;
-            }
-
-            if (north && west) {
-                return "nw";
-            } else if (north && !west) {
-                return "ne";
-            } else if (!north && west) {
-                return "sw";
-            } else if (!north && !west) {
-                return "se";
-            } else {
-                return "n";
+            if (currentxmove == sprite.getX()+(sprite.getWidth()/2)) { // straight up or down
+                if (currentymove <= sprite.getY()+(sprite.getHeight()/2)) { // if south
+                    return "s";
+                } else { // if north
+                    return "n";
+                }
+            } else if (currentxmove <= sprite.getX()+(sprite.getWidth()/2)) { // if to the West
+                System.out.println("currentxmove: "+currentxmove+"; currentymove:"+currentymove);
+                if (currentymove == sprite.getY()+(sprite.getHeight()/2)) { // straight west
+                    return "w";
+                } else if (currentymove <= sprite.getY()+(sprite.getHeight()/2)) { // south west
+                    return "sw";
+                } else { // north west
+                    return "nw";
+                }
+            } else { // if currentxmove > sprite OriginX
+                if (currentymove == sprite.getY()+(sprite.getHeight()/2)) { // straight east
+                    return "e";
+                } else if (currentymove <= sprite.getY()+(sprite.getHeight()/2)) { // south east
+                    return "se";
+                } else { // south west
+                    return "sw";
+                }
             }
         }
 
@@ -84,43 +98,35 @@ public class Unit {
     public void stopMovement() {
         unitVector.elementAt(selectedUnitIndex).curState = GameDataTypes.EUnitState.Idle;
     }
-    public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit) {
-        IndividualUnit newUnit = new IndividualUnit();
+    public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor inColor) {
+        final IndividualUnit newUnit = new IndividualUnit();
         newUnit.abilities = new Vector<GameDataTypes.EAssetCapabilityType>(5);
+        TextureAtlas unitAtlas = unitTextures.get(inUnit);
         TextureRegion texture;
         Animation<TextureRegion> anim;
+        newUnit.color = inColor;
+        texture = unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n");
+        anim = new Animation<TextureRegion>(0.067f, unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n", 0));
         switch(inUnit) {
             case Peasant:
-                texture = unitTextures[0].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegion("walk-n", 0));
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
                 newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
-                newUnit.unitTexInd = 0;
                 break;
             case Footman:
-                texture = unitTextures[1].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[1].findRegion("walk-n", 0));
                 newUnit.unitClass = GameDataTypes.EUnitType.Footman;
-                newUnit.unitTexInd = 1;
                 break;
             case Archer:
-                texture = unitTextures[2].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[2].findRegion("walk-n", 0));
                 newUnit.unitClass = GameDataTypes.EUnitType.Archer;
-                newUnit.unitTexInd = 2;
                 break;
             case Ranger:
-                texture = unitTextures[3].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[3].findRegion("walk-n", 0));
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
                 newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
-                newUnit.unitTexInd = 3;
+                break;
+            case Knight:
+                newUnit.unitClass = GameDataTypes.EUnitType.Knight;
                 break;
             default:
-                texture = unitTextures[0].findRegion("walk-n");
-                anim = new Animation<TextureRegion>(0.067f, unitTextures[0].findRegion("walk-n", 0));
                 newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
-                newUnit.unitTexInd = 0;
                 break;
         }
         newUnit.sprite = new Sprite(texture);
@@ -131,12 +137,21 @@ public class Unit {
         newUnit.currentymove = y_position*32;
         newUnit.curState = GameDataTypes.EUnitState.Idle;
         newUnit.curAnim = anim;
+        newUnit.direction = GameDataTypes.EDirection.North;
+        newUnit.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                newUnit.selected = true;
+                System.out.println("Unit Listener");
+                return true;
+            }
+        });
         unitVector.add(newUnit);
     }
 
     public void AddUnit(TilePosition tpos, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor color){
         UnitPosition upos = new UnitPosition(tpos);
-        AddUnit((float)upos.X(), (float)upos.Y(), inUnit);
+        AddUnit((float)upos.X(), (float)upos.Y(), inUnit, color);
     }
 
 
@@ -156,7 +171,7 @@ public class Unit {
                     UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target);
                     break;
                 case Patrol:
-                    UnitPatrolState(unitVector.elementAt(i));
+                    UnitPatrolState(unitVector.elementAt(i), map);
                     break;
                 case Mine:
                     UnitMineState(unitVector.elementAt(i), map);
@@ -176,21 +191,8 @@ public class Unit {
             UnitMoveState(cur, map);
     }
 
-    private void UnitPatrolState(IndividualUnit cur) {
-        if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
-            System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
-            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegions("walk-"+cur.getDirection()));
-            // TODO: If another unit gets in curr.range attack the other unit until dead, once unit dead go back to patrol
-            if (cur.sprite.getX()+36 < cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
-            if (cur.sprite.getX()+36 > cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
-            if (cur.sprite.getY()+36 < cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
-            if (cur.sprite.getY()+36 > cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
-        } else {
-            cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
+    private void UnitPatrolState(IndividualUnit cur, AssetDecoratedMap map) {
+        if (UnitMove(cur, map) == true) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -222,34 +224,70 @@ public class Unit {
     }
 
     private void UnitMoveState(IndividualUnit cur, AssetDecoratedMap map) {
-        if ((cur.sprite.getX()+32 != cur.currentxmove) || (cur.sprite.getY()+32 != cur.currentymove)) {
-            //TODO: delete later
-            UnitPosition unitPosition = new UnitPosition(Math.round(cur.sprite.getX()), Math.round(cur.sprite.getY()));
-            TilePosition tilePosition = new TilePosition(unitPosition);
-//            Vector<Vector<TileTypes.ETileType>> DMap = map.GetMap(0);
-            TileTypes.ETileType nextTile;
-//            nextTile = DMap.get(tilePosition.X()).get(tilePosition.Y());
-            nextTile = map.TileType(tilePosition);
-            if (!map.IsTraversable(nextTile)){
-                cur.curState = GameDataTypes.EUnitState.Idle;
-                Gdx.app.log("Unit", "Stopped moving!");
-                return;
+        if (UnitMove(cur, map) == true) {
+            cur.curState = GameDataTypes.EUnitState.Idle;
+        }
+    }
+
+    // Returns true if it's reached the destination, false if it hasn't
+    public boolean UnitMove(IndividualUnit cur, AssetDecoratedMap map) {
+        if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
+            // Add more rigorous direction changing
+
+            boolean north, south, east, west;
+            north = south = west = east = false;
+
+            if (cur.sprite.getX()+(cur.sprite.getWidth()/2) > cur.currentxmove) {
+                cur.sprite.setCenterX(cur.sprite.getX()+(cur.sprite.getWidth()/2) - cur.speed/10);
+                west = true;
+            } else if (cur.sprite.getX()+(cur.sprite.getWidth()/2) < cur.currentxmove) {
+                cur.sprite.setCenterX(cur.sprite.getX()+(cur.sprite.getWidth()/2) + cur.speed/10);
+                east = true;
+            } else {
+                // stay in X
             }
 
-            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegions("walk-"+cur.getDirection()));
-            System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
-            if (cur.sprite.getX()+36 < cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
-            if (cur.sprite.getX()+36 > cur.currentxmove)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
-            if (cur.sprite.getY()+36 < cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
-            if (cur.sprite.getY()+36 > cur.currentymove)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
+            if (cur.sprite.getY()+(cur.sprite.getHeight()/2) > cur.currentymove) {
+                cur.sprite.setCenterY(cur.sprite.getY()+(cur.sprite.getHeight()/2) - cur.speed/10);
+                south = true;
+            } else if (cur.sprite.getY()+(cur.sprite.getHeight()/2) < cur.currentymove) {
+                cur.sprite.setCenterY(cur.sprite.getY()+(cur.sprite.getHeight()/2) + cur.speed/10);
+                north = true;
+            } else {
+                // stay in Y
+            }
+
+            GameDataTypes.EDirection oldDir = cur.direction;
+            // This is bad and I should feel bad. - Sven
+            if (north && west) {
+                cur.direction = GameDataTypes.EDirection.NorthWest;
+            } else if (north && east) {
+                cur.direction = GameDataTypes.EDirection.NorthEast;
+            } else if (north) {
+                cur.direction = GameDataTypes.EDirection.North;
+            } else if (south && west) {
+                cur.direction = GameDataTypes.EDirection.SouthWest;
+            } else if (south && east) {
+                cur.direction = GameDataTypes.EDirection.SouthEast;
+            } else if (south) {
+                cur.direction = GameDataTypes.EDirection.South;
+            } else if (east) {
+                cur.direction = GameDataTypes.EDirection.East;
+            } else if (west) {
+                cur.direction = GameDataTypes.EDirection.West;
+            }
+            if (cur.direction != oldDir) {
+                cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
+            } else {
+                cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
+            }
+
+            return false;
         } else {
-            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures[cur.unitTexInd].findRegion("walk-"+cur.getDirection(), 0));
+            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegion(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction), 0));
             cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
-            cur.curState = GameDataTypes.EUnitState.Idle;
+            // Maybe 0 out currentxmove and currentymove at some point
+            return true;
         }
     }
 }

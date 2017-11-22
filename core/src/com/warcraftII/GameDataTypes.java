@@ -23,6 +23,13 @@ public class GameDataTypes {
         Max
     }
 
+    public static String toString(EPlayerColor inColor) {
+        if (inColor == EPlayerColor.Max) {
+            return "none";
+        }
+        return inColor.toString().toLowerCase();
+    }
+
     public enum EAssetAction {
         None,
         Construct,
@@ -142,6 +149,29 @@ public class GameDataTypes {
         West,
         NorthWest,
         Max
+    }
+
+    public static String toAbbr(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "n";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "e";
+            case SouthEast:
+                return "se";
+            case South:
+                return "s";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "w";
+            case NorthWest:
+                return "nw";
+            default:
+                return "n";
+        }
     }
 
     public enum EUnitState {

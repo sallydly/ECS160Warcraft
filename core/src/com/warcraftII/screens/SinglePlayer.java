@@ -93,6 +93,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
+
+        // Fucking leave this on. Nothing updates without constant input if it's off.
+        Gdx.graphics.setContinuousRendering(true);
+
         // initialize easy-access reference variables.
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
@@ -178,10 +182,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage = new Stage(new ScreenViewport());
 
 
-        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
-        gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman);
-        gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
-        gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
+        //gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Black);
+        //gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman, GameDataTypes.EPlayerColor.Green);
+        //gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant, GameDataTypes.EPlayerColor.Orange);
+        gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
 
 
 //        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -510,7 +514,69 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
+
+
+        Vector3 clickCoordinates = new Vector3(x,y,0);
+        Vector3 position = mapViewport.unproject(clickCoordinates);
+        int counter = 0;
+        int unit_selected = 0;
+        while(counter < allUnits.unitVector.size()){
+            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
+            if (temp_peasant.getX() <= position.x && temp_peasant.getX() + temp_peasant.getWidth() >= position.x && temp_peasant.getY() <= position.y && temp_peasant.getY() + temp_peasant.getHeight() >= position.y) {
+                //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
+                // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
+                // PEASANT SELECTED ==
+                if (attack == 1) {
+                    unit_selected = 1;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
+                    attack = 0;
+                    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
+                    break;
+                }
+                //TODO
+                //if (ability == 1) {
+                //}
+                allUnits.selectedUnitIndex = counter;
+                unit_selected = 1;
+                allUnits.unitVector.elementAt(counter).selected = true;
+            } else {
+                if (allUnits.unitVector.elementAt(counter).selected == true) {
+                    unit_selected = 1;
+                }
+                //allUnits.unitVector.elementAt(counter).selected = false;
+            }
+            counter+=1;
+        }
+        specialButtons();
+        //if asset is at position.x position.y then assetSelected = 1 and selectedAsset =  asset
+        if (unit_selected == 1 && moveButton.isPressed() /*&& movement == 1*/) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Move;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+            //System.out.println("unit x: " + allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX() + "; unit y: " + allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY());
+            //System.out.println("newDestX: "+round(position.x)+"; newDestY: "+round(position.y));
+            movement = 0;
+        }
+        if (unit_selected == 1 && patrolButton.isPressed()) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Patrol;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX()+36;
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY()+36;
+            patrol = 0;
+        }
+        //TODO
+        //if (unit_selected == 0 && assetSelected == 1){
+        //  if (assetSelected == Goldmine && mine == 1) {
+        //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
+        //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+        // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+        //mine = 1;
+        //}
+        //}
+        return true;
+
+        //return false;
     }
 
     private void selectUnits(Vector3 position) {
