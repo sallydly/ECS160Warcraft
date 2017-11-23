@@ -23,8 +23,12 @@ import com.warcraftII.terrain_map.TileTypes;
 
 import org.omg.CORBA.UNKNOWN;
 
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
 public class Unit {
     public Vector<IndividualUnit> unitVector;
+    public Vector<IndividualUnit> deleteUnits;
     public int selectedUnitIndex;
     /*private TextureAtlas[] unitTextures = {
         new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
@@ -37,6 +41,7 @@ public class Unit {
 
     public Unit() {
         unitVector = new Vector<IndividualUnit>(50);
+        deleteUnits = new Vector<IndividualUnit>(20);
         selectedUnitIndex = 0;
         unitTextures.put(GameDataTypes.EUnitType.Archer, new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")));
         unitTextures.put(GameDataTypes.EUnitType.Footman, new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")));
@@ -162,25 +167,26 @@ public class Unit {
         for (int i = 0; i < unitVector.size(); i++) {
             if (unitVector.elementAt(i).curHP <= 0) {
                 unitVector.remove(i);
-            }
-            switch (unitVector.elementAt(i).curState) {
-                case Idle:
-                    break;
-                case Move:
-                    UnitMoveState(unitVector.elementAt(i), map);
-                    break;
-                case Attack:
-                    UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target, map);
-                    break;
-                case Patrol:
-                    UnitPatrolState(unitVector.elementAt(i), map);
-                    break;
-                case Mine:
-                    UnitMineState(unitVector.elementAt(i), map);
-                    break;
-                default:
-                    System.out.println("How'd you manage to get to that state?");
-                    break;
+            } else {
+                switch (unitVector.elementAt(i).curState) {
+                    case Idle:
+                        break;
+                    case Move:
+                        UnitMoveState(unitVector.elementAt(i), map);
+                        break;
+                    case Attack:
+                        UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target, map);
+                        break;
+                    case Patrol:
+                        UnitPatrolState(unitVector.elementAt(i), map);
+                        break;
+                    case Mine:
+                        UnitMineState(unitVector.elementAt(i), map);
+                        break;
+                    default:
+                        System.out.println("How'd you manage to get to that state?");
+                        break;
+                }
             }
         }
     }
@@ -206,16 +212,22 @@ public class Unit {
 
     private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, AssetDecoratedMap map) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
-        if (UnitMove(cur, map)) { // maybe set this if to be if tar is dead
+        if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
+            // TODO: do animation, check current keyframe, and only then attack
             // check if tar within cur.range of cur
-                // if so attack
+            if (sqrt(pow((tar.getX()+(tar.getWidth()/2))-(cur.getX()+(cur.getWidth()/2)), 2)  + pow((tar.getY()+(tar.getHeight()/2))-(cur.getY()+(cur.getHeight()/2)), 2)) <= cur.range*5) {
+                tar.curHP -= cur.attackDamage;
+                System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
+            } else {
+                cur.currentxmove = tar.sprite.getX()+(tar.getWidth()/2);
+                cur.currentymove = tar.sprite.getY()+(tar.getHeight()/2);
+                UnitMove(cur, map);
+            }
             // if not, move closer, setting currentxmove and currentymove as needed
         } else {
-            cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
-            tar.curHP = tar.curHP - cur.attackDamage;
-            System.out.println(String.format("Current Unit did %f damage to Target, Target now has %f health", cur.attackDamage, tar.curHP));
-            if (tar.curHP <= 0)
-                cur.curState = GameDataTypes.EUnitState.Idle;
+            deleteUnits.add(tar);
+            cur.target = null;
+            cur.stopMovement();
         }
     }
 
@@ -281,6 +293,15 @@ public class Unit {
             cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
             // Maybe 0 out currentxmove and currentymove at some point
             return true;
+        }
+    }
+
+    public void updateVector() {
+        if (!deleteUnits.isEmpty()) {
+            for (IndividualUnit del : deleteUnits) {
+                unitVector.remove(del);
+            }
+            deleteUnits.removeAllElements();
         }
     }
 

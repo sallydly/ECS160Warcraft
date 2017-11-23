@@ -298,7 +298,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).height(300).colspan(2);
         sidebarTable.row();
         sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
@@ -449,6 +449,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.act();
         sidebarStage.draw();
         allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+        allUnits.updateVector();
     }
 
     public void specialButtons() {
@@ -529,19 +530,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
                 // PEASANT SELECTED ==
-                if (attack == 1) {
+                if (unit_selected == 1 && attackButton.isPressed()) {
                     unit_selected = 1;
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
                     attack = 0;
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
                     break;
+                } else {
+                    allUnits.selectedUnitIndex = counter;
+                    unit_selected = 1;
+                    allUnits.unitVector.elementAt(counter).selected = true;
                 }
                 //TODO
                 //if (ability == 1) {
                 //}
-                allUnits.selectedUnitIndex = counter;
-                unit_selected = 1;
-                allUnits.unitVector.elementAt(counter).selected = true;
             } else {
                 if (allUnits.unitVector.elementAt(counter).selected == true) {
                     unit_selected = 1;
@@ -570,6 +572,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         if (unit_selected == 1 && stopButton.isPressed()) { // TODO: remove this if
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).stopMovement();
+        }
+
+        // TODO: make this not require the attack button (and update sidebar to match spec)
+        if (unit_selected == 100 && attackButton.isPressed()) {
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Attack;
+
         }
         //TODO
         //if (unit_selected == 0 && assetSelected == 1){
