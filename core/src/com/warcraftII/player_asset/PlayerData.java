@@ -64,7 +64,7 @@ public class PlayerData {
                 {
                     StaticAsset InitAsset = CreateStaticAsset(AssetInit.DType);
                     InitAsset.tilePosition(AssetInit.DTilePosition);
-                    InitAsset.DOwner = color;
+                    InitAsset.owner(color);
                     if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
                         InitAsset.gold(DGold);
                     }
@@ -164,7 +164,7 @@ public class PlayerData {
         StaticAsset ConsAsset = CreateStaticAsset(
                 PlayerAssetType.TypeToName(type));
         ConsAsset.tilePosition(tpos);
-        ConsAsset.DOwner = DColor;
+        ConsAsset.owner(DColor);
         /*if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
             InitAsset.gold(DGold);
         }*/

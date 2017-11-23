@@ -1,6 +1,7 @@
 package com.warcraftII.player_asset;
 
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.player_asset.SAssetCommand;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.position.TilePosition;
@@ -26,7 +27,7 @@ public class StaticAsset extends PlayerAsset{
     private Vector<SAssetCommand> DCommands;
     private int DStep;
 
-    public GameDataTypes.EPlayerColor DOwner;
+    private EPlayerColor DOwner;
 
     public StaticAsset(PlayerAssetType type) {
         DType = type;
@@ -37,6 +38,15 @@ public class StaticAsset extends PlayerAsset{
         DCurrentState = EState.INACTIVE; // TODO: have a cycle of building-> inactive, active etc.
         DCommands = new Vector<SAssetCommand>();
     }
+
+    public EPlayerColor owner(){
+        return DOwner;
+    }
+
+    public EPlayerColor owner(EPlayerColor playerColor){
+        return DOwner = playerColor;
+    }
+
 
     public EState state(){
         return DCurrentState;
@@ -75,7 +85,7 @@ public class StaticAsset extends PlayerAsset{
         if(0 > DHitPoints){
             DHitPoints = 0;
             SAssetCommand deathcommand = new SAssetCommand();
-            deathcommand.DAction = GameDataTypes.EAssetAction.Death;
+            deathcommand.DAction = EAssetAction.Death;
             DCommands.add(deathcommand);
         }
         return DHitPoints;
@@ -187,8 +197,12 @@ public class StaticAsset extends PlayerAsset{
         return DType.HitPoints();
     }
 
-    public GameDataTypes.EAssetType type() {
+    public EAssetType type() {
         return DType.Type();
+    }
+
+    public EStaticAssetType staticAssetType(){
+        return GameDataTypes.to_staticAssetType(type());
     }
 
     public PlayerAssetType assetType() {
@@ -199,7 +213,7 @@ public class StaticAsset extends PlayerAsset{
         DType = type;
     }
 
-    public GameDataTypes.EPlayerColor color() {
+    public EPlayerColor color() {
         return DType.Color();
     }
 
@@ -235,7 +249,7 @@ public class StaticAsset extends PlayerAsset{
             return DCommands.lastElement();
         }
         SAssetCommand RetVal = new SAssetCommand();
-        RetVal.DAction = GameDataTypes.EAssetAction.None;
+        RetVal.DAction = EAssetAction.None;
         return RetVal;
     }
 
@@ -244,13 +258,13 @@ public class StaticAsset extends PlayerAsset{
             return DCommands.get(DCommands.size() - 2);
         }
         SAssetCommand RetVal = new SAssetCommand();
-        RetVal.DAction = GameDataTypes.EAssetAction.None;
+        RetVal.DAction = EAssetAction.None;
         return RetVal;
     }
 
-    public GameDataTypes.EAssetAction Action() {
+    public EAssetAction Action() {
         if(!DCommands.isEmpty()){
-            GameDataTypes.EAssetAction action = DCommands.lastElement().DAction;
+            EAssetAction action = DCommands.lastElement().DAction;
 
             switch(action) {
                 case Construct:
@@ -262,13 +276,13 @@ public class StaticAsset extends PlayerAsset{
             }
             return DCommands.lastElement().DAction;
         }
-        return GameDataTypes.EAssetAction.None;
+        return EAssetAction.None;
     }
 
 
 //TODO: add this
     public int Sight() {
-        return GameDataTypes.EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
+        return EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
     }
 
     public int SightUpgrade() {

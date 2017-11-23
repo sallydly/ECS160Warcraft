@@ -187,7 +187,7 @@ public class GameData {
                 }
                 else
                 {
-                    playerData.get(GameDataTypes.to_underlying(sasset.DOwner)).DeleteStaticAsset(sasset);
+                    playerData.get(GameDataTypes.to_underlying(sasset.owner())).DeleteStaticAsset(sasset);
                     iter.remove();
                 }
             }
