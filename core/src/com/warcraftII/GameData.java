@@ -2,6 +2,7 @@ package com.warcraftII;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -26,6 +28,7 @@ import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -39,6 +42,9 @@ public class GameData {
     // height and width of each map tile in pixels
     public static final int TILE_HEIGHT = 32;
     public static final int TILE_WIDTH = 32;
+    public static final float UPDATE_INTERVAL = (float) 0.001;
+    public static final float UPDATE_FREQUENCY = 1/UPDATE_INTERVAL;
+    public static final int SPEEDUP_FACTOR = 50;
 
     public TextureAtlas terrain;
     public TextureAtlas peasant;
@@ -54,17 +60,22 @@ public class GameData {
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
+    public SpriteBatch buildingSB;
 
     public MapProperties properties;
+
+    public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
     public UnitActions unitActions;
     public Unit allUnits;
 
     public float elapsedTime;
+    public float cumulativeTime = 0; // for slowing down timestep a bit.
 
     public GameData(){
         sb = new SpriteBatch();
+        buildingSB = new SpriteBatch();
         allUnits = new Unit();
         unitActions = new UnitActions();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
@@ -85,6 +96,7 @@ public class GameData {
 
         mapRenderer = new MapRenderer(map);
         staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
+        staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
 
@@ -139,6 +151,50 @@ public class GameData {
     }
 
 
+    //Naive timestep.
+    public void TimeStep(){
+
+        staticAssetRenderer.DrawEffects(buildingSB, mapCamera, elapsedTime);
+
+        if (cumulativeTime < UPDATE_INTERVAL){
+            return;
+        }
+        else{
+            cumulativeTime = 0;
+        }
+
+        Iterator<StaticAsset> iter = map.StaticAssets().iterator();
+
+        while(iter.hasNext())
+        {
+            StaticAsset sasset = iter.next();
+            if(GameDataTypes.EAssetAction.None == sasset.Action()){
+                //Do nothing. for now.
+            }
+            if(GameDataTypes.EAssetAction.Construct == sasset.Action()){
+                if(sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
+                    sasset.IncrementStep();
+                }
+                else
+                {
+                    sasset.PopCommand();
+                }
+                //Do nothing. for now.
+            }
+            if(GameDataTypes.EAssetAction.Death == sasset.Action()){
+                if(sasset.Step() < 15){
+                    sasset.IncrementStep();
+                }
+                else
+                {
+                    playerData.get(GameDataTypes.to_underlying(sasset.DOwner)).DeleteStaticAsset(sasset);
+                    iter.remove();
+                }
+            }
+        }
+
+        staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
+    }
 
 
     public void dispose() {

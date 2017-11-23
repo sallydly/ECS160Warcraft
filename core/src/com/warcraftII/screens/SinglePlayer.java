@@ -45,7 +45,10 @@ import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
 import static com.warcraftII.GameData.TILE_WIDTH;
+import static java.lang.Math.random;
 import static java.lang.Math.round;
+
+import java.util.Random;
 import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
@@ -57,6 +60,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Unit allUnits;
     private SpriteBatch batch;
     private SpriteBatch sb;
+    private SpriteBatch buildingSB;
 
 
     private Music readySound;
@@ -94,6 +98,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private double prevDistance = 0;
 
+    private int lastbuiltasset = 0; //DEBUG
+
+
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
@@ -101,6 +109,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
         sb = gameData.sb;
+        buildingSB = gameData.buildingSB;
+
+        Gdx.graphics.setContinuousRendering(true);
+
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
     }
@@ -211,6 +223,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(attackButton);
         
 	    mapCamera = new OrthographicCamera();
+	    gameData.mapCamera = mapCamera;
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
         mapStage = new Stage(mapViewport);
 
@@ -317,14 +330,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
+        gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
+
+        gameData.TimeStep();
+
         batch.begin();
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
-
         batch.end();
+
+
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         Texture selected = new Texture(Gdx.files.internal("img/select.png"));
@@ -340,6 +358,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             counter+=1;
         }
         sb.end();
+
 //        stage.act();
 //        stage.draw();
 	    sidebarStage.getViewport().apply();
@@ -471,7 +490,30 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
+        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        log.info("Tile position: " + xi +" " + yi);
+        /*gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, 100);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition,  100);
+        */
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
+        if (chosenStatAsset == null){
+            System.out.println("No asset here...building");
+            PlayerData player0 = gameData.playerData.get(0);
+            player0.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1]), gameData.map);
+            lastbuiltasset++;
+        }
+        else {
+            System.out.println("Asset found." + chosenStatAsset.assetType().Name());
+            System.out.println(chosenStatAsset.hitPoints());
+            chosenStatAsset.decrementHitPoints(1000);
+
+        }
         return false;
     }
 

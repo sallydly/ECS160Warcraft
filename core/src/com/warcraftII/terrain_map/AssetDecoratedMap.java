@@ -805,19 +805,17 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 
     /**
-     * Get function, return the list of assets DAssets
+     * Get function, return the list of Staticassets DAssets
      *
      * @param[in] Nothing
      *
      * @return DAssets
      *
      */
-    // TODO: Uncomment when PlayerAsset is available
-    /*
-    public List< PlayerAsset > Assets(){
-        return DAssets;
+
+    public List< StaticAsset > StaticAssets(){
+        return DStaticAssets;
     }
-*/
 
     /**
      * Get function, return the list of player (colors)
@@ -1141,6 +1139,7 @@ public class AssetDecoratedMap extends TerrainMap {
     public void RemoveStaticAsset(StaticAsset asset){
         DStaticAssets.remove(asset);
     }
+
 
 
 }

@@ -16,6 +16,8 @@ Farm
 500
 # Lumber Cost
 250
+# Stone Cost
+0
 # Food Consumption (Negative Production)
 -4
 # Build Time (s)

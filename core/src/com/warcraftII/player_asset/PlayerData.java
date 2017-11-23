@@ -3,6 +3,7 @@ package com.warcraftII.player_asset;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
 import com.warcraftII.terrain_map.initialization.SResourceInitialization;
@@ -63,6 +64,7 @@ public class PlayerData {
                 {
                     StaticAsset InitAsset = CreateStaticAsset(AssetInit.DType);
                     InitAsset.tilePosition(AssetInit.DTilePosition);
+                    InitAsset.DOwner = color;
                     if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
                         InitAsset.gold(DGold);
                     }
@@ -150,6 +152,32 @@ public class PlayerData {
     }
 
 
+    public void DeleteStaticAsset(StaticAsset staticAsset){
+        DStaticAssets.remove(staticAsset);
+        return;
+    }
+
+    public void ConstructStaticAsset(TilePosition tpos, EAssetType type, AssetDecoratedMap map){
+        if (!GameDataTypes.is_static(type))
+            return;
+
+        StaticAsset ConsAsset = CreateStaticAsset(
+                PlayerAssetType.TypeToName(type));
+        ConsAsset.tilePosition(tpos);
+        ConsAsset.DOwner = DColor;
+        /*if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
+            InitAsset.gold(DGold);
+        }*/
+
+        SAssetCommand constructCommand = new SAssetCommand();
+        constructCommand.DAction = GameDataTypes.EAssetAction.Construct;
+        ConsAsset.EnqueueCommand(constructCommand);
+        ConsAsset.Step(0);
+
+        DStaticAssets.add(ConsAsset);
+        map.AddStaticAsset(ConsAsset);
+
+    }
     /*
 
     std::shared_ptr< CPlayerAsset > CreateMarker( CPixelPosition &pos, boolean addtomap);

@@ -160,6 +160,8 @@ public class MapSelection implements Screen {
         game.batch.begin();
         game.batch.draw(texture, 0, 0);
         game.batch.end();
+
+        
     }
 
     @Override
