@@ -84,7 +84,7 @@ public class GameData {
         UnitPosition.setMapDimensions(map);
 
         mapRenderer = new MapRenderer(map);
-        staticAssetRenderer = new StaticAssetRenderer();
+        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
 

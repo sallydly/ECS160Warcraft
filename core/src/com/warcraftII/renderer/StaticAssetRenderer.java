@@ -12,31 +12,61 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
 import com.warcraftII.player_asset.StaticAsset;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.List;
 
 public class StaticAssetRenderer {
     private static final Logger log = new Logger("StaticAssetRenderer", 2);
 
-    private TextureAtlas staticAssetTextures;
+    private static Map<EStaticAssetType,TextureAtlas> DStaticAssetTextures;
+    private static Map<EStaticAssetType,String> DTypeNameTranslation;
+
     private TiledMap tiledMap;
     private TiledMapTileLayer assetLayer;
     private String[] staticAssetsArray;
     //private final String mapName;
-    private static final String TOWNHALL = "TownHall";
-    private static final String GOLDMINE = "GoldMine";
-    private static final String PEASANT = "Peasant";
+
+
+    static{ MakeAtlases();}
+    private static void MakeAtlases(){
+        DTypeNameTranslation = new HashMap<EStaticAssetType,String>();
+        {
+            DTypeNameTranslation.put( EStaticAssetType.GoldMine, "GoldMine");
+            DTypeNameTranslation.put(EStaticAssetType.TownHall, "TownHall");
+            DTypeNameTranslation.put(EStaticAssetType.Keep, "Keep");
+            DTypeNameTranslation.put(EStaticAssetType.Castle, "Castle");
+            DTypeNameTranslation.put(EStaticAssetType.Farm,"Farm");
+            DTypeNameTranslation.put(EStaticAssetType.Barracks, "Barracks");
+            DTypeNameTranslation.put(EStaticAssetType.LumberMill,"LumberMill");
+            DTypeNameTranslation.put(EStaticAssetType.Blacksmith, "Blacksmith");
+            DTypeNameTranslation.put(EStaticAssetType.ScoutTower, "ScoutTower");
+            DTypeNameTranslation.put(EStaticAssetType.GuardTower,"GuardTower");
+            DTypeNameTranslation.put(EStaticAssetType.CannonTower,"CannonTower");
+            DTypeNameTranslation.put(EStaticAssetType.Wall, "Wall");
+        }
+
+        for (EStaticAssetType assetType : DTypeNameTranslation.keySet())
+        {
+            String filePathString = "atlas/" + DTypeNameTranslation.get(assetType) + ".atlas";
+            TextureAtlas Textures = new TextureAtlas(Gdx.files.internal(filePathString));
+            DStaticAssetTextures.put(assetType,Textures);
+        }
+
+    }
 
     public StaticAssetRenderer(TiledMap tiledMap,
                                int mapWidth,
                                int mapHeight,
                                String mapName) {
-        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
+        this.DStaticAssetTextures = new HashMap<EStaticAssetType, TextureAtlas>();
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
         //this.mapName = mapName;
@@ -47,45 +77,11 @@ public class StaticAssetRenderer {
 
     }
 
-    public StaticAssetRenderer() {
 
-    }
-
-    // takes in an AssetDecoratedMap instead
-    public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map) {
-        List< SAssetInitialization > AssetInitializationList = map.AssetInitializationList();
-        System.out.println("start render");
-
-        this.staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
-        this.assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
-        this.assetLayer.setName("StationaryAssets");
-
-        for(SAssetInitialization AssetInit : AssetInitializationList) {
-            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-            TextureRegion textureRegion = new TextureRegion();
-
-            int XPos = AssetInit.DTilePosition.X();
-            //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
-            int YPos = map.Height() - AssetInit.DTilePosition.Y() - 1; // -1 to account for 0 index
-
-            String AssetType = AssetInit.DType;
-
-
-            if (GOLDMINE.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "goldmine-inactive");
-            } else if (TOWNHALL.equals(AssetType)) {
-                GraphicTileset.DrawTile(staticAssetTextures, assetLayer, XPos, YPos, "townhall-inactive");
-            }
-        }
-
-        return assetLayer;
-    }
 
     // This one takes in the map AND PlayerData object, and a tiledMapTileLayer that it edits.
     public TiledMapTileLayer addStaticAssets(AssetDecoratedMap map, Vector<PlayerData> playerData) {
         System.out.println("start render");
-
-        staticAssetTextures = new TextureAtlas(Gdx.files.internal("atlas/stationary_assets_32.atlas"));
 
         assetLayer = new TiledMapTileLayer(map.Width(), map.Height(), 32, 32);
         assetLayer.setName("StationaryAssets");
