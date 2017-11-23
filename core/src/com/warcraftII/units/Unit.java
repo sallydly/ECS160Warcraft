@@ -93,11 +93,13 @@ public class Unit {
             }
         }
 
+        public void stopMovement() {
+            curState = GameDataTypes.EUnitState.Idle;
+            curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(unitClass).findRegion(GameDataTypes.toString(color)+"-walk-"+GameDataTypes.toAbbr(direction), 0));
+        }
+
     }
 
-    public void stopMovement() {
-        unitVector.elementAt(selectedUnitIndex).curState = GameDataTypes.EUnitState.Idle;
-    }
     public void AddUnit(float x_position, float y_position, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor inColor) {
         final IndividualUnit newUnit = new IndividualUnit();
         newUnit.abilities = new Vector<GameDataTypes.EAssetCapabilityType>(5);
@@ -168,7 +170,7 @@ public class Unit {
                     UnitMoveState(unitVector.elementAt(i), map);
                     break;
                 case Attack:
-                    UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target);
+                    UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target, map);
                     break;
                 case Patrol:
                     UnitPatrolState(unitVector.elementAt(i), map);
@@ -192,7 +194,7 @@ public class Unit {
     }
 
     private void UnitPatrolState(IndividualUnit cur, AssetDecoratedMap map) {
-        if (UnitMove(cur, map) == true) {
+        if (UnitMove(cur, map)) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -202,18 +204,12 @@ public class Unit {
         }
     }
 
-    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar) {
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, AssetDecoratedMap map) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
-        if ((cur.sprite.getX()+36 != tar.sprite.getX()+36 - cur.range) || (cur.sprite.getY()+36 != tar.sprite.getY() + 36 - cur.range)) {
-            System.out.println(String.format("X: %f, Y: %f, desX: %f, desY: %f", cur.sprite.getX(), cur.sprite.getY(), cur.currentxmove, cur.currentymove));
-            if (cur.sprite.getX()+36 < tar.sprite.getX()+36 - cur.range)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 + cur.speed/10);
-            if (cur.sprite.getX()+36 > tar.sprite.getX()+36 - cur.range)
-                cur.sprite.setCenterX(cur.sprite.getX()+36 - cur.speed/10);
-            if (cur.sprite.getY()+36 < tar.sprite.getY() + 36 - cur.range)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 + cur.speed/10);
-            if (cur.sprite.getY()+36 > tar.sprite.getY() + 36 - cur.range)
-                cur.sprite.setCenterY(cur.sprite.getY()+36 - cur.speed/10);
+        if (UnitMove(cur, map)) { // maybe set this if to be if tar is dead
+            // check if tar within cur.range of cur
+                // if so attack
+            // if not, move closer, setting currentxmove and currentymove as needed
         } else {
             cur.sprite.setCenter(cur.currentxmove, cur.currentymove);
             tar.curHP = tar.curHP - cur.attackDamage;
@@ -224,7 +220,7 @@ public class Unit {
     }
 
     private void UnitMoveState(IndividualUnit cur, AssetDecoratedMap map) {
-        if (UnitMove(cur, map) == true) {
+        if (UnitMove(cur, map)) {
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
@@ -232,7 +228,7 @@ public class Unit {
     // Returns true if it's reached the destination, false if it hasn't
     public boolean UnitMove(IndividualUnit cur, AssetDecoratedMap map) {
         if ((cur.sprite.getX()+36 != cur.currentxmove) || (cur.sprite.getY()+36 != cur.currentymove)) {
-            // Add more rigorous direction changing
+            // TODO: do actual pathfinding
 
             boolean north, south, east, west;
             north = south = west = east = false;
@@ -276,11 +272,8 @@ public class Unit {
             } else if (west) {
                 cur.direction = GameDataTypes.EDirection.West;
             }
-            if (cur.direction != oldDir) {
-                cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
-            } else {
-                cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
-            }
+
+            cur.curAnim = new Animation<TextureRegion>(0.067f, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
 
             return false;
         } else {
@@ -290,6 +283,7 @@ public class Unit {
             return true;
         }
     }
+
 }
 
 

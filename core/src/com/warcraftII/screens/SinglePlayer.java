@@ -117,7 +117,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                allUnits.stopMovement();
+                //allUnits.stopMovement();
                 movement = 0;
                 patrol = 0;
                 attack = 0;
@@ -435,7 +435,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //temp_peasant.draw(sb);
             // TODO: This isn't a good way of doing the selection and should be improved
             if (temp_peasant.selected) {
-                sb.draw(selected,temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
+                sb.draw(selected, temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
+                if (stopButton.isPressed()) {
+                    temp_peasant.stopMovement();
+                }
             }
             sb.draw(temp_peasant.curAnim.getKeyFrame(gameData.elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
@@ -564,6 +567,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX()+36;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY()+36;
             patrol = 0;
+        }
+        if (unit_selected == 1 && stopButton.isPressed()) { // TODO: remove this if
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).stopMovement();
         }
         //TODO
         //if (unit_selected == 0 && assetSelected == 1){
