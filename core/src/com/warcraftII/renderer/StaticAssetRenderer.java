@@ -87,7 +87,7 @@ public class StaticAssetRenderer {
             TypeNameTranslation.put(EStaticAssetType.ScoutTower, "ScoutTower");
             TypeNameTranslation.put(EStaticAssetType.GuardTower, "GuardTower");
             TypeNameTranslation.put(EStaticAssetType.CannonTower, "CannonTower");
-            //TypeNameTranslation.put(EStaticAssetType.Wall, "Wall");
+            TypeNameTranslation.put(EStaticAssetType.Wall, "Wall");
         }
 
         for (EStaticAssetType assetType : TypeNameTranslation.keySet()) {

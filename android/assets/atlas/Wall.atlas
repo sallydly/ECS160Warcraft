@@ -4,392 +4,392 @@ size: 2048,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-construct-0
+construct_0
   rotate: false
   xy: 2, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-construct-1
+construct_1
   rotate: false
   xy: 36, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-0
+damaged_0
   rotate: false
   xy: 70, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-1
+damaged_1
   rotate: false
   xy: 104, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-2
+damaged_2
   rotate: false
   xy: 138, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-3
+damaged_3
   rotate: false
   xy: 172, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-4
+damaged_4
   rotate: false
   xy: 206, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-5-0
+damaged_5-0
   rotate: false
   xy: 240, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-5-1
+damaged_5-1
   rotate: false
   xy: 274, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-6
+damaged_6
   rotate: false
   xy: 308, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-7
+damaged_7
   rotate: false
   xy: 342, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-8
+damaged_8
   rotate: false
   xy: 376, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-9
+damaged_9
   rotate: false
   xy: 410, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-A-0
+damaged_A-0
   rotate: false
   xy: 444, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-A-1
+damaged_A-1
   rotate: false
   xy: 478, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-B
+damaged_B
   rotate: false
   xy: 512, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-C
+damaged_C
   rotate: false
   xy: 546, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-D
+damaged_D
   rotate: false
   xy: 580, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-E
+damaged_E
   rotate: false
   xy: 614, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-damaged-F
+damaged_F
   rotate: false
   xy: 648, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-0
+destroyed_0
   rotate: false
   xy: 682, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-1
+destroyed_1
   rotate: false
   xy: 716, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-2
+destroyed_2
   rotate: false
   xy: 750, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-3
+destroyed_3
   rotate: false
   xy: 784, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-4
+destroyed_4
   rotate: false
   xy: 818, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-5-0
+destroyed_5-0
   rotate: false
   xy: 852, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-5-1
+destroyed_5-1
   rotate: false
   xy: 886, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-6
+destroyed_6
   rotate: false
   xy: 920, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-7
+destroyed_7
   rotate: false
   xy: 954, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-8
+destroyed_8
   rotate: false
   xy: 988, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-9
+destroyed_9
   rotate: false
   xy: 1022, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-A-0
+destroyed_A-0
   rotate: false
   xy: 1056, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-A-1
+destroyed_A-1
   rotate: false
   xy: 1090, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-B
+destroyed_B
   rotate: false
   xy: 1124, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-C
+destroyed_C
   rotate: false
   xy: 1158, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-D
+destroyed_D
   rotate: false
   xy: 1192, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-E
+destroyed_E
   rotate: false
   xy: 1226, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-destroyed-F
+destroyed_F
   rotate: false
   xy: 1260, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-0
+inactive_0
   rotate: false
   xy: 1294, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-1
+inactive_1
   rotate: false
   xy: 1328, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-2
+inactive_2
   rotate: false
   xy: 1362, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-3
+inactive_3
   rotate: false
   xy: 1396, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-4
+inactive_4
   rotate: false
   xy: 1430, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-5-0
+inactive_5-0
   rotate: false
   xy: 1464, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-5-1
+inactive_5-1
   rotate: false
   xy: 1498, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-6
+inactive_6
   rotate: false
   xy: 1532, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-7
+inactive_7
   rotate: false
   xy: 1566, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-8
+inactive_8
   rotate: false
   xy: 1600, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-9
+inactive_9
   rotate: false
   xy: 1634, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-A-0
+inactive_A-0
   rotate: false
   xy: 1668, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-A-1
+inactive_A-1
   rotate: false
   xy: 1702, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-B
+inactive_B
   rotate: false
   xy: 1736, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-C
+inactive_C
   rotate: false
   xy: 1770, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-D
+inactive_D
   rotate: false
   xy: 1804, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-E
+inactive_E
   rotate: false
   xy: 1838, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-inactive-F
+inactive_F
   rotate: false
   xy: 1872, 2
   size: 32, 32
