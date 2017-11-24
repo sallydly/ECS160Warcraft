@@ -504,9 +504,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
         if (chosenStatAsset == null){
             System.out.println("No asset here...building");
-            PlayerData player0 = gameData.playerData.get(0);
-            player0.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1]), gameData.map);
-            lastbuiltasset++;
+            PlayerData player1 = gameData.playerData.get(1);
+            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
+            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
+                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
+                lastbuiltasset++;
+            }
         }
         else {
             System.out.println("Asset found." + chosenStatAsset.assetType().Name());

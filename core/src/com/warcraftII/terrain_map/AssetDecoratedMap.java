@@ -4,6 +4,7 @@ package com.warcraftII.terrain_map;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -238,65 +239,76 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 */
 
+
     /**
      * Determine if an asset can be placed at a certain tile position
      *
+     *
      * @param[in] pos TilePosition object of the position where you want to place the asset
      * @param[in] size The size of the asset you want to place
-     * @param[in] ignoreasset An asset to ignore when checking if two assets will overlap
+     * OR
+     * @param[in] asset Static Asset that you want to place.
      *
      * @return true if the asset can be placed at that position, false if not
      *
      */
-//TODO: Fix when PlayerAsset is available
-    /*
-    boolean CanPlaceAsset(TilePosition pos, int size, PlayerAsset ignoreasset){
+
+
+    public boolean CanPlaceStaticAsset(TilePosition pos, EStaticAssetType assetType) {
+        return CanPlaceStaticAsset(pos, PlayerAssetType.StaticAssetSize(assetType));
+    }
+
+
+
+    public boolean CanPlaceStaticAsset(TilePosition pos, int size){
         int RightX, BottomY;
 
         for(int YOff = 0; YOff < size; YOff++){
             for(int XOff = 0; XOff < size; XOff++){
                 ETileType TileTerrainType = TileType(pos.X() + XOff, pos.Y() + YOff);
 
-                //if((ETileType.Grass != TileTerrainType)&&(ETileType.Dirt != TileTerrainType)&&(ETileType.Stump != TileTerrainType)&&(ETileType.Rubble != TileTerrainType)){
                 if(!CanPlaceOn(TileTerrainType)){
                     return false;
                 }
             }
         }
+
         RightX = pos.X() + size;
         BottomY = pos.Y() + size;
+
         if(RightX >= Width()){
             return false;
         }
         if(BottomY >= Height()){
             return false;
         }
-        for(PlayerAsset Asset : DAssets){
-            int Offset = EAssetType.GoldMine == Asset.Type() ? 1 : 0;
 
-            if(EAssetType.None == Asset.Type()){
+        for(StaticAsset Asset : DStaticAssets){
+            int Offset = EStaticAssetType.GoldMine == Asset.staticAssetType() ? 1 : 0;
+
+            if(EStaticAssetType.None == Asset.staticAssetType()){
                 continue;
             }
-            if(ignoreasset == Asset){
+            /*if(ignoreasset == Asset){
+                continue;
+            }*/
+            if(RightX <= Asset.tilePositionX() - Offset){
                 continue;
             }
-            if(RightX <= Asset.TilePositionX() - Offset){
+            if(pos.X() >= (Asset.tilePositionX() + Asset.Size() + Offset)){
                 continue;
             }
-            if(pos.X() >= (Asset.TilePositionX() + Asset.Size() + Offset)){
+            if(BottomY <= Asset.tilePositionY() - Offset){
                 continue;
             }
-            if(BottomY <= Asset.TilePositionY() - Offset){
-                continue;
-            }
-            if(pos.Y() >= (Asset.TilePositionY() + Asset.Size() + Offset)){
+            if(pos.Y() >= (Asset.tilePositionY() + Asset.Size() + Offset)){
                 continue;
             }
             return false;
         }
         return true;
     }
-*/
+
     /**
      * Find a valid tile position to place a new asset
      *

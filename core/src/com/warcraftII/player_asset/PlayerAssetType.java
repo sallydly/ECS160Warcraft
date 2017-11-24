@@ -401,6 +401,14 @@ public class PlayerAssetType {
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }
+
+    public static int StaticAssetSize(EStaticAssetType type){
+        String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
+        PlayerAssetType playerAssetType = DRegistry.get(typeString);
+        return playerAssetType.Size();
+    }
+
+
     /*
     public static int MaxSight(){
 
