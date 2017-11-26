@@ -154,8 +154,6 @@ public class GameData {
     //Naive timestep.
     public void TimeStep(){
 
-        staticAssetRenderer.DrawEffects(buildingSB, mapCamera, elapsedTime);
-
         if (cumulativeTime < UPDATE_INTERVAL){
             return;
         }
@@ -182,14 +180,7 @@ public class GameData {
                 //Do nothing. for now.
             }
             if(GameDataTypes.EAssetAction.Death == sasset.Action()){
-                if(sasset.Step() < 15){
-                    sasset.IncrementStep();
-                }
-                else
-                {
-                    playerData.get(GameDataTypes.to_underlying(sasset.owner())).DeleteStaticAsset(sasset);
-                    iter.remove();
-                }
+                //do nothing for now.
             }
         }
 

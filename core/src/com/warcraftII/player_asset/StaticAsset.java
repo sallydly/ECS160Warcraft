@@ -86,6 +86,7 @@ public class StaticAsset extends PlayerAsset{
             DHitPoints = 0;
             SAssetCommand deathcommand = new SAssetCommand();
             deathcommand.DAction = EAssetAction.Death;
+            DCommands.clear();
             DCommands.add(deathcommand);
         }
         return DHitPoints;

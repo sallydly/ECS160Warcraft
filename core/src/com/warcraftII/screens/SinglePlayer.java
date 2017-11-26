@@ -357,6 +357,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             sb.draw(temp_peasant.curAnim.getKeyFrame(gameData.elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
         }
+
+        gameData.staticAssetRenderer.DrawEffects(sb,delta);
+
         sb.end();
 
 //        stage.act();
@@ -512,9 +515,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
         else {
-            System.out.println("Asset found." + chosenStatAsset.assetType().Name());
-            System.out.println(chosenStatAsset.hitPoints());
-            chosenStatAsset.decrementHitPoints(1000);
+            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
+            chosenStatAsset.decrementHitPoints(100);
 
         }
         return false;

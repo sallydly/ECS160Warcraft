@@ -7,6 +7,7 @@ package com.warcraftII.renderer;
  */
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,8 +27,11 @@ import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Vector;
 import java.util.List;
 
@@ -42,15 +46,21 @@ public class StaticAssetRenderer {
     private TiledMapTileLayer assetLayer;
     private String[] staticAssetsArray;
 
+    private Sound burningSound;
+    private Sound[] buildingDeathSounds;
+
+
     private int DUpdateFrequency;
 
     private static int[] DConstructionStages; // Gives the max construction stage # for each type.
-    private static int BuildingDeathMaxIndex = 15;
 
+    private static Animation<TextureRegion> BuildingDeathAnim, LargeFireAnim, SmallFireAnim;
 
-    private static Animation<TextureRegion> LargeFireAnim,SmallFireAnim, BuildingDeathAnim;
-    private Map<StaticAsset, SpriteAnimation> DEffectSpriteMapping;
+    private Map<StaticAsset, BuildingEffect> DEffectMapping;
 
+    private List<StaticAsset> DeathRowBuildings;
+
+    private Random rando = new Random();
     //private final String mapName;
 
 
@@ -104,9 +114,7 @@ public class StaticAssetRenderer {
 
             DConstructionStages[GameDataTypes.to_underlying(sassettype)] = -1;
 
-            //if (sassettype == EStaticAssetType.None || sassettype == EStaticAssetType.Max){ continue;}
-
-            if (sassettype == EStaticAssetType.None || sassettype == EStaticAssetType.Max || sassettype == EStaticAssetType.Wall){ continue;}
+            if (sassettype == EStaticAssetType.None || sassettype == EStaticAssetType.Max){ continue;}
 
             TextureAtlas atlas = DStaticAssetTextures.get(sassettype);
 
@@ -132,6 +140,9 @@ public class StaticAssetRenderer {
                 }
             }
         }
+        BuildingDeathAnim = new Animation<TextureRegion>(0.25f, animationTextures.findRegions("buildingdeath"), Animation.PlayMode.NORMAL);
+        LargeFireAnim = new Animation<TextureRegion>(0.2f, animationTextures.findRegions("large-fire"), Animation.PlayMode.LOOP_RANDOM);
+        SmallFireAnim = new Animation<TextureRegion>(0.2f, animationTextures.findRegions("small-fire"), Animation.PlayMode.LOOP_RANDOM);
     }
 
     private static boolean IsColored(EStaticAssetType type) {
@@ -166,11 +177,17 @@ public class StaticAssetRenderer {
         this.tiledMap = tiledMap;
         this.assetLayer = new TiledMapTileLayer(mapWidth, mapHeight, 32, 32);
 
-        DEffectSpriteMapping = new HashMap<StaticAsset, SpriteAnimation>();
+        DEffectMapping = new HashMap<StaticAsset, BuildingEffect>();
+        DeathRowBuildings = new ArrayList<StaticAsset>();
 
-        LargeFireAnim = new Animation<TextureRegion>(0.5f,animationTextures.findRegions("large-fire"));
-        SmallFireAnim = new Animation<TextureRegion>(0.5f, animationTextures.findRegions("small-fire"));
-        BuildingDeathAnim = new Animation<TextureRegion>(0.5f, animationTextures.findRegions("buildingdeath"));
+        burningSound = Gdx.audio.newSound(Gdx.files.internal("data/snd/misc/burning.wav"));
+
+        buildingDeathSounds = new Sound[3];
+        buildingDeathSounds[0] = Gdx.audio.newSound(Gdx.files.internal("data/snd/misc/building-explode1.wav"));
+        buildingDeathSounds[1] = Gdx.audio.newSound(Gdx.files.internal("data/snd/misc/building-explode2.wav"));
+        buildingDeathSounds[2] = Gdx.audio.newSound(Gdx.files.internal("data/snd/misc/building-explode3.wav"));
+
+
 
         //log.debug(typeName+String.valueOf(DConstructionStages[to_underlying(sassettype)] ));
 
@@ -222,12 +239,13 @@ public class StaticAssetRenderer {
     public void UpdateStaticAssets(TiledMap tmap, AssetDecoratedMap map, Vector<PlayerData> playerData) {
 
         TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
-        TiledMapTileLayer effectsLayer = (TiledMapTileLayer) tmap.getLayers().get("BuildingEffects");
 
         for (PlayerData player : playerData) {
             String colorName = DPlayerColorToString.get(player.Color());
 
-            for (StaticAsset StatAsset : player.StaticAssets()) {
+           for (Iterator<StaticAsset> itr = player.StaticAssets().iterator(); itr.hasNext();) {
+                StaticAsset StatAsset = itr.next();
+
                 String tileName, stateName;
 
                 TextureAtlas textures = DStaticAssetTextures.get(StatAsset.staticAssetType());
@@ -237,6 +255,51 @@ public class StaticAssetRenderer {
                 //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
                 int YPos = map.Height() - StatAsset.tilePosition().Y() - 1; // -1 to account for 0 index
 
+                // Fire is drawn as long as building is not already dead.
+                if (StatAsset.Action() != EAssetAction.Death) {
+                    int HitRange = StatAsset.hitPoints() * 4 / StatAsset.maxHitPoints();
+
+                    if (HitRange < 2) {
+                        int TilesetIndex = 1 - HitRange;
+                        float AdjHeight = Position.halfTileHeight() * (StatAsset.assetType().Size());
+                        float AdjWidth = Position.halfTileWidth() * (StatAsset.assetType().Size() / 2 - (float) 0.5);
+
+                        BuildingEffect currentEffect = DEffectMapping.get(StatAsset);
+                        if (currentEffect == null) {
+                            currentEffect = new BuildingEffect();
+                        }
+
+                        UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
+
+                        if (TilesetIndex == 0){
+                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("SmallFire")){
+                                continue;
+                            }
+
+                            Sprite newSprite = new Sprite(animationTextures.findRegion("small-fire"));
+                            newSprite.setOriginCenter();
+                            newSprite.setPosition(newUPos.X() + AdjWidth, newUPos.Y() - AdjHeight);
+                            currentEffect.SetAnimation(newSprite, SmallFireAnim, StatAsset, "SmallFire");
+                            currentEffect.LoopSound(burningSound);
+                            DEffectMapping.put(StatAsset, currentEffect);
+                        } else if (TilesetIndex == 1) {
+                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("LargeFire")){
+                                continue;
+                            }
+                            Sprite newSprite = new Sprite(animationTextures.findRegion("large-fire"));
+                            newSprite.setOriginCenter();
+                            newSprite.setPosition(newUPos.X() + AdjWidth, newUPos.Y() - AdjHeight);
+                            currentEffect.SetAnimation(newSprite, LargeFireAnim, StatAsset, "LargeFire");
+                            currentEffect.LoopSound(burningSound);
+                            DEffectMapping.put(StatAsset, currentEffect);
+                        }
+                        else // HP is not in burning range
+                        {
+                            DEffectMapping.get(StatAsset).StopSound();
+                            DEffectMapping.remove(StatAsset);
+                        }
+                    }
+                }
 
                 switch (StatAsset.Action()) {
 
@@ -248,16 +311,8 @@ public class StaticAssetRenderer {
                             tileName = stateName;
                         }
 
-                    GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
-
-                    if (StatAsset.hitPoints() < StatAsset.maxHitPoints() / 2) {
-                        UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
-                        Sprite newSprite = new Sprite();
-                        newSprite.setPosition(newUPos.X(), newUPos.Y());
-                        newSprite.setSize(Position.tileWidth() * StatAsset.assetType().Size(), Position.tileWidth() * StatAsset.assetType().Size());
-                        DEffectSpriteMapping.put(StatAsset, new SpriteAnimation(newSprite, LargeFireAnim));
-                    }
-                    break;
+                        GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
+                        break;
 
 
                     case Construct:
@@ -300,42 +355,97 @@ public class StaticAssetRenderer {
                         break;
 
                     case Death:
+                            BuildingEffect currentEffect = DEffectMapping.get(StatAsset);
+                            if (currentEffect == null) {
+                                currentEffect = new BuildingEffect();
+                            }
 
-                        if (StatAsset.Step() <= BuildingDeathMaxIndex) {
+                            currentEffect.PlaySound(buildingDeathSounds[rando.nextInt(3)]);
+
+
                             UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
                             Sprite newSprite = new Sprite();
-                            newSprite.setPosition(newUPos.X(), newUPos.Y());
+                            newSprite.setPosition(newUPos.X() - Position.halfTileWidth(), newUPos.Y() - StatAsset.assetType().Size() * Position.tileHeight());
                             newSprite.setSize(Position.tileWidth() * StatAsset.assetType().Size(), Position.tileWidth() * StatAsset.assetType().Size());
-                            DEffectSpriteMapping.put(StatAsset, new SpriteAnimation(newSprite, BuildingDeathAnim));
-                        }
-                        break;
+                            currentEffect.SetAnimation(newSprite, BuildingDeathAnim, StatAsset, "BuildingDeath");
 
-                }
+                            DEffectMapping.put(StatAsset, currentEffect);
+                            DeathRowBuildings.add(StatAsset);
+                            // Remove from map when Animation is put in DEffectMapping
+                            itr.remove();
+                            map.RemoveStaticAsset(StatAsset);
+
+                            //Clear tiles function.
+                            break;
+
+                    }
             }
         }
     }
 
-    protected class SpriteAnimation {
-        Sprite DSprite;
-        Animation<TextureRegion> DAnim;
+    protected class BuildingEffect {
+        protected Sprite DSprite;
+        protected Animation<TextureRegion> DAnim;
+        protected StaticAsset DBuilding;
+        protected float DElapsedTime;
+        protected String DAnimName;
+        protected long DSoundID;
+        protected Sound DCurrentSound;
 
-        protected SpriteAnimation(Sprite sprite, Animation<TextureRegion> anim) {
+        protected BuildingEffect(){}
+
+
+        protected void SetAnimation(Sprite sprite, Animation<TextureRegion> anim, StaticAsset building, String name) {
             DSprite = sprite;
             DAnim = anim;
+            DBuilding = building;
+            DAnimName = name;
+            DElapsedTime = 0;
+        }
+
+        protected void LoopSound(Sound sound) {
+            if (DCurrentSound != null)
+            {
+                DCurrentSound.stop(DSoundID);
+            }
+            DCurrentSound = sound;
+            DSoundID = sound.loop();
+        }
+
+        protected void PlaySound(Sound sound) {
+            if (DCurrentSound != null)
+            {
+                DCurrentSound.stop(DSoundID);
+            }
+            DCurrentSound = sound;
+            DSoundID = sound.play();
+        }
+
+        protected void StopSound(){
+            DCurrentSound.stop(DSoundID);
+            DCurrentSound = null;
         }
     }
 
-    public void DrawEffects(SpriteBatch sb, OrthographicCamera cam, float elapsedTime){
-        System.out.println("drawing effects");
-        sb.setProjectionMatrix(cam.combined);
-        sb.begin();
-        for(SpriteAnimation  spa : DEffectSpriteMapping.values()){
-            boolean looping = spa.DAnim.equals(LargeFireAnim);
-            System.out.println(String.valueOf(looping) );
+// To be called in the render() step of singleplayer, between sb.begin() and sb.end()
+    public void DrawEffects(SpriteBatch sb, float deltaTime) {
 
-            sb.draw(spa.DAnim.getKeyFrame(elapsedTime, looping), spa.DSprite.getX(), spa.DSprite.getY());
+        for(Iterator<Map.Entry<StaticAsset, BuildingEffect>> it = DEffectMapping.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<StaticAsset, BuildingEffect> entry = it.next();
+
+            BuildingEffect buildEff = entry.getValue();
+            StaticAsset sasset = entry.getKey();
+
+            buildEff.DElapsedTime += deltaTime;
+
+            sb.draw(buildEff.DAnim.getKeyFrame(buildEff.DElapsedTime), buildEff.DSprite.getX(), buildEff.DSprite.getY(),
+                    buildEff.DSprite.getWidth(),buildEff.DSprite.getHeight());
+
+            if(buildEff.DAnim.isAnimationFinished(buildEff.DElapsedTime) && DeathRowBuildings.contains(sasset)) {
+                DeathRowBuildings.remove(sasset);
+                it.remove();
+            }
         }
-        sb.end();
     }
 
     public int UpdateFrequency(){
