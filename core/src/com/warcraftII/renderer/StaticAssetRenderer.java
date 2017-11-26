@@ -243,10 +243,10 @@ public class StaticAssetRenderer {
         for (PlayerData player : playerData) {
             String colorName = DPlayerColorToString.get(player.Color());
 
-           for (Iterator<StaticAsset> itr = player.StaticAssets().iterator(); itr.hasNext();) {
+            for (Iterator<StaticAsset> itr = player.StaticAssets().iterator(); itr.hasNext(); ) {
                 StaticAsset StatAsset = itr.next();
 
-                String tileName, stateName;
+                String tileName, stateName, pieceName;
 
                 TextureAtlas textures = DStaticAssetTextures.get(StatAsset.staticAssetType());
 
@@ -255,8 +255,8 @@ public class StaticAssetRenderer {
                 //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
                 int YPos = map.Height() - StatAsset.tilePosition().Y() - 1; // -1 to account for 0 index
 
-                // Fire is drawn as long as building is not already dead.
-                if (StatAsset.Action() != EAssetAction.Death) {
+                // Fire is drawn as long as building is not already dead.. also assuming walls dont catch on fire.
+                if (StatAsset.Action() != EAssetAction.Death && StatAsset.staticAssetType() != EStaticAssetType.Wall) {
                     int HitRange = StatAsset.hitPoints() * 4 / StatAsset.maxHitPoints();
 
                     if (HitRange < 2) {
@@ -271,8 +271,8 @@ public class StaticAssetRenderer {
 
                         UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
 
-                        if (TilesetIndex == 0){
-                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("SmallFire")){
+                        if (TilesetIndex == 0) {
+                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("SmallFire")) {
                                 continue;
                             }
 
@@ -283,7 +283,7 @@ public class StaticAssetRenderer {
                             currentEffect.LoopSound(burningSound);
                             DEffectMapping.put(StatAsset, currentEffect);
                         } else if (TilesetIndex == 1) {
-                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("LargeFire")){
+                            if (currentEffect.DAnimName != null && currentEffect.DAnimName.equals("LargeFire")) {
                                 continue;
                             }
                             Sprite newSprite = new Sprite(animationTextures.findRegion("large-fire"));
@@ -292,8 +292,7 @@ public class StaticAssetRenderer {
                             currentEffect.SetAnimation(newSprite, LargeFireAnim, StatAsset, "LargeFire");
                             currentEffect.LoopSound(burningSound);
                             DEffectMapping.put(StatAsset, currentEffect);
-                        }
-                        else // HP is not in burning range
+                        } else // HP is not in burning range
                         {
                             DEffectMapping.get(StatAsset).StopSound();
                             DEffectMapping.remove(StatAsset);
@@ -301,14 +300,61 @@ public class StaticAssetRenderer {
                     }
                 }
 
+                // If wall, generate the piecenum based on whether there are adjacent sections of wall:
+                if (StatAsset.staticAssetType() == EStaticAssetType.Wall) {
+
+                    //direction and encoding bit#, 0 is LSB. 3 is MSB
+                    int north0, east1, south2, west3, piecenum;
+                    int wallPositionX = StatAsset.tilePositionX();
+                    int wallPositionY = StatAsset.tilePositionY();
+
+                    TilePosition northPos = new TilePosition(wallPositionX, wallPositionY - 1);
+                    north0 = (map.StaticAssetAt(northPos) != null && map.StaticAssetAt(northPos).staticAssetType() == EStaticAssetType.Wall) ? 1 : 0;
+
+                    TilePosition eastPos = new TilePosition(wallPositionX + 1, wallPositionY);
+                    east1 = (map.StaticAssetAt(eastPos) != null && map.StaticAssetAt(eastPos).staticAssetType() == EStaticAssetType.Wall) ? 1 : 0;
+
+                    TilePosition southPos = new TilePosition(wallPositionX, wallPositionY + 1);
+                    south2 = (map.StaticAssetAt(southPos) != null && map.StaticAssetAt(southPos).staticAssetType() == EStaticAssetType.Wall) ? 1 : 0;
+
+                    TilePosition westPos = new TilePosition(wallPositionX - 1, wallPositionY);
+                    west3 = (map.StaticAssetAt(westPos) != null && map.StaticAssetAt(westPos).staticAssetType() == EStaticAssetType.Wall) ? 1 : 0;
+
+                    piecenum = (north0 * 1) + (east1 * 2) + (south2 * 4) + (west3 * 8);
+
+                    if (piecenum == 5) {
+                        int altPiece = wallPositionY % 2;
+                        pieceName = Integer.toHexString(piecenum).toUpperCase() + "-" + Integer.toString(altPiece);
+                    } else if (piecenum == 10) {
+                        int altPiece = wallPositionX % 2;
+                        pieceName = Integer.toHexString(piecenum).toUpperCase() + "-" + Integer.toString(altPiece);
+                    } else {
+                        pieceName = Integer.toHexString(piecenum).toUpperCase();
+                    }
+                }
+                else {
+                    pieceName = ""; //Initializing pieceName so compiler stops complaining
+                }
                 switch (StatAsset.Action()) {
 
                     case None:
-                        stateName = "inactive";
-                        if (IsColored(StatAsset.staticAssetType())){
-                            tileName = colorName + stateName;
-                        } else {
-                            tileName = stateName;
+                        if (StatAsset.staticAssetType() == EStaticAssetType.Wall) {
+
+                            if (StatAsset.hitPoints() < StatAsset.maxHitPoints() / 2) {
+                                stateName = "damaged_";
+                            } else {
+                                stateName = "inactive_";
+                            }
+
+                            tileName = stateName + pieceName;
+                        } else { // any other static asset
+                            stateName = "inactive";
+                            if (IsColored(StatAsset.staticAssetType())) {
+                                tileName = colorName + stateName;
+                            } else {
+                                tileName = stateName;
+                            }
+
                         }
 
                         GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
@@ -335,7 +381,7 @@ public class StaticAssetRenderer {
 
                             stateName = "construct_" + String.valueOf(ConstructTileIndex);
 
-                            if (IsColored(StatAsset.staticAssetType())){
+                            if (IsColored(StatAsset.staticAssetType())) {
                                 tileName = colorName + stateName;
                             } else {
                                 tileName = stateName;
@@ -344,7 +390,7 @@ public class StaticAssetRenderer {
                             GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
                         } else {
                             stateName = "inactive";
-                            if (IsColored(StatAsset.staticAssetType())){
+                            if (IsColored(StatAsset.staticAssetType())) {
                                 tileName = colorName + "inactive";
                             } else {
                                 tileName = stateName;
@@ -355,6 +401,13 @@ public class StaticAssetRenderer {
                         break;
 
                     case Death:
+                        if (StatAsset.staticAssetType() == EStaticAssetType.Wall) {
+                            stateName = "destroyed_";
+                            tileName = stateName + pieceName;
+                            GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
+                            //Wall's StaticAsset is not removed because the rubble is not traversable/buildable
+
+                        } else { // for all non-wall static assets
                             BuildingEffect currentEffect = DEffectMapping.get(StatAsset);
                             if (currentEffect == null) {
                                 currentEffect = new BuildingEffect();
@@ -371,14 +424,13 @@ public class StaticAssetRenderer {
 
                             DEffectMapping.put(StatAsset, currentEffect);
                             DeathRowBuildings.add(StatAsset);
-                            // Remove from map when Animation is put in DEffectMapping
+                            //TODO: insert clear tiles function here when available
                             itr.remove();
                             map.RemoveStaticAsset(StatAsset);
+                        }
+                        break;
 
-                            //Clear tiles function.
-                            break;
-
-                    }
+                }
             }
         }
     }
