@@ -78,6 +78,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private FitViewport sidebarViewport;
     private Stage sidebarStage;
 
+    private OrthographicCamera topbarCamera;
+    private FitViewport topbarViewport;
+    private Stage topbarStage;
+
     private Table sidebarTable;
 
 
@@ -242,16 +246,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(attackButton);
 
 	    mapCamera = new OrthographicCamera();
-        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
+        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .93f, mapCamera);
         mapStage = new Stage(mapViewport);
 
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
-        // set size of map viewport to 75% of the screen width and 100% height
-        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight(), false);
+        // set size of map viewport to 75% of the screen width and 93% height
+        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .93f), false);
         // position map viewport on right 75% of the screen
-        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight());
+        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .93f));
         mapStage.getViewport().apply();
 
         sidebarCamera = new OrthographicCamera();
@@ -268,6 +272,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.getViewport().setScreenBounds(0, 0, Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight());
         sidebarStage.getViewport().apply();
 
+        //topbar
+        topbarCamera = new OrthographicCamera();
+        topbarViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Math.round(Gdx.graphics.getHeight() * .07f), topbarCamera);
+        topbarStage = new Stage(topbarViewport);
+
+        topbarStage.getViewport().apply();
+        topbarStage.act();
+        topbarStage.draw();
+        // set size of topbar viewport to 75% of the screen width and 7% height
+        topbarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .07f), false);
+        // position topbar viewport on right 75% of the screen and 7% on top
+        topbarStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), Math.round(Gdx.graphics.getHeight() * .93f), Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .07f));
+        topbarStage.getViewport().apply();
+
         // set background texture image for sidebar menu
         // code adapted from https://libgdx.info/basic_image/
         Texture backgroundImageTexture = new Texture("img/Texture.png");
@@ -280,6 +298,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         backgroundImage.setPosition(0, 0);
         sidebarStage.addActor(backgroundImage);
 
+        // set background texture image for topbar
+        TextureRegion topbackgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
+        topbackgroundImageTextureRegion.setRegion(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
+        Image topbackgroundImage = new Image(topbackgroundImageTextureRegion);
+        topbarStage.addActor(topbackgroundImage);
+
 
         // table for layout of sidebar
         sidebarTable = new Table();
@@ -288,6 +313,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
         sidebarStage.draw();
+
+
 
         /*
         Label nameLabel = new Label("Name:", skin);
@@ -449,6 +476,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
+
+        topbarStage.getViewport().apply();
+        topbarStage.act();
+        topbarStage.draw();
+
         allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
     }
 
