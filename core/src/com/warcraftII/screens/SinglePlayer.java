@@ -592,7 +592,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //}
 
         //Add to sidebar selected peasants
-        selectCount.setText("Hello");
+        selectCount.setText(Integer.toString(selectedUnits.size()));
         sidebarStage.draw();
     }
 
