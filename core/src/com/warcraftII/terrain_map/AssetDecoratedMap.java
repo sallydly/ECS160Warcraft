@@ -4,19 +4,21 @@ package com.warcraftII.terrain_map;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
-import com.warcraftII.player_asset.StaticAsset;
-import com.warcraftII.terrain_map.TileTypes.*;
-import com.warcraftII.position.TilePosition;
-import com.warcraftII.GameDataTypes.*;
-import com.warcraftII.data_source.*;
+import com.warcraftII.GameDataTypes.EPlayerColor;
 import com.warcraftII.Tokenizer;
+import com.warcraftII.data_source.CommentSkipLineDataSource;
+import com.warcraftII.data_source.DataSource;
+import com.warcraftII.data_source.FileDataSource;
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.TilePosition;
+import com.warcraftII.terrain_map.TileTypes.ETerrainTileType;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
 import com.warcraftII.terrain_map.initialization.SResourceInitialization;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -157,7 +159,7 @@ public class AssetDecoratedMap extends TerrainMap {
                 log.debug("Loaded map " + fh.name());
             }
             //TempMap.RenderTerrain();  // Shouldn't need to do this. Its in RenderMap()
-            DMapNameTranslation.put(TempMap.MapName(), DAllMaps.size());
+            DMapNameTranslation.put(TempMap.MapName().replace("\r", ""), DAllMaps.size());
             DAllMaps.add(TempMap);
         }
         //Log.d(ASSETDEC, "Maps loaded\n");
