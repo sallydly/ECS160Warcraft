@@ -506,8 +506,16 @@ public class TerrainMap {
             TypeIndex &= (ETerrainTileType.Rock == UR) ? 0xF : 0xD;
             TypeIndex &= (ETerrainTileType.Rock == LL) ? 0xF : 0xB;
             TypeIndex &= (ETerrainTileType.Rock == LR) ? 0xF : 0x7;
-            Type = TypeIndex != 0 ? ETileType.Rock : ETileType.Rubble;
-            Index = TypeIndex;
+//            Type = TypeIndex != 0 ? ETileType.Rock : ETileType.Rubble;
+//            Index = TypeIndex;
+            if (TypeIndex != 0) {
+                Type = ETileType.Rock;
+                Index = TypeIndex;
+            } else {
+                Type = ETileType.Rubble;
+                log.debug("I am rubble");
+                Index = ((ETerrainTileType.Rock == UL) ? 0x1 : 0x0) | ((ETerrainTileType.Rock == UR) ? 0x2 : 0x0) | ((ETerrainTileType.Rock == LL) ? 0x4 : 0x0) | ((ETerrainTileType.Rock == LR) ? 0x8 : 0x0);
+            }
         } else if ((ETerrainTileType.Forest == UL) || (ETerrainTileType.Forest == UR) || (ETerrainTileType.Forest == LL) || (ETerrainTileType.Forest == LR)) {
             TypeIndex &= (ETerrainTileType.Forest == UL) ? 0xF : 0xE;
             TypeIndex &= (ETerrainTileType.Forest == UR) ? 0xF : 0xD;
