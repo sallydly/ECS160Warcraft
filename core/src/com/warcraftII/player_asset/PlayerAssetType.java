@@ -35,6 +35,7 @@ public class PlayerAssetType {
     protected int DSpeed;
     protected int DGoldCost;
     protected int DLumberCost;
+    protected int DStoneCost;
     protected int DFoodConsumption;
     protected int DBuildTime;
     protected int DAttackSteps;
@@ -147,6 +148,10 @@ public class PlayerAssetType {
 
     public int LumberCost() {
         return DLumberCost;
+    }
+
+    public int StoneCost() {
+        return DStoneCost;
     }
 
     public int FoodConsumption() {
@@ -343,6 +348,9 @@ public class PlayerAssetType {
         PAssetType.DLumberCost  = Integer.parseInt(TempString);
 
         TempString = LineSource.read().trim();
+        PAssetType.DStoneCost  = Integer.parseInt(TempString);
+
+        TempString = LineSource.read().trim();
         PAssetType.DFoodConsumption = Integer.parseInt(TempString);
 
         TempString = LineSource.read().trim();
@@ -389,9 +397,18 @@ public class PlayerAssetType {
 
 
     public static StaticAsset ConstructStaticAsset(String type){
+        log.info("Constructing: " + type);
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }
+
+    public static int StaticAssetSize(EStaticAssetType type){
+        String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
+        PlayerAssetType playerAssetType = DRegistry.get(typeString);
+        return playerAssetType.Size();
+    }
+
+
     /*
     public static int MaxSight(){
 

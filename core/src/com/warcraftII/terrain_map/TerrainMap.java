@@ -219,7 +219,7 @@ public class TerrainMap {
             case LightDirt:
             case Rubble:
             case Stump:      return true;
-            default:                    return false;
+            default:         return false;
         }
     }
     public boolean LoadMap(DataSource source) {

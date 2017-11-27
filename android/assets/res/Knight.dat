@@ -1,42 +1,44 @@
 # Resource Name
-LumberMill
+Knight
 # Hit Points
-600
+70
 # Armor
-20
-# Sight
 3
+# Sight
+4
 # Sight during construction
 0
 # Size
-3
+1
 # Speed
-0
+10
 # Gold Cost
 600
 # Lumber Cost
-450
+0
 # Stone Cost
 0
 # Food Consumption (Negative Production)
-0
+1
 # Build Time (s)
-150
+60
 # Attack Steps
-0
+10
 # Reload Steps
 0
 # Basic Damage
-0
+6
 # Piercing Damage
-0
+4
 # Range
-0
+1
 # Capability Count
-2
+4
 # Name of Capabilities
-ArrowUpgrade2
-BuildRanger
+Move
+Attack
+StandGround
+Patrol
 # Requirement Count
 0
 # List of Requirements

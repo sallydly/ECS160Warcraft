@@ -35,15 +35,16 @@ public class CameraPosition extends Position {
 
     /**
      * Construct a CameraPosition using the position at the middle of the tile
+     *
      * @param tilePosition
      */
     public CameraPosition(TilePosition tilePosition, OrthographicCamera camera) {
         super();
         DOrthoCam = camera;
-        Vector3 tilePos = new Vector3(tilePosition.X()*DTileWidth+DHalfTileWidth, (DMapHeight-tilePosition.Y()-1)*DTileHeight+DHalfTileHeight, 0);
+        Vector3 tilePos = new Vector3(tilePosition.X() * DTileWidth + DHalfTileWidth, (DMapHeight - tilePosition.Y() - 1) * DTileHeight + DHalfTileHeight, 0);
         Vector3 camPos = DOrthoCam.project(tilePos);
-        DX = (int)camPos.x;
-        DY = (int)camPos.y;
+        DX = (int) camPos.x;
+        DY = (int) camPos.y;
     }
 
     public CameraPosition(UnitPosition unitPosition, OrthographicCamera camera) {
@@ -51,20 +52,18 @@ public class CameraPosition extends Position {
         DOrthoCam = camera;
         Vector3 unitPos = new Vector3(unitPosition.X(), unitPosition.Y(), 0);
         Vector3 camPos = DOrthoCam.project(unitPos);
-        DX = (int)camPos.x;
-        DY = DMapHeight*DTileWidth - (int)camPos.y - 1;
+        DX = (int) camPos.x;
+        DY = DMapHeight * DTileWidth - (int) camPos.y - 1;
     }
 
     public TilePosition getTilePosition() {
         Vector3 camPos = new Vector3(DX, DY, 0);
         Vector3 tilePos = DOrthoCam.unproject(camPos);
-        return new TilePosition((int)tilePos.x/DTileWidth, DMapHeight-(int)tilePos.y/DTileHeight-1);
+        return new TilePosition((int) tilePos.x / DTileWidth, DMapHeight - (int) tilePos.y / DTileHeight - 1);
     }
-
 
 
     public void updateCamera(OrthographicCamera cam) {
         DOrthoCam = cam;
     }
-
 }
