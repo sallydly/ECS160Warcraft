@@ -1,7 +1,7 @@
 # Relative path to PNG
 ./Terrain.png
 # Number of tiles
-322
+321
 # Tile Names
 shallow-water-F-0
 shallow-water-F-1
@@ -296,7 +296,6 @@ stump-D-0
 stump-D-1
 stump-E-0
 stump-E-1
-stump-F-1
 rubble-1-0
 rubble-1-1
 rubble-2-0
