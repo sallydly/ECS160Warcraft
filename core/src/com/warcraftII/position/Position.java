@@ -34,14 +34,18 @@ public class Position {
 
     protected static int DMapHeight;
     protected static int DMapWidth;
-    
+
+    /**
+     *
+     */
+
 
     /*
      * Should call initVectors once a Position object is instantiated
      */
-        /*
-    * Should call initVectors once a Position object is instantiated
-    */
+    /*
+     * Should call initVectors once a Position object is instantiated
+     */
     static {
         initVectors();
     }

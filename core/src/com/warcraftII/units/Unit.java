@@ -123,6 +123,7 @@ public class Unit {
                 newUnit.unitTexInd = 0;
                 break;
         }
+
         newUnit.sprite = new Sprite(texture);
         newUnit.sprite.setSize(72,72);
         newUnit.sprite.setOriginCenter();

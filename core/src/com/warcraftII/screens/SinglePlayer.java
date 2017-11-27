@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -31,9 +32,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
+
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.position.*;
 import com.warcraftII.units.Unit;
 
 import static java.lang.Math.round;
+
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -90,6 +96,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
+    private int lastbuiltasset = 0; //DEBUG
+
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
@@ -97,6 +106,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
         sb = gameData.sb;
+
+        Gdx.graphics.setContinuousRendering(true);
+
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
         this.shapeRenderer = new ShapeRenderer();
@@ -396,12 +408,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
+        gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
+
+        gameData.TimeStep();
 
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
 
         batch.begin();
+
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
@@ -422,6 +438,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
+
+
+
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         Texture selected = new Texture(Gdx.files.internal("img/select.png"));
@@ -436,9 +455,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             sb.draw(temp_peasant.curAnim.getKeyFrame(gameData.elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
             counter+=1;
         }
+
+        gameData.staticAssetRenderer.DrawEffects(sb,delta);
+
         sb.end();
 
         sidebarStage.getViewport().apply();
+
+	    sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
         allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
@@ -585,12 +609,61 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
+        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        PlayerData player1 = gameData.playerData.get(0);
+
+
+        // REMOVING RESOURCES
+        int resourceRemove = 100;
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+
+
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
+        if (chosenStatAsset == null){
+            System.out.println("No asset here...building");
+            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
+            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
+
+            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
+                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
+                lastbuiltasset++;
+            }
+        }
+        else {
+            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
+            chosenStatAsset.decrementHitPoints(75);
+        }
         return false;
     }
 
     @Override
     public boolean longPress(float x, float y) {
+        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        log.info("Tile position: " + xi +" " + yi);
+        int resourceRemove = 200;
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
@@ -716,5 +789,54 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    private void KimisTestFunction(){
+      //TESTING REMOVELUMBER
+        TilePosition tposunit = new TilePosition(12,1);
+        TilePosition tree1 = new TilePosition(11,0);
+        TilePosition tree2 = new TilePosition(12,1);
+        TilePosition tree3 = new TilePosition(13,2);
+
+        gameData.RemoveLumber(tree1,tposunit,400);
+        gameData.RemoveLumber(tree2,tposunit,400);
+        gameData.RemoveLumber(tree3,tposunit,400);
+
+        // TESTING STATICASSETAT
+        TilePosition sassetAt = new TilePosition(0,0);
+        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
+        if (sasset != null){
+            System.out.println(sasset.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset here");
+        }
+
+        TilePosition sassetAt1 = new TilePosition(0,1);
+        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
+        if (sasset1 != null){
+            System.out.println(sasset1.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 1 here");
+        }
+
+        TilePosition sassetAt2 = new TilePosition(15,1);
+        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
+        if (sasset2 != null){
+            System.out.println(sasset2.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 2 here");
+        }
+
+        TilePosition sassetAt3 = new TilePosition(1,30);
+        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
+        if (sasset3 != null){
+            System.out.println(sasset3.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 3 here");
+        }
     }
 }
