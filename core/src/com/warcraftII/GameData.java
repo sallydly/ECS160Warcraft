@@ -4,16 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
@@ -24,7 +20,6 @@ import com.warcraftII.position.UnitPosition;
 import com.warcraftII.renderer.MapRenderer;
 import com.warcraftII.renderer.StaticAssetRenderer;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
-import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
@@ -49,20 +44,15 @@ public class GameData {
     public TextureAtlas terrain;
     public TextureAtlas peasant;
     public SpriteBatch batch;
-    public Sprite tile;
 
     public SpriteBatch sb;
     public Texture texture;
     public Skin skin;
-    public Table table;
 
     public AssetDecoratedMap map;
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
-    public SpriteBatch buildingSB;
-
-    public MapProperties properties;
 
     public OrthographicCamera mapCamera;
 
@@ -75,7 +65,6 @@ public class GameData {
 
     public GameData(){
         sb = new SpriteBatch();
-        buildingSB = new SpriteBatch();
         allUnits = new Unit();
         unitActions = new UnitActions();
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));

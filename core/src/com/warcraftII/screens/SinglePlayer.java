@@ -30,29 +30,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
 
 import com.warcraftII.player_asset.StaticAsset;
-import com.warcraftII.renderer.GraphicTileset;
-import com.warcraftII.terrain_map.AssetDecoratedMap;
-import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
-import com.warcraftII.renderer.StaticAssetRenderer;
 import com.warcraftII.position.*;
-import com.warcraftII.renderer.MapRenderer;
-import com.warcraftII.terrain_map.TileTypes;
-
-import com.warcraftII.position.CameraPosition;
-import com.warcraftII.position.PixelPosition;
-import com.warcraftII.position.Position;
-import com.warcraftII.position.TilePosition;
-import com.warcraftII.position.UnitPosition;
 import com.warcraftII.units.Unit;
-import com.warcraftII.units.UnitActions;
 
-import static com.warcraftII.GameData.TILE_WIDTH;
-import static java.lang.Math.random;
 import static java.lang.Math.round;
 
-import java.util.Random;
-import java.util.Vector;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -63,7 +46,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Unit allUnits;
     private SpriteBatch batch;
     private SpriteBatch sb;
-    private SpriteBatch buildingSB;
 
 
     private Music readySound;
@@ -104,7 +86,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private int lastbuiltasset = 0; //DEBUG
 
 
-
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
@@ -112,7 +93,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
         sb = gameData.sb;
-        buildingSB = gameData.buildingSB;
 
         Gdx.graphics.setContinuousRendering(true);
 
