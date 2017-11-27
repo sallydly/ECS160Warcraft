@@ -174,6 +174,30 @@ public class GameDataTypes {
         }
     }
 
+    // TODO: delete this stupid shit
+    public static String toAbbrDeath(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "ne";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "ne";
+            case SouthEast:
+                return "se";
+            case South:
+                return "se";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "sw";
+            case NorthWest:
+                return "nw";
+            default:
+                return "nw";
+        }
+    }
+
     public enum EUnitState {
         Idle,
         Move,
@@ -190,7 +214,8 @@ public class GameDataTypes {
         BuildScoutTower,
         BuildBlacksmith,
         BuildWall,
-        Patrol
+        Patrol,
+        Dead
     }
 
     public static int to_underlying(Enum enumerator) {
