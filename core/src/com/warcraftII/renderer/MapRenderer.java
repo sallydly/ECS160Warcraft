@@ -194,23 +194,41 @@ public class MapRenderer {
             }
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
-        }
 
-        for(int Index = 0; Index < 16; Index++){
-            Vector<Vector<TextureRegion> > OuterVec;
-            Vector<TextureRegion> InnerVec;
-
-            int AltTileIndex = 0;
-            int TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
+            //HM: added for rubble
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
             OuterVec = DTileTextures.get(TileTypeNum);
             InnerVec = new Vector<TextureRegion>();
-
-            TextureRegion textureRegion = DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0);
-            InnerVec.add(textureRegion);
-
+            while(true){
+                TextureRegion textureRegion = DTerrainTextures.findRegion("rubble-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
+            //HM: end of added code
         }
+
+        //HM: in case of rubble texture not render correctly, enable this code
+//        for(int Index = 0; Index < 16; Index++){
+//            Vector<Vector<TextureRegion> > OuterVec;
+//            Vector<TextureRegion> InnerVec;
+//
+//            int AltTileIndex = 0;
+//            int TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
+//            OuterVec = DTileTextures.get(TileTypeNum);
+//            InnerVec = new Vector<TextureRegion>();
+//
+//            TextureRegion textureRegion = DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0);
+//            InnerVec.add(textureRegion);
+//
+//            OuterVec.set(Index,InnerVec);
+//            DTileTextures.set(TileTypeNum, OuterVec);
+//        }
 
     } // end MapRenderer() constructor
 
@@ -314,7 +332,7 @@ public class MapRenderer {
 
             if (ThisTileType == TileTypes.ETileType.Stump)
                 System.out.println("I will be stump");
-            if (ThisTileType == ETileType.Rock)
+            if (ThisTileType == ETileType.Rubble)
                 System.out.println("I will be Rubble");
 
             if ((0 <= TileIndex) && (16 > TileIndex)) {
