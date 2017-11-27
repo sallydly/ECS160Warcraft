@@ -416,6 +416,8 @@ public class StaticAssetRenderer {
 
                             currentEffect.PlaySound(buildingDeathSounds[rando.nextInt(3)]);
 
+                            GraphicTileset.RemoveTile(assetLayer,XPos,YPos,StatAsset.Size());
+
 
                             UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
                             Sprite newSprite = new Sprite();
@@ -425,7 +427,6 @@ public class StaticAssetRenderer {
 
                             DEffectMapping.put(StatAsset, currentEffect);
                             DeathRowBuildings.add(StatAsset);
-                            //TODO: insert clear tiles function here when available
                             itr.remove();
                             map.RemoveStaticAsset(StatAsset);
                         }

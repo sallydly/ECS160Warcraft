@@ -260,7 +260,6 @@ public class GraphicTileset {
     }
 
     public static void DrawTile(TextureAtlas atlas, TiledMapTileLayer assetLayer, int xpos, int ypos, String tileName) {
-        //TODO: change last arg to tileindex, remove static once we get loading in tileset (.dat) files finished
         int numTiles, tilesPerRow, tilesPerCol, listIndex; //use to iterate through tiles
         TextureRegion region;
         Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(tileName); //gdx's Array class
@@ -288,17 +287,14 @@ public class GraphicTileset {
 
     //TODO: once we get an array of assets, change function to look at array
     public static void RemoveTile(TiledMapTileLayer assetLayer, int xpos, int ypos, int size) {
-        int tilesPerCol = (int)sqrt((double)size);
+        int tilesPerCol = size;
         int tilesPerRow = tilesPerCol;
 
         for (int i = 0; i < tilesPerCol; i++) {
             for (int j=0; j < tilesPerRow; j++) {
 
-                System.out.println("Removing Tile at position");
-                System.out.println((xpos + j) + ", " + (ypos - i));
-
-
-
+                //System.out.println("Removing Tile at position");
+                //System.out.println(String.valueOf(xpos + j) + ", " + String.valueOf(ypos - i));
                 assetLayer.setCell(xpos + j, ypos - i, null);
             }
         }

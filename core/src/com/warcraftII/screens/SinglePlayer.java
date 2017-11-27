@@ -520,13 +520,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         else {
             System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
             chosenStatAsset.decrementHitPoints(75);
-            System.out.println("removing tile...");
-            player1.DeleteStaticAsset(chosenStatAsset);
-            gameData.map.RemoveStaticAsset(chosenStatAsset);
-            GraphicTileset.RemoveTile((TiledMapTileLayer)gameData.tiledMap.getLayers().get(1),0, 31,9);
-            System.out.println(gameData.map.StaticAssetExists(chosenStatAsset));
-            System.out.println(player1.StaticAssetExists(chosenStatAsset));
-            gameData.RenderMap();
         }
         return false;
     }

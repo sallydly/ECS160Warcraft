@@ -100,6 +100,7 @@ public class GameData {
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
 
+    //ONLY USE AT THE BEGINNING.
     public void RenderMap(){
                 /* Rendering the map: */
         MapLayers layers = tiledMap.getLayers();
