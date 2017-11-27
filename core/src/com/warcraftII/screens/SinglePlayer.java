@@ -44,7 +44,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private GameData gameData;
     // More concise access to data members of gameData:
     private Unit allUnits;
-    public ArrayList<Unit.IndividualUnit> selectedUnits;
+    public ArrayList<Unit.IndividualUnit> selectedUnits = new ArrayList<Unit.IndividualUnit>();
     private SpriteBatch batch;
     private SpriteBatch sb;
 
