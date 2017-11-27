@@ -66,6 +66,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton pauseButton;
     private TextButton moveButton;
     private TextButton selectButton;
+    private Label selectCount;
 
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -114,6 +115,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         menuButton = new TextButton("Menu", skin);
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
+        selectCount = new Label("", skin);
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -305,6 +307,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
@@ -520,7 +524,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private void selectUnits(Vector3 position) {
         int counter = 0;
         int unit_selected = 0;
-
+        selectedUnits = new ArrayList<Unit.IndividualUnit>();
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -588,11 +592,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //}
 
         //Add to sidebar selected peasants
-        TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
-        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
-        sidebarTable.row();
-        Label selectCount = new Label(Integer.toString(selectedUnits.size()), skin);
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        selectCount.setText("Hello");
         sidebarStage.draw();
     }
 
