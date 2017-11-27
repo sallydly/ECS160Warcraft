@@ -34,6 +34,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.renderer.GraphicTileset;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
@@ -498,6 +499,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         TilePosition tilePosition = camerePosition.getTilePosition();
         int xi = tilePosition.X();
         int yi = tilePosition.Y();
+        PlayerData player1 = gameData.playerData.get(0);
         log.info("Tile position: " + xi +" " + yi);
         /*gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, 100);
         gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, 100);
@@ -507,7 +509,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
         if (chosenStatAsset == null){
             System.out.println("No asset here...building");
-            PlayerData player1 = gameData.playerData.get(1);
             //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
             GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
 
@@ -519,7 +520,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         else {
             System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
             chosenStatAsset.decrementHitPoints(75);
-
+            System.out.println("removing tile...");
+            player1.DeleteStaticAsset(chosenStatAsset);
+            gameData.map.RemoveStaticAsset(chosenStatAsset);
+            GraphicTileset.RemoveTile((TiledMapTileLayer)gameData.tiledMap.getLayers().get(1),0, 31,9);
+            System.out.println(gameData.map.StaticAssetExists(chosenStatAsset));
+            System.out.println(player1.StaticAssetExists(chosenStatAsset));
+            gameData.RenderMap();
         }
         return false;
     }

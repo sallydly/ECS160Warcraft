@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.utils.Array;
 import com.warcraftII.data_source.CommentSkipLineDataSource;
 import com.warcraftII.data_source.DataSource;
+import com.warcraftII.position.TilePosition;
 
 import java.util.Vector;
 
@@ -283,6 +284,25 @@ public class GraphicTileset {
                 assetLayer.setCell(xpos + j, ypos - i, cell);
             }
         }
+    }
+
+    //TODO: once we get an array of assets, change function to look at array
+    public static void RemoveTile(TiledMapTileLayer assetLayer, int xpos, int ypos, int size) {
+        int tilesPerCol = (int)sqrt((double)size);
+        int tilesPerRow = tilesPerCol;
+
+        for (int i = 0; i < tilesPerCol; i++) {
+            for (int j=0; j < tilesPerRow; j++) {
+
+                System.out.println("Removing Tile at position");
+                System.out.println((xpos + j) + ", " + (ypos - i));
+
+
+
+                assetLayer.setCell(xpos + j, ypos - i, null);
+            }
+        }
+        return;
     }
 
     //TODO: Delete later. Most likely will not need to draw clipped tiles

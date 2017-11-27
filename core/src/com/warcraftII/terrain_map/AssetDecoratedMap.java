@@ -1152,6 +1152,9 @@ public class AssetDecoratedMap extends TerrainMap {
         DStaticAssets.remove(asset);
     }
 
+    public boolean StaticAssetExists(StaticAsset asset) {
+        return DStaticAssets.contains(asset);
+    }
 
 
 }

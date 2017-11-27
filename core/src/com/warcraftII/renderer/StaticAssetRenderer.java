@@ -230,6 +230,7 @@ public class StaticAssetRenderer {
                 int XPos = StatAsset.tilePosition().X();
                 //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
                 int YPos = map.Height() - StatAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+                System.out.println(XPos + " " + YPos);
                 GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
             }
         }
