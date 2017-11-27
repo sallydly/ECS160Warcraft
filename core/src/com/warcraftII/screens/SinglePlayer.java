@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -33,6 +34,8 @@ import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
 import com.warcraftII.units.Unit;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.round;
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
@@ -41,6 +44,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private GameData gameData;
     // More concise access to data members of gameData:
     private Unit allUnits;
+    public ArrayList<Unit.IndividualUnit> selectedUnits = new ArrayList<Unit.IndividualUnit>();
     private SpriteBatch batch;
     private SpriteBatch sb;
 
@@ -62,6 +66,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton pauseButton;
     private TextButton moveButton;
     private TextButton selectButton;
+    private Label selectCount;
 
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -110,6 +115,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         menuButton = new TextButton("Menu", skin);
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
+        selectCount = new Label("", skin);
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -301,6 +307,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
@@ -516,7 +524,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private void selectUnits(Vector3 position) {
         int counter = 0;
         int unit_selected = 0;
-
+        selectedUnits = new ArrayList<Unit.IndividualUnit>();
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -538,6 +546,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //peasant.setPosition(peasant.getX()+1, peasant.getY()+1);
                 // TODO Play Peasant Sound here - do this in the Peasant class? so diff units can play diff sounds -KT
                 // PEASANT SELECTED ==
+                selectedUnits.add(allUnits.unitVector.elementAt(counter));
                 if (attack == 1) {
                     unit_selected = 1;
                     allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).target = allUnits.unitVector.elementAt(counter);
@@ -581,6 +590,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //mine = 1;
         //}
         //}
+
+        //Add to sidebar selected peasants
+        selectCount.setText(Integer.toString(selectedUnits.size()));
+        sidebarStage.draw();
     }
 
     @Override
