@@ -1,0 +1,1259 @@
+
+icons.png
+size: 2048,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+alchemist
+  rotate: false
+  xy: 98, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+altar
+  rotate: false
+  xy: 866, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+archer
+  rotate: false
+  xy: 98, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+aviary
+  rotate: false
+  xy: 242, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+axethrower
+  rotate: false
+  xy: 1010, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ballista
+  rotate: false
+  xy: 866, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ballista-upgrade-1
+  rotate: false
+  xy: 1154, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ballista-upgrade-2
+  rotate: false
+  xy: 434, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+battleship
+  rotate: false
+  xy: 1106, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+berserker
+  rotate: false
+  xy: 1058, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+beserker-scouting
+  rotate: false
+  xy: 1010, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+blizzard
+  rotate: false
+  xy: 1010, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+bloodlust
+  rotate: false
+  xy: 866, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+bloodlust-2
+  rotate: false
+  xy: 1106, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+breed-horse-1
+  rotate: false
+  xy: 434, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+breed-horse-2
+  rotate: false
+  xy: 530, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+breed-wolf-1
+  rotate: false
+  xy: 722, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+breed-wolf-2
+  rotate: false
+  xy: 1442, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+build-advanced
+  rotate: false
+  xy: 290, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+build-simple
+  rotate: false
+  xy: 1010, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+burn
+  rotate: false
+  xy: 578, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+cancel
+  rotate: false
+  xy: 626, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+castle
+  rotate: false
+  xy: 1250, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+castle-2
+  rotate: false
+  xy: 98, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+catapult
+  rotate: false
+  xy: 530, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+catapult-upgrade-1
+  rotate: false
+  xy: 1250, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+catapult-upgrade-2
+  rotate: false
+  xy: 482, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+chicken-farm
+  rotate: false
+  xy: 530, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+cho'gall
+  rotate: false
+  xy: 914, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+church
+  rotate: false
+  xy: 242, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+daemon
+  rotate: false
+  xy: 1394, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+dark-portal
+  rotate: false
+  xy: 290, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+death-and-decay
+  rotate: false
+  xy: 962, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+death-coil
+  rotate: false
+  xy: 338, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+death-knight
+  rotate: false
+  xy: 98, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+demo-squad
+  rotate: false
+  xy: 1154, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+disabled
+  rotate: false
+  xy: 386, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+dragon
+  rotate: false
+  xy: 722, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+exorcism
+  rotate: false
+  xy: 770, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+eye-of-kilrogg
+  rotate: false
+  xy: 386, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+fireball
+  rotate: false
+  xy: 866, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+flame-shield
+  rotate: false
+  xy: 1106, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+flying-machine
+  rotate: false
+  xy: 818, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+footman
+  rotate: false
+  xy: 338, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+fortress
+  rotate: false
+  xy: 146, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+fortress-2
+  rotate: false
+  xy: 1298, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+gold-mine
+  rotate: false
+  xy: 962, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+great-hall
+  rotate: false
+  xy: 1298, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+grunt
+  rotate: false
+  xy: 290, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+gryphon
+  rotate: false
+  xy: 818, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+gul'dan
+  rotate: false
+  xy: 482, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+haste
+  rotate: false
+  xy: 1346, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+healing
+  rotate: false
+  xy: 1250, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+holy-vision
+  rotate: false
+  xy: 578, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-anchor
+  rotate: false
+  xy: 1250, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-armor-1
+  rotate: false
+  xy: 1394, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-armor-2
+  rotate: false
+  xy: 722, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-armor-3
+  rotate: false
+  xy: 1442, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-arrow-1
+  rotate: false
+  xy: 434, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-arrow-2
+  rotate: false
+  xy: 1058, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-arrow-3
+  rotate: false
+  xy: 1106, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-attack-ground
+  rotate: false
+  xy: 2, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-attack-ground
+  rotate: false
+  xy: 2, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-barracks
+  rotate: false
+  xy: 482, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-blacksmith
+  rotate: false
+  xy: 2, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-cannon-1
+  rotate: false
+  xy: 626, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-cannon-2
+  rotate: false
+  xy: 50, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-cannon-3
+  rotate: false
+  xy: 674, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-cannon-tower
+  rotate: false
+  xy: 530, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-convey
+  rotate: false
+  xy: 770, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-demolish
+  rotate: false
+  xy: 50, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-destroyer
+  rotate: false
+  xy: 2, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-foundary
+  rotate: false
+  xy: 482, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-guard-tower
+  rotate: false
+  xy: 962, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-lumber-mill
+  rotate: false
+  xy: 962, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-move
+  rotate: false
+  xy: 818, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-oil-refinery
+  rotate: false
+  xy: 242, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-oil-rig
+  rotate: false
+  xy: 626, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-oil-tanker
+  rotate: false
+  xy: 194, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-patrol
+  rotate: false
+  xy: 1202, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-armor-1
+  rotate: false
+  xy: 338, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-armor-2
+  rotate: false
+  xy: 1010, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-deploy
+  rotate: false
+  xy: 578, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-move
+  rotate: false
+  xy: 914, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-shipyard
+  rotate: false
+  xy: 98, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-stand-ground
+  rotate: false
+  xy: 2, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-transport
+  rotate: false
+  xy: 1202, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-wall
+  rotate: false
+  xy: 530, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-weapon-1
+  rotate: false
+  xy: 482, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-weapon-2
+  rotate: false
+  xy: 1298, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-weapon-3
+  rotate: false
+  xy: 578, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+inventor
+  rotate: false
+  xy: 386, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+invisibility
+  rotate: false
+  xy: 770, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+juggernaught
+  rotate: false
+  xy: 338, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+keep
+  rotate: false
+  xy: 50, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+knight
+  rotate: false
+  xy: 194, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+lighter-axe
+  rotate: false
+  xy: 1106, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+lightning
+  rotate: false
+  xy: 1154, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+longbow
+  rotate: false
+  xy: 1058, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+lothar
+  rotate: false
+  xy: 1058, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+mage
+  rotate: false
+  xy: 626, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+mage-tower
+  rotate: false
+  xy: 914, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+marksmanship
+  rotate: false
+  xy: 722, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+mine
+  rotate: false
+  xy: 1202, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ogre
+  rotate: false
+  xy: 674, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ogre-magi
+  rotate: false
+  xy: 434, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ogre-mound
+  rotate: false
+  xy: 530, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+oil-1
+  rotate: false
+  xy: 1298, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+oil-2
+  rotate: false
+  xy: 1346, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-anchor
+  rotate: false
+  xy: 290, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-armor-1
+  rotate: false
+  xy: 194, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-armor-2
+  rotate: false
+  xy: 1058, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-armor-3
+  rotate: false
+  xy: 290, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-axe-1
+  rotate: false
+  xy: 770, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-axe-2
+  rotate: false
+  xy: 1154, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-axe-3
+  rotate: false
+  xy: 194, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-barracks
+  rotate: false
+  xy: 626, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-blacksmith
+  rotate: false
+  xy: 50, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-cannon-1
+  rotate: false
+  xy: 482, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-cannon-2
+  rotate: false
+  xy: 386, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-cannon-3
+  rotate: false
+  xy: 1106, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-cannon-tower
+  rotate: false
+  xy: 722, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-convey
+  rotate: false
+  xy: 1346, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-demolish
+  rotate: false
+  xy: 962, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-destroyer
+  rotate: false
+  xy: 242, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-foundary
+  rotate: false
+  xy: 674, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-guard-tower
+  rotate: false
+  xy: 578, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-lumber-mill
+  rotate: false
+  xy: 866, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-move
+  rotate: false
+  xy: 962, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-oil-refinery
+  rotate: false
+  xy: 1154, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-oil-rig
+  rotate: false
+  xy: 818, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-oil-tanker
+  rotate: false
+  xy: 242, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-patrol
+  rotate: false
+  xy: 1154, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-runes
+  rotate: false
+  xy: 194, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-armor-1
+  rotate: false
+  xy: 1250, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-armor-2
+  rotate: false
+  xy: 818, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-convey
+  rotate: false
+  xy: 674, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-convey
+  rotate: false
+  xy: 674, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-deploy
+  rotate: false
+  xy: 626, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-move
+  rotate: false
+  xy: 770, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-ship-patrol
+  rotate: false
+  xy: 578, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+human-ship-patrol
+  rotate: false
+  xy: 578, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-shipyard
+  rotate: false
+  xy: 338, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-stand-ground
+  rotate: false
+  xy: 914, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-transport
+  rotate: false
+  xy: 914, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-wall
+  rotate: false
+  xy: 146, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-weapon-1
+  rotate: false
+  xy: 98, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-weapon-2
+  rotate: false
+  xy: 674, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+orc-weapon-3
+  rotate: false
+  xy: 50, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+paladin
+  rotate: false
+  xy: 290, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+peasant
+  rotate: false
+  xy: 914, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+peon
+  rotate: false
+  xy: 242, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+pig-farm
+  rotate: false
+  xy: 818, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+polymorph
+  rotate: false
+  xy: 1058, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+raise-dead
+  rotate: false
+  xy: 146, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ranger
+  rotate: false
+  xy: 50, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+ranger-scouting
+  rotate: false
+  xy: 146, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+regeneration
+  rotate: false
+  xy: 146, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+repair
+  rotate: false
+  xy: 434, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+roost
+  rotate: false
+  xy: 386, 202
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+runes
+  rotate: false
+  xy: 1202, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+runestone
+  rotate: false
+  xy: 770, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+sapper
+  rotate: false
+  xy: 674, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+scout-tower
+  rotate: false
+  xy: 1202, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+slow
+  rotate: false
+  xy: 434, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+stables
+  rotate: false
+  xy: 866, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+stronghold
+  rotate: false
+  xy: 722, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+submarine
+  rotate: false
+  xy: 1346, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+temple
+  rotate: false
+  xy: 386, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+touch-of-darkness
+  rotate: false
+  xy: 1250, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+town-hall
+  rotate: false
+  xy: 194, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+turtle
+  rotate: false
+  xy: 338, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+unholy-armor
+  rotate: false
+  xy: 1202, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+uther
+  rotate: false
+  xy: 2, 2
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+watch-tower
+  rotate: false
+  xy: 1298, 82
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+water
+  rotate: false
+  xy: 2, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+whirlwind
+  rotate: false
+  xy: 1010, 42
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+zeppelin
+  rotate: false
+  xy: 1394, 162
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+zul'jin
+  rotate: false
+  xy: 146, 122
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1

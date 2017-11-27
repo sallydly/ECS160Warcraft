@@ -1,0 +1,398 @@
+
+animations.png
+size: 2048,128
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+arrow-attack-e-0
+  rotate: false
+  xy: 694, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-e-1
+  rotate: false
+  xy: 1784, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-n-0
+  rotate: false
+  xy: 1580, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-n-1
+  rotate: false
+  xy: 592, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-ne-0
+  rotate: false
+  xy: 1546, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-ne-1
+  rotate: false
+  xy: 1716, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-nw-0
+  rotate: false
+  xy: 558, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-nw-1
+  rotate: false
+  xy: 1614, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-s-0
+  rotate: false
+  xy: 1410, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-s-1
+  rotate: false
+  xy: 388, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-se-0
+  rotate: false
+  xy: 422, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-se-1
+  rotate: false
+  xy: 1478, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-sw-0
+  rotate: false
+  xy: 1512, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-sw-1
+  rotate: false
+  xy: 490, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-w-0
+  rotate: false
+  xy: 728, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+arrow-attack-w-1
+  rotate: false
+  xy: 456, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+buildingdeath
+  rotate: false
+  xy: 2, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 0
+buildingdeath
+  rotate: false
+  xy: 68, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 1
+buildingdeath
+  rotate: false
+  xy: 134, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 2
+buildingdeath
+  rotate: false
+  xy: 200, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 3
+buildingdeath
+  rotate: false
+  xy: 266, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 4
+buildingdeath
+  rotate: false
+  xy: 332, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 5
+buildingdeath
+  rotate: false
+  xy: 398, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 7
+buildingdeath
+  rotate: false
+  xy: 464, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 8
+buildingdeath
+  rotate: false
+  xy: 530, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 11
+buildingdeath
+  rotate: false
+  xy: 596, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 9
+buildingdeath
+  rotate: false
+  xy: 662, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 6
+buildingdeath
+  rotate: false
+  xy: 728, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 10
+buildingdeath
+  rotate: false
+  xy: 794, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 12
+buildingdeath
+  rotate: false
+  xy: 860, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 13
+buildingdeath
+  rotate: false
+  xy: 926, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 14
+buildingdeath
+  rotate: false
+  xy: 992, 52
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 15
+cannonball-attack
+  rotate: false
+  xy: 524, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+cannonball-attack
+  rotate: false
+  xy: 1648, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+cannonball-attack
+  rotate: false
+  xy: 1682, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+cannonball-attack
+  rotate: false
+  xy: 660, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
+cannonball-death
+  rotate: false
+  xy: 354, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 0
+cannonball-death
+  rotate: false
+  xy: 1444, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 3
+cannonball-death
+  rotate: false
+  xy: 626, 18
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 1
+cannonball-death
+  rotate: false
+  xy: 1750, 84
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: 2
+large-fire
+  rotate: false
+  xy: 2, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 4
+large-fire
+  rotate: false
+  xy: 1058, 68
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 0
+large-fire
+  rotate: false
+  xy: 52, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 2
+large-fire
+  rotate: false
+  xy: 1108, 68
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 3
+large-fire
+  rotate: false
+  xy: 102, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 6
+large-fire
+  rotate: false
+  xy: 1158, 68
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 7
+large-fire
+  rotate: false
+  xy: 152, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 8
+large-fire
+  rotate: false
+  xy: 1208, 68
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 9
+large-fire
+  rotate: false
+  xy: 202, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 5
+large-fire
+  rotate: false
+  xy: 1258, 68
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: 1
+small-fire
+  rotate: false
+  xy: 252, 2
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 2
+small-fire
+  rotate: false
+  xy: 1308, 68
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 4
+small-fire
+  rotate: false
+  xy: 286, 2
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 0
+small-fire
+  rotate: false
+  xy: 1342, 68
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 1
+small-fire
+  rotate: false
+  xy: 320, 2
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 3
+small-fire
+  rotate: false
+  xy: 1376, 68
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 5
