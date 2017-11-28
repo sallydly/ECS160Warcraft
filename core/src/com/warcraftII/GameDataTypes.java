@@ -23,6 +23,13 @@ public class GameDataTypes {
         Max
     }
 
+    public static String toString(EPlayerColor inColor) {
+        if (inColor == EPlayerColor.Max) {
+            return "none";
+        }
+        return inColor.toString().toLowerCase();
+    }
+
     public enum EAssetAction {
         None,
         Construct,
@@ -144,6 +151,53 @@ public class GameDataTypes {
         Max
     }
 
+    public static String toAbbr(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "n";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "e";
+            case SouthEast:
+                return "se";
+            case South:
+                return "s";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "w";
+            case NorthWest:
+                return "nw";
+            default:
+                return "n";
+        }
+    }
+
+    // TODO: delete this stupid shit
+    public static String toAbbrDeath(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "ne";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "ne";
+            case SouthEast:
+                return "se";
+            case South:
+                return "se";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "sw";
+            case NorthWest:
+                return "nw";
+            default:
+                return "nw";
+        }
+    }
+
     public enum EUnitState {
         Idle,
         Move,
@@ -160,7 +214,8 @@ public class GameDataTypes {
         BuildScoutTower,
         BuildBlacksmith,
         BuildWall,
-        Patrol
+        Patrol,
+        Dead
     }
 
     public static int to_underlying(Enum enumerator) {
