@@ -65,7 +65,7 @@ public class Unit {
         public float patrolymove;
         public boolean attackEnd = true;
         public float frameTime = 0.1f;
-        public float lastAttack = 0;
+        public float animStart = 0;
         public IndividualUnit target;
         public GameDataTypes.EUnitState curState;
         public Animation<TextureRegion> curAnim;
@@ -103,6 +103,7 @@ public class Unit {
 
         public void stopMovement() {
             curAnim = new Animation<TextureRegion>(frameTime, unitTextures.get(unitClass).findRegion(GameDataTypes.toString(color)+"-walk-"+GameDataTypes.toAbbr(direction), 0));
+            curTexture = curAnim.getKeyFrame(0, false);
             curState = GameDataTypes.EUnitState.Idle;
         }
 
@@ -127,9 +128,9 @@ public class Unit {
         public void act (float delta) {
 
             // TODO: Make this take over the unitstatehandler function maybe?
-            if (curState == GameDataTypes.EUnitState.Dead) {
-                remove();
-            }
+            //if (curState == GameDataTypes.EUnitState.Dead) {
+            //    remove();
+            //}
         }
 
     }
@@ -205,7 +206,7 @@ public class Unit {
 
     public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
         for (int i = 0; i < unitVector.size(); i++) {
-            if (unitVector.elementAt(i).curHP <= 0) {
+            if (unitVector.elementAt(i).curHP <= 0 && false) {
                 unitVector.remove(i);
             } else {
                 switch (unitVector.elementAt(i).curState) {
@@ -262,16 +263,16 @@ public class Unit {
                 if (cur.attackEnd) {
                     cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-attack-"+GameDataTypes.toAbbr(cur.direction)));
                     cur.attackEnd = false;
-                    cur.lastAttack = deltaTime;
+                    cur.animStart = deltaTime;
                 }
-                if (cur.curAnim.isAnimationFinished(deltaTime) && deltaTime-cur.lastAttack > 1.5) {
+                if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
                     // TODO: make this use the projectiles
 
                 } else {
-                    cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, false);
+                    cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
                 }
             } else {
                 cur.currentxmove = tar.getMidX();
@@ -292,11 +293,11 @@ public class Unit {
             // TODO: make a fucking function to return these animations
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
             cur.curAnim.setPlayMode(Animation.PlayMode.NORMAL);
+            cur.animStart = deltaTime;
             cur.curHP = -101;
             //deleteUnits.add(this);
-        }  else if (cur.curHP == -101) {
-            cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, false);
         }
+        cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
     }
 
     private void UnitMoveState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {

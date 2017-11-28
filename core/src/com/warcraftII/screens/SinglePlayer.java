@@ -133,7 +133,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
         selectCount = new Label("", skin);
-        stopButton.addListener(new ClickListener() {
+ /*       stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //allUnits.stopMovement();
@@ -143,7 +143,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 mine = 0;
                 ability = 0;
             }
-        });
+        });*/
     }
 
     @Override
