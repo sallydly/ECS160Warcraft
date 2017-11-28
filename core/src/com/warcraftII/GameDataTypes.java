@@ -310,6 +310,63 @@ public class GameDataTypes {
 
     }
 
+    public static EAssetType to_assetType(EStaticAssetType type) {
+        switch (type){
+            case None:
+                return EAssetType.None;
+            case GoldMine:
+                return EAssetType.GoldMine;
+            case TownHall:
+                return EAssetType.TownHall;
+            case Keep:
+                return EAssetType.Keep;
+            case Castle:
+                return EAssetType.Castle;
+            case Farm:
+                return EAssetType.Farm;
+            case Barracks:
+                return EAssetType.Barracks;
+            case LumberMill:
+                return EAssetType.LumberMill;
+            case Blacksmith:
+                return EAssetType.Blacksmith;
+            case ScoutTower:
+                return EAssetType.ScoutTower;
+            case GuardTower:
+                return EAssetType.GuardTower;
+            case CannonTower:
+                return EAssetType.CannonTower;
+            case Wall:
+                return EAssetType.Wall;
+            case Max:
+                return EAssetType.Max;
+            default:
+                return EAssetType.None;
+        }
+
+    }
+    public static EAssetType to_assetType(EUnitType type) {
+        switch (type){
+            case None:
+                return EAssetType.None;
+            case Peasant:
+                return EAssetType.Peasant;
+            case Footman:
+                return EAssetType.Footman;
+            case Archer:
+                return EAssetType.Archer;
+            case Ranger:
+                return EAssetType.Ranger;
+            case Knight:
+                return EAssetType.Knight;
+            case Max:
+                return EAssetType.Max;
+            default:
+                return EAssetType.None;
+        }
+
+    }
+
 }
 
 // TODO: redefine DirectionOpposite function

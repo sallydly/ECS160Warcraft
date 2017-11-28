@@ -194,23 +194,41 @@ public class MapRenderer {
             }
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
-        }
 
-        for(int Index = 0; Index < 16; Index++){
-            Vector<Vector<TextureRegion> > OuterVec;
-            Vector<TextureRegion> InnerVec;
-
-            int AltTileIndex = 0;
-            int TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
+            //HM: added for rubble
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
             OuterVec = DTileTextures.get(TileTypeNum);
             InnerVec = new Vector<TextureRegion>();
-
-            TextureRegion textureRegion = DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0);
-            InnerVec.add(textureRegion);
-
+            while(true){
+                TextureRegion textureRegion = DTerrainTextures.findRegion("rubble-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
+            //HM: end of added code
         }
+
+        //HM: in case of rubble texture not render correctly, enable this code
+//        for(int Index = 0; Index < 16; Index++){
+//            Vector<Vector<TextureRegion> > OuterVec;
+//            Vector<TextureRegion> InnerVec;
+//
+//            int AltTileIndex = 0;
+//            int TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
+//            OuterVec = DTileTextures.get(TileTypeNum);
+//            InnerVec = new Vector<TextureRegion>();
+//
+//            TextureRegion textureRegion = DTileTextures.get(TileTypes.to_underlying(ETileType.Rock)).get(0).get(0);
+//            InnerVec.add(textureRegion);
+//
+//            OuterVec.set(Index,InnerVec);
+//            DTileTextures.set(TileTypeNum, OuterVec);
+//        }
 
     } // end MapRenderer() constructor
 
@@ -272,80 +290,75 @@ public class MapRenderer {
      * and updates the tile at that position
      * Will be called by RemoveLumber.
      */
-    public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer){
+    public void UpdateTile(TilePosition tpos, TiledMapTileLayer terrainLayer){
+        int OrigXIndex = tpos.X();
+        int OrigYIndex = tpos.Y();
 
-        int XIndex = pos.X();
-        int YIndex = pos.Y();
-        ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
-        int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
+        Vector<TilePosition> tilePositions = new Vector<TilePosition>();
+
+        tilePositions.add(tpos);
+
+        TilePosition PosXplus = new TilePosition(OrigXIndex+1, OrigYIndex);
+        tilePositions.add(PosXplus);
+
+        TilePosition PosYplus = new TilePosition(OrigXIndex, OrigYIndex+1);
+        tilePositions.add(PosYplus);
+
+        TilePosition PosXYplus = new TilePosition(OrigXIndex+1, OrigYIndex+1);
+        tilePositions.add(PosXYplus);
+
+        TilePosition PosXminus = new TilePosition(OrigXIndex-1, OrigYIndex);
+        tilePositions.add(PosXminus);
+
+        TilePosition PosYminus = new TilePosition(OrigXIndex, OrigYIndex-1);
+        tilePositions.add(PosYminus);
+
+        TilePosition PosXYminus = new TilePosition(OrigXIndex-1, OrigYIndex-1);
+        tilePositions.add(PosXYminus);
+
+        TilePosition PosXplusYminus = new TilePosition(OrigXIndex+1, OrigYIndex-1);
+        tilePositions.add(PosXplusYminus);
+
+        TilePosition PosXminusYplus = new TilePosition(OrigXIndex-1, OrigYIndex+1);
+        tilePositions.add(PosXminusYplus);
 
 
-        if (ThisTileType == TileTypes.ETileType.Stump)
-            System.out.println("I will be stump");
+        for (TilePosition pos : tilePositions) {
+            int XIndex = pos.X();
+            int YIndex = pos.Y();
+            ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
+            int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
 
-        if((0 <= TileIndex)&&(16 > TileIndex)){
-            TextureRegion textureRegion = null;
-            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
-            if(AltTileCount >0){
-                int AltIndex = (XIndex + YIndex) % AltTileCount;
 
-                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+            if (ThisTileType == TileTypes.ETileType.Stump)
+                System.out.println("I will be stump");
+            if (ThisTileType == ETileType.Rubble)
+                System.out.println("I will be Rubble");
+
+            if ((0 <= TileIndex) && (16 > TileIndex)) {
+                TextureRegion textureRegion = null;
+                int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
+                if (AltTileCount > 0) {
+                    int AltIndex = (XIndex + YIndex) % AltTileCount;
+
+                    textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+                }
+
+                if (null != textureRegion) {
+                    // need to invert both y axis:
+                    int Xpos = XIndex;
+                    int Ypos = DMapHeight - 1 - YIndex;
+                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                    cell.setTile(new StaticTiledMapTile(textureRegion));
+                    terrainLayer.setCell(Xpos, Ypos, cell);
+                }
+            } else {
+
+                return;
             }
-            if(null != textureRegion){
-                // need to invert both y axis:
-                int Xpos =  XIndex;
-                int Ypos = DMapHeight - 1 - YIndex;
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                terrainLayer.setCell(Xpos, Ypos, cell);
-            }
-        }
-        else{
-
-            return;
         }
         return;
 
     }
 
-
-    /**
-     * UpdateTile takes in a tile position object, and the tile layer.
-     * and updates the tile at that position
-     * Will be called by RemoveLumber.
-     */
-    public void UpdateTile(TilePosition pos, TiledMapTileLayer terrainLayer, AssetDecoratedMap  map){
-        int XIndex = pos.X();
-        int YIndex = pos.Y();
-        ETileType ThisTileType = map.TileType(XIndex, YIndex);
-        int TileIndex = map.TileTypeIndex(XIndex, YIndex);
-
-        if (ThisTileType == TileTypes.ETileType.Stump)
-            log.debug("I will be stump");
-
-        if((0 <= TileIndex)&&(16 > TileIndex)){
-            TextureRegion textureRegion = null;
-            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
-            if(AltTileCount >0){
-                int AltIndex = (XIndex + YIndex) % AltTileCount;
-
-                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
-            }
-            if(null != textureRegion){
-                // need to invert both y axis:
-                int Xpos =  XIndex;
-                int Ypos = DMapHeight - 1 - YIndex;
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(new StaticTiledMapTile(textureRegion));
-                terrainLayer.setCell(Xpos, Ypos, cell);
-                System.out.println("We setting cocrrectly?");
-            }
-        }
-        else{
-
-            return;
-        }
-        return;
-
-    }
 } // end MapRenderer Class

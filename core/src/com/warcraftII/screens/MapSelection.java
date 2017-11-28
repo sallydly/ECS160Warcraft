@@ -53,15 +53,15 @@ public class MapSelection implements Screen {
     public void show() {
         Gdx.input.setInputProcessor(stage);
         Table menuTable = createMenuTable();
+
         //music.play();
+
         // set background texture image
         // code adapted from https://libgdx.info/basic_image/
         Texture backgroundImageTexture = new Texture("img/Texture.png");
         backgroundImageTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         TextureRegion backgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
         backgroundImageTextureRegion.setRegion(0, 0, stage.getWidth(), stage.getHeight());
-
-        //backgroundImage.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Image backgroundImage = new Image(backgroundImageTextureRegion);
         backgroundImage.setPosition(0, 0);
 
@@ -69,14 +69,18 @@ public class MapSelection implements Screen {
         stage.addActor(menuTable);
     }
 
+
     private Table createMenuTable() {
         //Maps the .png filename to the image button
         final Map<String, ImageButton> fileNameToImageButtonMap = new HashMap<String, ImageButton>();
         final Map<String, String> mapNameToFileName = new HashMap<String, String>();
         Vector<TextButton> textButtons = new Vector<TextButton>();
-        Vector<ImageButton> imageButtons = new Vector<ImageButton>();
         Vector<String> orderedMapNames = new Vector<String>();
+        Table menuTable = new Table();
+        Table container = new Table(skin);
 
+        //NOTE: To add a new map, give the map's name in this block,
+        // and map (using mapNameToFileName) to its fileName in the next block
         //Map names
         final String BAY_GAME_NAME = "Three ways to cross";
         final String MOUNTAINS_GAME_NAME = "One way in one way out";
@@ -88,14 +92,11 @@ public class MapSelection implements Screen {
         mapNameToFileName.put(HEDGES_GAME_NAME, "hedges.PNG");
         mapNameToFileName.put(NWHR2RN_GAME_NAME, "nwhr2rn.PNG");
 
-        Table menuTable = new Table();
-        Table container = new Table(skin);
         container.setFillParent(true);
         ScrollPane scrollPane = new ScrollPane(menuTable);
         container.add(scrollPane).width(Gdx.graphics.getWidth()).height(Gdx.graphics.getHeight());
 
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
-
 
         FileHandle dirHandle;
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
@@ -104,41 +105,46 @@ public class MapSelection implements Screen {
             dirHandle = Gdx.files.internal("./bin/map_previews");
         }
 
-        //Map the filenames to their ImageButton
+        //Create the ImageButtons and map the filenames to their ImageButton
         for (FileHandle entry : dirHandle.list()) {
+            //Create the ImageButton using the "map_preview"
             Texture mapPreview = new Texture(entry);
             TextureRegion myTextureRegion= new TextureRegion(mapPreview);
             TextureRegionDrawable drawable = new TextureRegionDrawable(myTextureRegion);
             ImageButton button = new ImageButton(drawable);
-            imageButtons.add(button);
-            String splitFileName = String.valueOf(entry).split("/")[1];
-            fileNameToImageButtonMap.put(splitFileName, button);
+
+            //remove the directory prefix of the file name
+            String fileName = String.valueOf(entry).split("/")[1];
+
+            //Map the fileName to the ImageButton
+            fileNameToImageButtonMap.put(fileName, button);
         }
 
+        for (final String mapName : AssetDecoratedMap.GetMapNames()) {
+            //AssetDecoratedMap.GetMapNames() returns a string with a \r at the end, gotta remove it
+            orderedMapNames.add(mapName.trim());
 
-        for (final String MapName : AssetDecoratedMap.GetMapNames()) {
-            orderedMapNames.add(MapName);
-
-            TextButton textButton = new TextButton(MapName, skin);
+            //Set a ClickListener on the TextButton
+            TextButton textButton = new TextButton(mapName, skin);
             textButton.getLabel().setFontScale(1, 1);
             textButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.DMapName = MapName;
+                    game.DMapName = mapName;
                     game.setScreen(new SinglePlayer(game));
                 }
             });
 
             textButtons.add(textButton);
 
-            //This block sets ClickListeners on the images
-            //`mapNameToFileName.get(MapName))` returns a the filename e.g. "bay.PNG"
-            String fileName = mapNameToFileName.get(MapName.replace("\r", ""));
+            //Set a ClickListener on the ImageButton
+            //`mapNameToFileName.get(MapName))` returns the filename e.g. "bay.PNG"
+            String fileName = mapNameToFileName.get(mapName.trim());
             ImageButton temp = fileNameToImageButtonMap.get(fileName);
             temp.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.DMapName = MapName;
+                    game.DMapName = mapName;
                     game.setScreen(new SinglePlayer(game));
                 }
             });
@@ -146,14 +152,16 @@ public class MapSelection implements Screen {
             fileNameToImageButtonMap.put(fileName, temp);
         }
 
+        //Top row has the name of the map, and you can click on it
         for (TextButton textButton : textButtons) {
             menuTable.add(textButton).pad(0,50,100,50).uniformX();
         }
 
         menuTable.row().pad(20);
 
+        //Bottom row has a preview of the map, and you can click on it
         for (String mapName : orderedMapNames) {
-            String fileName =  mapNameToFileName.get(mapName);
+            String fileName =  mapNameToFileName.get(mapName.trim());
             ImageButton imageButton = fileNameToImageButtonMap.get(fileName);
             menuTable.add(imageButton);
         }
@@ -171,6 +179,8 @@ public class MapSelection implements Screen {
         game.batch.begin();
         //game.batch.draw(texture, 0, 0);
         game.batch.end();
+
+        
     }
 
     @Override
@@ -197,6 +207,7 @@ public class MapSelection implements Screen {
     public void dispose() {
         skin.dispose();
         atlas.dispose();
+        stage.dispose();
         //music.dispose();
     }
 }

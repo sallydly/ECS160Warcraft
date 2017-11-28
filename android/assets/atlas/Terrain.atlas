@@ -1327,730 +1327,933 @@ light-grass-F-1
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-0-0
+rock-1-0
   rotate: false
   xy: 240, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-1-0
+rock-1-1
   rotate: false
   xy: 274, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-1-1
+rock-2-0
   rotate: false
   xy: 308, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-2-0
+rock-2-1
   rotate: false
   xy: 342, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-2-1
+rock-3-0
   rotate: false
   xy: 376, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-3-0
+rock-3-1
   rotate: false
   xy: 410, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-3-1
+rock-4-0
   rotate: false
   xy: 444, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-4-0
+rock-4-1
   rotate: false
   xy: 478, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-4-1
+rock-5-0
   rotate: false
   xy: 512, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-5-0
+rock-5-1
   rotate: false
   xy: 546, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-5-1
+rock-6-0
   rotate: false
   xy: 580, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-6-0
+rock-6-1
   rotate: false
   xy: 614, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-6-1
+rock-7-0
   rotate: false
   xy: 206, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-7-0
+rock-8-0
   rotate: false
   xy: 206, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-8-0
+rock-8-1
   rotate: false
   xy: 240, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-8-1
+rock-9-0
   rotate: false
   xy: 274, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-9-0
+rock-9-1
   rotate: false
   xy: 308, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-9-1
+rock-A-0
   rotate: false
   xy: 342, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-A-0
+rock-A-1
   rotate: false
   xy: 376, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-A-1
+rock-B-0
   rotate: false
   xy: 410, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-B-0
+rock-C-0
   rotate: false
   xy: 444, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-C-0
+rock-C-1
   rotate: false
   xy: 478, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-C-1
+rock-D-0
   rotate: false
   xy: 512, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-D-0
+rock-E-0
   rotate: false
   xy: 546, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-E-0
+rock-F-0
   rotate: false
   xy: 580, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-F-0
+rock-F-1
   rotate: false
   xy: 614, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-F-1
+rock-F-2
   rotate: false
   xy: 648, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-F-2
+rock-F-3
   rotate: false
   xy: 240, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-F-3
+rock-UK-155
   rotate: false
   xy: 240, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-155
+rock-UK-156
   rotate: false
   xy: 274, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-156
+rock-UK-157
   rotate: false
   xy: 308, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-157
+rock-UK-158
   rotate: false
   xy: 342, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-158
+rock-UK-159
   rotate: false
   xy: 376, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-159
+rock-UK-160
   rotate: false
   xy: 410, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-160
+rock-UK-161
   rotate: false
   xy: 444, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-161
+rock-UK-162
   rotate: false
   xy: 478, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-162
+rock-UK-163
   rotate: false
   xy: 512, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-rock-UK-163
+rubble-1-0
   rotate: false
   xy: 546, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-1-0
+rubble-1-1
   rotate: false
   xy: 580, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-1-1
+rubble-2-0
   rotate: false
   xy: 614, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-2-0
+rubble-2-1
   rotate: false
   xy: 648, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-2-1
+rubble-3-0
   rotate: false
   xy: 682, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-3-0
+rubble-3-1
   rotate: false
   xy: 274, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-3-1
+rubble-4-0
   rotate: false
   xy: 274, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-3-2
+rubble-4-1
   rotate: false
   xy: 308, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-4-0
+rubble-5-0
   rotate: false
   xy: 342, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-4-1
+rubble-5-1
   rotate: false
   xy: 376, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-5-0
+rubble-6-0
   rotate: false
   xy: 410, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-5-1
+rubble-6-1
   rotate: false
   xy: 444, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-5-2
+rubble-7-0
   rotate: false
   xy: 478, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-6-0
+rubble-7-1
   rotate: false
   xy: 512, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-6-1
-  rotate: false
-  xy: 512, 274
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-shallow-water-7-0
+rubble-8-0
   rotate: false
   xy: 546, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-7-1
+rubble-8-1
   rotate: false
   xy: 580, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-8-0
+rubble-9-0
   rotate: false
   xy: 614, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-8-1
+rubble-9-1
   rotate: false
   xy: 648, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-9-0
+rubble-A-0
   rotate: false
   xy: 682, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-9-1
-  rotate: false
-  xy: 682, 444
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-shallow-water-A-0
+rubble-A-1
   rotate: false
   xy: 716, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-A-1
+rubble-B-0
   rotate: false
   xy: 308, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-A-2
+rubble-B-1
   rotate: false
   xy: 308, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-B-0
+rubble-C-0
   rotate: false
   xy: 342, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-B-1
+rubble-C-1
   rotate: false
   xy: 376, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-C-0
+rubble-D-0
   rotate: false
   xy: 410, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-C-1
+rubble-D-1
   rotate: false
   xy: 444, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-C-2
+rubble-E-0
   rotate: false
   xy: 478, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-D-0
+rubble-E-1
   rotate: false
   xy: 512, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-D-1
+rubble-F-0
   rotate: false
   xy: 546, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-E-0
+rubble-F-1
   rotate: false
   xy: 580, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-E-1
+shallow-water-1-0
   rotate: false
   xy: 614, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-F-0
+shallow-water-1-1
   rotate: false
   xy: 648, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-F-1
+shallow-water-2-0
   rotate: false
   xy: 682, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-shallow-water-F-2
-  rotate: false
-  xy: 682, 410
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-shallow-water-F-3
+shallow-water-2-1
   rotate: false
   xy: 716, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-1-0
+shallow-water-3-0
   rotate: false
   xy: 750, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-1-1
+shallow-water-3-1
   rotate: false
   xy: 342, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-2-0
+shallow-water-3-2
   rotate: false
   xy: 342, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-2-1
+shallow-water-4-0
   rotate: false
   xy: 376, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-3-0
+shallow-water-4-1
   rotate: false
   xy: 410, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-3-1
+shallow-water-5-0
   rotate: false
   xy: 444, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-4-0
+shallow-water-5-1
   rotate: false
   xy: 478, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-4-1
+shallow-water-5-2
   rotate: false
   xy: 512, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-5-0
+shallow-water-6-0
   rotate: false
   xy: 546, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-5-1
+shallow-water-6-1
+  rotate: false
+  xy: 546, 240
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shallow-water-7-0
   rotate: false
   xy: 580, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-6-0
+shallow-water-7-1
   rotate: false
   xy: 614, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-6-1
+shallow-water-8-0
   rotate: false
   xy: 648, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-7-0
+shallow-water-8-1
   rotate: false
   xy: 682, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-7-1
+shallow-water-9-0
   rotate: false
   xy: 716, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-8-0
+shallow-water-9-1
+  rotate: false
+  xy: 716, 410
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shallow-water-A-0
   rotate: false
   xy: 750, 444
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-8-1
+shallow-water-A-1
   rotate: false
   xy: 784, 478
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-9-0
+shallow-water-A-2
   rotate: false
   xy: 376, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-9-1
+shallow-water-B-0
   rotate: false
   xy: 376, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-A-0
+shallow-water-B-1
   rotate: false
   xy: 410, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-A-1
+shallow-water-C-0
   rotate: false
   xy: 444, 104
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-B-0
+shallow-water-C-1
   rotate: false
   xy: 478, 138
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-B-1
+shallow-water-C-2
   rotate: false
   xy: 512, 172
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-C-0
+shallow-water-D-0
   rotate: false
   xy: 546, 206
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-C-1
+shallow-water-D-1
   rotate: false
   xy: 580, 240
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-D-0
+shallow-water-E-0
   rotate: false
   xy: 614, 274
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-D-1
+shallow-water-E-1
   rotate: false
   xy: 648, 308
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-E-0
+shallow-water-F-0
   rotate: false
   xy: 682, 342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-E-1
+shallow-water-F-1
   rotate: false
   xy: 716, 376
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-F-0
+shallow-water-F-2
+  rotate: false
+  xy: 716, 376
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+shallow-water-F-3
   rotate: false
   xy: 750, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-stump-F-1
+stump-1-0
   rotate: false
   xy: 784, 444
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-1-1
+  rotate: false
+  xy: 818, 478
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-2-0
+  rotate: false
+  xy: 410, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-2-1
+  rotate: false
+  xy: 410, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-3-0
+  rotate: false
+  xy: 444, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-3-1
+  rotate: false
+  xy: 478, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-4-0
+  rotate: false
+  xy: 512, 138
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-4-1
+  rotate: false
+  xy: 546, 172
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-5-0
+  rotate: false
+  xy: 580, 206
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-5-1
+  rotate: false
+  xy: 614, 240
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-6-0
+  rotate: false
+  xy: 648, 274
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-6-1
+  rotate: false
+  xy: 682, 308
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-7-0
+  rotate: false
+  xy: 716, 342
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-7-1
+  rotate: false
+  xy: 750, 376
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-8-0
+  rotate: false
+  xy: 784, 410
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-8-1
+  rotate: false
+  xy: 818, 444
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-9-0
+  rotate: false
+  xy: 852, 478
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-9-1
+  rotate: false
+  xy: 444, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-A-0
+  rotate: false
+  xy: 444, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-A-1
+  rotate: false
+  xy: 478, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-B-0
+  rotate: false
+  xy: 512, 104
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-B-1
+  rotate: false
+  xy: 546, 138
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-C-0
+  rotate: false
+  xy: 580, 172
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-C-1
+  rotate: false
+  xy: 614, 206
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-D-0
+  rotate: false
+  xy: 648, 240
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-D-1
+  rotate: false
+  xy: 682, 274
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-E-0
+  rotate: false
+  xy: 716, 308
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-E-1
+  rotate: false
+  xy: 750, 342
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-F-0
+  rotate: false
+  xy: 784, 376
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+stump-F-1
+  rotate: false
+  xy: 818, 410
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

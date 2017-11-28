@@ -1,13 +1,14 @@
 package com.warcraftII.player_asset;
 
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.GameDataTypes.*;
 import com.warcraftII.player_asset.SAssetCommand;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.position.TilePosition;
 
 import java.util.Vector;
 
-public class StaticAsset {
+public class StaticAsset extends PlayerAsset{
     public enum EState {
         CONSTRUCT_0,
         CONSTRUCT_1,
@@ -23,7 +24,14 @@ public class StaticAsset {
     private int DLumber;
     private PlayerAssetType DType;
     private TilePosition DPosition;
-    private Vector<SAssetCommand> DCommands = new Vector<SAssetCommand>();
+    private Vector<SAssetCommand> DCommands;
+    private int DStep;
+
+    private EPlayerColor DOwner;
+
+
+
+    public StaticAsset() {}
 
     public StaticAsset(PlayerAssetType type) {
         DType = type;
@@ -32,7 +40,17 @@ public class StaticAsset {
         DLumber = 0;
         DPosition = new TilePosition(0, 0);
         DCurrentState = EState.INACTIVE; // TODO: have a cycle of building-> inactive, active etc.
+        DCommands = new Vector<SAssetCommand>();
     }
+
+    public EPlayerColor owner(){
+        return DOwner;
+    }
+
+    public EPlayerColor owner(EPlayerColor playerColor){
+        return DOwner = playerColor;
+    }
+
 
     public EState state(){
         return DCurrentState;
@@ -70,6 +88,10 @@ public class StaticAsset {
         DHitPoints -= hitPoints;
         if(0 > DHitPoints){
             DHitPoints = 0;
+            SAssetCommand deathcommand = new SAssetCommand();
+            deathcommand.DAction = EAssetAction.Death;
+            DCommands.clear();
+            DCommands.add(deathcommand);
         }
         return DHitPoints;
     }
@@ -180,8 +202,12 @@ public class StaticAsset {
         return DType.HitPoints();
     }
 
-    public GameDataTypes.EAssetType type() {
+    public EAssetType type() {
         return DType.Type();
+    }
+
+    public EStaticAssetType staticAssetType(){
+        return GameDataTypes.to_staticAssetType(type());
     }
 
     public PlayerAssetType assetType() {
@@ -192,7 +218,7 @@ public class StaticAsset {
         DType = type;
     }
 
-    public GameDataTypes.EPlayerColor color() {
+    public EPlayerColor color() {
         return DType.Color();
     }
 
@@ -228,7 +254,7 @@ public class StaticAsset {
             return DCommands.lastElement();
         }
         SAssetCommand RetVal = new SAssetCommand();
-        RetVal.DAction = GameDataTypes.EAssetAction.None;
+        RetVal.DAction = EAssetAction.None;
         return RetVal;
     }
 
@@ -237,13 +263,13 @@ public class StaticAsset {
             return DCommands.get(DCommands.size() - 2);
         }
         SAssetCommand RetVal = new SAssetCommand();
-        RetVal.DAction = GameDataTypes.EAssetAction.None;
+        RetVal.DAction = EAssetAction.None;
         return RetVal;
     }
 
-    public GameDataTypes.EAssetAction Action() {
+    public EAssetAction Action() {
         if(!DCommands.isEmpty()){
-            GameDataTypes.EAssetAction action = DCommands.lastElement().DAction;
+            EAssetAction action = DCommands.lastElement().DAction;
 
             switch(action) {
                 case Construct:
@@ -255,13 +281,22 @@ public class StaticAsset {
             }
             return DCommands.lastElement().DAction;
         }
-        return GameDataTypes.EAssetAction.None;
-    };
+        return EAssetAction.None;
+    }
+
 
 //TODO: add this
-//    public int Sight() {
-//        return GameDataTypes.EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
-//    };
+    public int Sight() {
+        return EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
+    }
+
+    public int SightUpgrade() {
+        return DType.SightUpgrade();
+    }
+
+    public int EffectiveSight() {
+        return Sight() + SightUpgrade();
+    }
 
     public int GoldCost() {
         return DType.GoldCost();
@@ -274,5 +309,11 @@ public class StaticAsset {
     int BuildTime() {
         return DType.BuildTime();
     }
+
+    public int Step(){ return DStep; }
+    public int Step(int step){ return DStep = step; }
+    public  int IncrementStep() { return DStep = DStep + 1;}
+
+
 }
 

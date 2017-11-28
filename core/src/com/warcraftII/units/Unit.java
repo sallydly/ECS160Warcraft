@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.TileTypes;
 
-import org.omg.CORBA.UNKNOWN;
+//import org.omg.CORBA.UNKNOWN;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -34,12 +34,6 @@ public class Unit {
     public Vector<IndividualUnit> unitVector;
     public Vector<IndividualUnit> deleteUnits;
     public int selectedUnitIndex;
-    /*private TextureAtlas[] unitTextures = {
-        new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
-        new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
-        new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
-        new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
-    };*/
 
     private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures = new HashMap<GameDataTypes.EUnitType, TextureAtlas>();
 
@@ -174,10 +168,6 @@ public class Unit {
 
         newUnit.setX(x_position);
         newUnit.setY(y_position);
-        //newUnit.sprite = new Sprite(texture);
-        //newUnit.sprite.setSize(72,72);
-        //newUnit.sprite.setOriginCenter();
-        //newUnit.sprite.setPosition(x_position,y_position);
         newUnit.currentxmove = x_position*32;
         newUnit.currentymove = y_position*32;
         newUnit.curState = GameDataTypes.EUnitState.Idle;

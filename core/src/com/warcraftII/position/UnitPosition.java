@@ -81,6 +81,5 @@ public class UnitPosition extends Position {
 
 
 
-
 }
 

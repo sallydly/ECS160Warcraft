@@ -2,9 +2,12 @@ package com.warcraftII.player_asset;
 
 //import com.warcraftII.asset.player.PlayerAsset;
 
+import com.warcraftII.position.TilePosition;
+
+import java.util.List;
 import java.util.Vector;
 
-public class VisibilityMap{
+public class VisibilityMap {
     public enum ETileVisibility{
         None,
         PartialPartial,
@@ -105,93 +108,89 @@ public class VisibilityMap{
         }
         return gameMap.get(yIndex+maxVisibility).get(xIndex+maxVisibility);
     }
-//
-//    public List<PlayerAsset> update(List<PlayerAsset> assets) {
-//        for(Vector row : gameMap) {
-//            for(Object tile : row) {
-//                if((ETileVisibility.Visible == tile) || ETileVisibility.Partial == tile) {
-//                    tile = ETileVisibility.Seen;
-//                } else if(ETileVisibility.PartialPartial == tile) {
-//                    tile = ETileVisibility.SeenPartial;
-//                }
-//            }
-//
-//            for(PlayerAsset weakAsset : assets) {
-//                if (Object currentAsset = weakAsset.lock()) {
-//                    TilePosition anchor = currentAsset.TilePosition();
-//                }
-//            }
-//            for(auto WeakAsset : assets){
-//                if(auto CurAsset = WeakAsset.lock()){
-//                    CTilePosition Anchor = CurAsset->TilePosition();
-//                    int Sight = CurAsset->EffectiveSight() + CurAsset->Size()/2;
-//                    int SightSquared = Sight * Sight;
-//                    Anchor.X(Anchor.X() + CurAsset->Size()/2);
-//                    Anchor.Y(Anchor.Y() + CurAsset->Size()/2);
-//                    for(int X = 0; X <= Sight; X++){
-//                        int XSquared = X * X;
-//                        int XSquared1 = X ? (X - 1) * (X - 1) : 0;
-//
-//                        for(int Y = 0; Y <= Sight; Y++){
-//                            int YSquared = Y * Y;
-//                            int YSquared1 = Y ? (Y - 1) * (Y - 1) : 0;
-//
-//                            if((XSquared + YSquared) < SightSquared){
-//                                // Visible
-//                                DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::Visible;
-//                                DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::Visible;
-//                                DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::Visible;
-//                                DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::Visible;
-//                            }
-//                            else if((XSquared1 + YSquared1) < SightSquared){
-//                                // Partial
-//                                ETileVisibility CurVis = DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility];
-//                                if(ETileVisibility::Seen == CurVis){
-//                                    DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::Partial;
-//                                }
-//                                else if((ETileVisibility::None == CurVis)||(ETileVisibility::SeenPartial == CurVis)){
-//                                    DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::PartialPartial;
-//                                }
-//                                CurVis = DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility];
-//                                if(ETileVisibility::Seen == CurVis){
-//                                    DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::Partial;
-//                                }
-//                                else if((ETileVisibility::None == CurVis)||(ETileVisibility::SeenPartial == CurVis)){
-//                                    DMap[Anchor.Y() - Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::PartialPartial;
-//                                }
-//                                CurVis = DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility];
-//                                if(ETileVisibility::Seen == CurVis){
-//                                    DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::Partial;
-//                                }
-//                                else if((ETileVisibility::None == CurVis)||(ETileVisibility::SeenPartial == CurVis)){
-//                                    DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() - X + DMaxVisibility] = ETileVisibility::PartialPartial;
-//                                }
-//                                CurVis = DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility];
-//                                if(ETileVisibility::Seen == CurVis){
-//                                    DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::Partial;
-//                                }
-//                                else if((ETileVisibility::None == CurVis)||(ETileVisibility::SeenPartial == CurVis)){
-//                                    DMap[Anchor.Y() + Y + DMaxVisibility][Anchor.X() + X + DMaxVisibility] = ETileVisibility::PartialPartial;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            int MinX, MinY, MaxX, MaxY;
-//            MinY = DMaxVisibility;
-//            MaxY = DMap.size() - DMaxVisibility;
-//            MinX = DMaxVisibility;
-//            MaxX = DMap[0].size() - DMaxVisibility;
-//            DUnseenTiles = 0;
-//            for(int Y = MinY; Y < MaxY; Y++){
-//                for(int X = MinX; X < MaxX; X++){
-//                    if(ETileVisibility::None == DMap[Y][X]){
-//                        DUnseenTiles++;
-//                    }
-//                }
-//            }
-//
-//        }    }
 
+    public List<StaticAsset> update(List<StaticAsset> assets) {
+        for(Vector row : gameMap) {
+            for(Object tile : row) {
+                if((ETileVisibility.Visible == tile) || ETileVisibility.Partial == tile) {
+                    tile = ETileVisibility.Seen;
+                } else if(ETileVisibility.PartialPartial == tile) {
+                    tile = ETileVisibility.SeenPartial;
+                }
+            }
+
+            for(StaticAsset CurAsset : assets) {
+                if(CurAsset != null) {
+                    TilePosition Anchor = CurAsset.tilePosition();
+                    int Sight = CurAsset.EffectiveSight() + CurAsset.Size()/2;
+                    int SightSquared = Sight * Sight;
+                    Anchor.X(Anchor.X() + CurAsset.Size()/2);
+                    Anchor.Y(Anchor.Y() + CurAsset.Size()/2);
+
+                    for(int X = 0; X <= Sight; X++) {
+                        int XSquared = X * X;
+                        int XSquared1 = (X > 0) ? (X - 1) * (X - 1) : 0;
+
+                        for(int Y = 0; Y <= Sight; Y++){
+                            int YSquared = Y * Y;
+                            int YSquared1 = (Y > 0) ? (Y - 1) * (Y - 1) : 0;
+
+                            if((XSquared + YSquared) < SightSquared) {
+                                // Visible
+                                gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Visible);
+                                gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
+                                gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Visible);
+                                gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
+                            }
+                            else if((XSquared1 + YSquared1) < SightSquared){
+                                // Partial
+                                ETileVisibility CurVis = gameMap.get(Anchor.Y() - Y + maxVisibility).get(Anchor.X() - X + maxVisibility);
+                                if(ETileVisibility.Seen == CurVis){
+                                    gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Partial);
+                                }
+                                else if((ETileVisibility.None == CurVis)||(ETileVisibility.SeenPartial == CurVis)){
+                                    gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.PartialPartial);
+                                }
+                                CurVis = gameMap.get(Anchor.Y() - Y + maxVisibility).get(Anchor.X() + X + maxVisibility);
+                                if(ETileVisibility.Seen == CurVis){
+                                    gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Partial);
+                                }
+                                else if((ETileVisibility.None == CurVis)||(ETileVisibility.SeenPartial == CurVis)){
+                                    gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.PartialPartial);
+                                }
+                                CurVis = gameMap.get(Anchor.Y() + Y + maxVisibility).get(Anchor.X() - X + maxVisibility);
+                                if(ETileVisibility.Seen == CurVis){
+                                    gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Partial);
+                                }
+                                else if((ETileVisibility.None == CurVis)||(ETileVisibility.SeenPartial == CurVis)){
+                                    gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.PartialPartial);
+                                }
+                                CurVis = gameMap.get(Anchor.Y() + Y + maxVisibility).get(Anchor.X() + X + maxVisibility);
+                                if(ETileVisibility.Seen == CurVis){
+                                    gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Partial);
+                                }
+                                else if((ETileVisibility.None == CurVis)||(ETileVisibility.SeenPartial == CurVis)){
+                                    gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.PartialPartial);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            int MinX, MinY, MaxX, MaxY;
+            MinY = maxVisibility;
+            MaxY = gameMap.size() - maxVisibility;
+            MinX = maxVisibility;
+            MaxX = gameMap.get(0).size() - maxVisibility;
+            unseenTiles = 0;
+            for(int Y = MinY; Y < MaxY; Y++){
+                for(int X = MinX; X < MaxX; X++){
+                    if(ETileVisibility.None == gameMap.get(Y).get(X)){
+                        unseenTiles++;
+                    }
+                }
+            }
+        }
+        return assets;
+    }
 }
