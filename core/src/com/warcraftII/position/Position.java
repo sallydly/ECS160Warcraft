@@ -183,7 +183,7 @@ public class Position {
     /*
      * Gets the distance squared between two Positions
      */
-    protected int distanceSquared(Position pos) {
+    public int distanceSquared(Position pos) {
         int deltaX = pos.DX - DX;
         int deltaY = pos.DY - DY;
 

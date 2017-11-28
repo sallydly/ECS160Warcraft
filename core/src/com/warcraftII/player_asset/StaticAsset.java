@@ -29,6 +29,10 @@ public class StaticAsset extends PlayerAsset{
 
     private EPlayerColor DOwner;
 
+
+
+    public StaticAsset() {}
+
     public StaticAsset(PlayerAssetType type) {
         DType = type;
         DHitPoints = type.HitPoints();

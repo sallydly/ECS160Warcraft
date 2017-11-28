@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.GameDataTypes.*;
@@ -415,28 +416,33 @@ public class AssetDecoratedMap extends TerrainMap {
  * @param[in] color The player the nearest asset should belong to
  * @param[in] type The type of asset to find
  *
- * @return pointer to the nearest asset
+ * @return pointer to the nearest asset -- will be null if no such asset exists
  *
  */
-//TODO: Fix??
-/*
-    PlayerAsset FindNearestAsset(CPixelPosition &pos, EPlayerColor color, EAssetType type){
-        std.shared_ptr< CPlayerAsset > BestAsset;
+
+    StaticAsset FindNearestStaticAsset(UnitPosition pos, EPlayerColor color, EStaticAssetType type){
+        StaticAsset BestAsset =  new StaticAsset();
         int BestDistanceSquared = -1;
 
-        for(auto &Asset : DAssets){
-            if((Asset.Type() == type)&&(Asset.Color() == color)&&(EAssetAction.Construct != Asset.Action())){
-                int CurrentDistance = Asset.Position().DistanceSquared(pos);
+        for(StaticAsset SAsset : DStaticAssets){
+            if((SAsset.staticAssetType() == type)&&(SAsset.owner() == color)&&(EAssetAction.Construct != SAsset.Action())){
+                UnitPosition StatAssetUPos = new UnitPosition(SAsset.tilePosition());
+                int CurrentDistance = StatAssetUPos.distanceSquared(pos);
 
                 if((-1 == BestDistanceSquared)||(CurrentDistance < BestDistanceSquared)){
                     BestDistanceSquared = CurrentDistance;
-                    BestAsset = Asset;
+                    BestAsset = SAsset;
                 }
             }
         }
-        return BestAsset;
+        if (BestDistanceSquared != -1){
+            return BestAsset;
+        }
+        else{
+            return null;
+        }
     }
-*/
+
 
     /**
      * Remove lumber from a given tile position and update the partials map
