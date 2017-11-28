@@ -27,6 +27,9 @@ import com.warcraftII.terrain_map.TileTypes;
 
 //import org.omg.CORBA.UNKNOWN;
 
+import static com.warcraftII.GameDataTypes.EAssetCapabilityType.BuildSimple;
+import static com.warcraftII.GameDataTypes.EAssetCapabilityType.Repair;
+import static com.warcraftII.GameDataTypes.EAssetCapabilityType.StandGround;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
@@ -49,14 +52,28 @@ public class Unit {
     }
 
     public class IndividualUnit extends Actor {
-        //public Sprite sprite;
+
         public GameDataTypes.EUnitType unitClass;
-        public int unitTexInd;
         public int maxHP = 40;
         public int curHP = 40;
-        public int attackDamage = 5;
+        public int attackDamage = 3;
+        public int piercingDamage = 6;
         public int speed = 10;
-        public int range = 1;
+        public int range = 4;
+        public int armor = 0;
+        public int sight = 0;
+        public int attackTime = 10;
+        public int reloadTime = 10;
+        // Gold Cost
+        // Lumber Cost
+        // Stone Cost
+        // Build Time
+        // Attack Steps
+        // Reload Steps
+        // I think the above should be included in the buildings?
+        // Or we can include it as requirements for addUnit, but that makes init harder
+        public int foodConsumed = 1;
+
         public boolean selected = false;
         public boolean touched = false;
         public float currentxmove;
@@ -147,20 +164,85 @@ public class Unit {
         switch(inUnit) {
             case Peasant:
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Convey);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Repair);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildSimple);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildTownHall);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildFarm);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildBarracks);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildLumberMill);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildScoutTower);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildBlacksmith);
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.BuildWall);
                 newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
+                newUnit.curHP = 30;
+                newUnit.maxHP = 30;
+                newUnit.armor = 0;
+                newUnit.sight = 4;
+                newUnit.speed = 10;
+                newUnit.attackTime = 10;
+                newUnit.reloadTime = 0;
+                newUnit.attackDamage = 3;
+                newUnit.piercingDamage = 2;
+                newUnit.range = 1;
+                newUnit.foodConsumed = 1;
                 break;
             case Footman:
                 newUnit.unitClass = GameDataTypes.EUnitType.Footman;
+                newUnit.curHP = 60;
+                newUnit.maxHP = 60;
+                newUnit.armor = 2;
+                newUnit.sight = 4;
+                newUnit.speed = 10;
+                newUnit.attackTime = 10;
+                newUnit.reloadTime = 0;
+                newUnit.attackDamage = 6;
+                newUnit.piercingDamage = 3;
+                newUnit.range = 1;
+                newUnit.foodConsumed = 1;
                 break;
             case Archer:
                 newUnit.unitClass = GameDataTypes.EUnitType.Archer;
+                newUnit.curHP = 40;
+                newUnit.maxHP = 40;
+                newUnit.armor = 2;
+                newUnit.sight = 5;
+                newUnit.speed = 10;
+                newUnit.attackTime = 10;
+                newUnit.reloadTime = 10;
+                newUnit.attackDamage = 3;
+                newUnit.piercingDamage = 6;
+                newUnit.range = 4;
+                newUnit.foodConsumed = 1;
                 break;
             case Ranger:
-                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
                 newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
+                newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
+                newUnit.curHP = 50;
+                newUnit.maxHP = 50;
+                newUnit.armor = 2;
+                newUnit.sight = 5;
+                newUnit.speed = 10;
+                newUnit.attackTime = 10;
+                newUnit.reloadTime = 10;
+                newUnit.attackDamage = 3;
+                newUnit.piercingDamage = 6;
+                newUnit.range = 4;
+                newUnit.foodConsumed = 1;
                 break;
             case Knight:
                 newUnit.unitClass = GameDataTypes.EUnitType.Knight;
+                newUnit.curHP = 70;
+                newUnit.maxHP = 70;
+                newUnit.armor = 3;
+                newUnit.sight = 4;
+                newUnit.speed = 10;
+                newUnit.attackTime = 10;
+                newUnit.reloadTime = 0;
+                newUnit.attackDamage = 6;
+                newUnit.piercingDamage = 4;
+                newUnit.range = 1;
+                newUnit.foodConsumed = 1;
                 break;
             default:
                 newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
@@ -297,6 +379,7 @@ public class Unit {
             cur.curHP = -101;
             //deleteUnits.add(this);
         }
+        cur.selected = false;
         cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
     }
 
