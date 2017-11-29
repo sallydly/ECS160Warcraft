@@ -1,6 +1,7 @@
 package com.warcraftII.screens.options;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -116,22 +117,6 @@ public class Options implements Screen {
         table.add().expandY();
         table.row();
 
-        TextButton backButton = new TextButton("Back", skin);
-        backButton.getLabel().setStyle(buttonLabelStyle);
-        backButton.getLabel().setFontScale(2);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                log.info("Back button clicked.");
-                game.setScreen(new MainMenu(game));
-            }
-        });
-        table.add(backButton).uniformX().expandY();
-        table.row();
-
-        // empty row for more space
-        table.add().expandY();
-        table.row();
 
         Gdx.graphics.requestRendering();
     }
@@ -143,6 +128,10 @@ public class Options implements Screen {
 
         stage.act();
         stage.draw();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            game.setScreen(new MainMenu(game));
+        }
     }
 
     @Override

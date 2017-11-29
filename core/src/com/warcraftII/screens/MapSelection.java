@@ -2,6 +2,7 @@ package com.warcraftII.screens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
@@ -180,6 +181,9 @@ public class MapSelection implements Screen {
         stage.draw();
         game.batch.begin();
         //game.batch.draw(texture, 0, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            game.setScreen(new MainMenu(game));
+        }
         game.batch.end();
     }
 

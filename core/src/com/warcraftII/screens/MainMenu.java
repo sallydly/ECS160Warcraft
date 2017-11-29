@@ -76,6 +76,8 @@ public class MainMenu implements Screen {
     }
 
     private Table createMenuTable() {
+        Gdx.input.setCatchBackKey(true);
+
         // generate Kingthings font
         // TODO: may need to move this to static class/singleton
         // code adapted from https://github.com/libgdx/libgdx/wiki/Gdx-freetype
