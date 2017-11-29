@@ -601,7 +601,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
             } else if (attackButton.isPressed()) {
 
-            } else if (buildButton.isPressed()) {
+            } else if (buildButton.isPressed()) { // Replace this when Camera gets us buttons
                 // REMOVE WHEN DONE TESTING
                 //sUnit.curState = GameDataTypes.EUnitState.BuildBarracks;
             } else {
