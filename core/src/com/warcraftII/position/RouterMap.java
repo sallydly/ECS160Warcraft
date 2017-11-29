@@ -1,18 +1,23 @@
 package com.warcraftII.position;
 
 import com.badlogic.gdx.Gdx;
+import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.units.Unit;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.GameData;
 import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.terrain_map.TerrainMap;
+import com.warcraftII.player_asset.PlayerData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 
 /**
- * Created by 9S on 11/6/2017.
+ * Created by Kim Dang on 11/6/2017.
  */
 
 public class RouterMap {
@@ -41,6 +46,8 @@ public class RouterMap {
     static final int SEARCH_STATUS_VISITED = -2;
     static final int SEARCH_STATUS_OCCUPIED = -3;
 
+    public RouterMap(){ }
+
     static boolean MovingAway(GameDataTypes.EDirection dir1, GameDataTypes.EDirection dir2){
         int Value;
         if((0 > GameDataTypes.to_underlying(dir2))||(GameDataTypes.to_underlying(GameDataTypes.EDirection.Max) <= GameDataTypes.to_underlying(dir2))){
@@ -54,11 +61,11 @@ public class RouterMap {
     }
 
     //TODO: could change so assetdecorated map has all units?
-    GameDataTypes.EDirection FindRoute(AssetDecoratedMap resmap, Unit.IndividualUnit asset, PixelPosition target){
+    public GameDataTypes.EDirection FindRoute(AssetDecoratedMap resmap, GameData gameData, HashMap<GameDataTypes.EPlayerColor, Vector<Unit.IndividualUnit>> unitMap, Unit.IndividualUnit asset){
         int MapWidth = resmap.Width();
         int MapHeight = resmap.Height();
         //TODO: Verify if this is correct coordinate!
-        UnitPosition unitPosition = new UnitPosition(Math.round(asset.getX()), Math.round(asset.getY()));
+        UnitPosition unitPosition = new UnitPosition(Math.round(asset.sprite.getX()), Math.round(asset.sprite.getY()));
         int StartX = unitPosition.X();
         int StartY = unitPosition.Y();
         /*int StartX = asset.TilePositionX(); //TODO: for unit class
@@ -66,7 +73,7 @@ public class RouterMap {
         */
         TerrainMap terrainMap = new TerrainMap();
         SSearchTarget CurrentSearch = new SSearchTarget(), BestSearch = new SSearchTarget(), TempSearch = new SSearchTarget();
-        TilePosition CurrentTile, TargetTile = new TilePosition(), TempTile = new TilePosition();
+        TilePosition CurrentTile, TargetTile, TempTile = new TilePosition();
         GameDataTypes.EDirection SearchDirecitons[] = {GameDataTypes.EDirection.North, GameDataTypes.EDirection.East, GameDataTypes.EDirection.South, GameDataTypes.EDirection.West};
         int ResMapXOffsets[] = {0,1,0,-1};
         int ResMapYOffsets[] = {-1,0,1,0};
@@ -77,7 +84,8 @@ public class RouterMap {
         //TODO: Can LinkedLists work??
         Queue< SSearchTarget > SearchQueue = new LinkedList<SSearchTarget>();
 
-        TargetTile.setFromPixel(target);
+        UnitPosition targetPosition = new UnitPosition(Math.round(asset.currentxmove), Math.round(asset.currentymove));
+        TargetTile = new TilePosition(targetPosition);
         if((DMap.size() != MapHeight + 2)||(DMap.get(0).size() != MapWidth + 2)){
             int LastYIndex = MapHeight + 1;
             int LastXIndex = MapWidth + 1;
@@ -98,8 +106,8 @@ public class RouterMap {
         }
 
         if(unitPosition.equals(TargetTile)){
-            int DeltaX = target.X() - unitPosition.X();
-            int DeltaY = target.Y() - unitPosition.Y();
+            int DeltaX = targetPosition.X() - unitPosition.X();
+            int DeltaY = targetPosition.Y() - unitPosition.Y();
 
             if(0 < DeltaX){
                 if(0 < DeltaY){
@@ -154,49 +162,31 @@ public class RouterMap {
                 }
             }
         }*/
-        //TODO: work in progress bc idk what this does
-        /*
-        for(SAssetInitialization Res : resmap.AssetInitializationList()) {
-            if (asset.unitTexInd != Res.DType) {
-                if (GameDataTypes.EAssetType.None != Res.DType) { //assets hasn't implemented the file types yet
-                    if ((GameDataTypes.EAssetAction.Walk != Res -> Action()) || (asset.getColor() != Res -> Color())) {  //TODO: unit class has yet to have color
-                        if ((asset.getColor() != Res.DColor()) || ((GameDataTypes.EAssetAction.ConveyGold != Res -> Action()) && (GameDataTypes.EAssetAction.ConveyLumber != Res -> Action()) && (GameDataTypes.EAssetAction.MineGold != Res -> Action()) && (GameDataTypes.EAssetAction.ConveyStone != Res -> Action()))) {
-                            for (int YOff = 0; YOff < Res -> Size(); YOff++) {
-                                for (int XOff = 0; XOff < Res -> Size(); XOff++) {
-                                    DMap[Res -> TilePositionY() + YOff + 1][Res -> TilePositionX() + XOff + 1] = SEARCH_STATUS_VISITED;
+
+        for(PlayerData player : gameData.playerData) {
+            for(StaticAsset res: player.StaticAssets()){
+                if (GameDataTypes.EAssetType.None != res.type()) { //assets hasn't implemented the file types yet
+                    if (asset.color != res.color()) {
+                        if ((asset.color != res.color())) {
+                            for (int YOff = 0; YOff < res.Size(); YOff++) {
+                                for (int XOff = 0; XOff < res.Size(); XOff++) {
+                                    DMap.get(res.positionY() + YOff + 1).set(res.positionX() + XOff + 1, SEARCH_STATUS_VISITED);
                                 }
                             }
                         }
-                    } else {
-                        DMap.get(Res.DTilePosition.Y() + 1).get(Res.DTilePosition.X() + 1) = SEARCH_STATUS_OCCUPIED);// - GameDataTypes.to_underlying(Res.Direction()); //TODO: what is direction for?
                     }
                 }
             }
         }
-        */
-
-        //TODO: change back to normal direction once unit fixes theirs
-        String dir = asset.getDirection();
-        if (dir.equals("n")){
-            DIdealSearchDirection = GameDataTypes.EDirection.North;
-        } else if (dir.equals("ne")){
-            DIdealSearchDirection = GameDataTypes.EDirection.NorthEast;
-        } else if (dir.equals("e")){
-            DIdealSearchDirection = GameDataTypes.EDirection.East;
-        } else if (dir.equals("se")){
-            DIdealSearchDirection = GameDataTypes.EDirection.SouthEast;
-        } else if (dir.equals("s")){
-            DIdealSearchDirection = GameDataTypes.EDirection.South;
-        } else if (dir.equals("sw")){
-            DIdealSearchDirection = GameDataTypes.EDirection.SouthWest;
-        } else if (dir.equals("w")){
-            DIdealSearchDirection = GameDataTypes.EDirection.West;
-        } else if (dir.equals("nw")){
-            DIdealSearchDirection = GameDataTypes.EDirection.NorthWest;
-        } else {
-            DIdealSearchDirection = GameDataTypes.EDirection.Max;
+        //ADD TO LOOK THROUGH LIST OF UNITS
+        for (Unit.IndividualUnit eachUnit : allUnits){
+            if (asset != eachUnit){   //does this check work?
+                UnitPosition eachUnitPosition = new UnitPosition(Math.round(eachUnit.sprite.getX()), Math.round(eachUnit.sprite.getY()));
+                DMap.get(eachUnitPosition.Y() + 1).set(eachUnitPosition.X() + 1, SEARCH_STATUS_OCCUPIED);
+            }
         }
-        //DIdealSearchDirection = asset.getDirection();
+
+        DIdealSearchDirection = asset.direction;
         CurrentTile = new TilePosition();
         CurrentTile.SetFromUnit(unitPosition);
 
