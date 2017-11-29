@@ -73,6 +73,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton pauseButton;
     private TextButton moveButton;
     private TextButton selectButton;
+    private TextButton buildButton;
     private Label selectCount;
 
 
@@ -132,6 +133,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         menuButton = new TextButton("Menu", skin);
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
+        buildButton = new TextButton("Build", skin);
         selectCount = new Label("", skin);
  /*       stopButton.addListener(new ClickListener() {
             @Override
@@ -211,6 +213,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
         patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
         attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
+        buildButton.setPosition(5, 90+(4*Gdx.graphics.getHeight() / 10));
         /*moveButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -315,17 +318,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).height(300).colspan(2);
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(stopButton).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(moveButton).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(selectCount).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).height(200).colspan(2);
+
+        /// REMOVE
+        sidebarTable.row();
+        sidebarTable.add(buildButton).width(sidebarStage.getWidth()).height(200).colspan(2);
+
         sidebarStage.draw();
 
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
@@ -590,10 +598,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 sUnit.patrolymove = sUnit.getMidY();
                 sUnit.curState = GameDataTypes.EUnitState.Patrol;
             } else if (stopButton.isPressed()) {
-                // TODO: move this to just fire on pressing the stop button
-                //sUnit.stopMovement();
+
             } else if (attackButton.isPressed()) {
 
+            } else if (buildButton.isPressed()) {
+                // REMOVE WHEN DONE TESTING
+                //sUnit.curState = GameDataTypes.EUnitState.BuildBarracks;
             } else {
                 // still need to check for mine, forest, attack(ish), etc
                 sUnit.selected = false;

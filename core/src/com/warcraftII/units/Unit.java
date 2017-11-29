@@ -287,34 +287,37 @@ public class Unit {
     }
 
     public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
-        for (int i = 0; i < unitVector.size(); i++) {
-            if (unitVector.elementAt(i).curHP <= 0 && false) {
-                unitVector.remove(i);
-            } else {
-                switch (unitVector.elementAt(i).curState) {
-                    case Idle:
-                        break;
-                    case Move:
-                        UnitMoveState(unitVector.elementAt(i), elapsedTime, map);
-                        break;
-                    case Attack:
-                        UnitAttackState(unitVector.elementAt(i), unitVector.elementAt(i).target, elapsedTime, map);
-                        break;
-                    case Patrol:
-                        UnitPatrolState(unitVector.elementAt(i), elapsedTime, map);
-                        break;
-                    case Mine:
-                        UnitMineState(unitVector.elementAt(i), elapsedTime, map);
-                        break;
-                    case Dead:
-                        UnitDeadState(unitVector.elementAt(i), elapsedTime, map);
-                        break;
-                    default:
-                        System.out.println("How'd you manage to get to that state?");
-                        break;
-                }
+        Vector<IndividualUnit> toDelete = new Vector<IndividualUnit>();
+        for (IndividualUnit cur : unitVector) {
+            switch (cur.curState) {
+                case Idle:
+                    break;
+                case Move:
+                    UnitMoveState(cur, elapsedTime, map);
+                    break;
+                case Attack:
+                    UnitAttackState(cur, cur.target, elapsedTime, map);
+                    break;
+                case Patrol:
+                    UnitPatrolState(cur, elapsedTime, map);
+                    break;
+                case Mine:
+                    UnitMineState(cur, elapsedTime, map);
+                    break;
+                case Dead:
+                    if (UnitDeadState(cur, elapsedTime, map)) {
+                        toDelete.add(cur);
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid state");
+                    break;
             }
         }
+        for (IndividualUnit cur : toDelete) {
+            unitVector.remove(cur);
+        }
+        toDelete.removeAllElements();
     }
 
     private void UnitMineState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
@@ -370,17 +373,23 @@ public class Unit {
         }
     }
 
-    private void UnitDeadState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {
             // TODO: make a fucking function to return these animations
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
             cur.curAnim.setPlayMode(Animation.PlayMode.NORMAL);
             cur.animStart = deltaTime;
             cur.curHP = -101;
+            cur.setTouchable(Touchable.disabled);
             //deleteUnits.add(this);
         }
         cur.selected = false;
         cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
+        if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void UnitMoveState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
