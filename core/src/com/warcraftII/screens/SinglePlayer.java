@@ -225,9 +225,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                for (Unit.IndividualUnit cur : allUnits.unitVector) {
-                    if (cur.selected) {
-                        cur.stopMovement();
+                for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+                    for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
+                        if (cur.selected) {
+                            cur.stopMovement();
+                        }
                     }
                 }
                 //movement = 0;
@@ -428,8 +430,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
         gameData.allUnits.AddUnit(690,90, GameDataTypes.EUnitType.Knight, GameDataTypes.EPlayerColor.White);
 
-        for (Unit.IndividualUnit unit : gameData.allUnits.unitVector) {
-            mapStage.addActor(unit);
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
+                mapStage.addActor(cur);
+            }
         }
     }
 
@@ -496,6 +500,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //                actor.remove();
 //            counter = counter + 1;
 //        }
+        /*
         for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
             if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
                 newAbility = new TextButton("Mine", gameData.unitActions.skin);
@@ -522,6 +527,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //                stage.addActor(newAbility);
             }
         }
+        */
     }
 
     @Override
@@ -558,29 +564,34 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
 
-        // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
+        // TODO: maybe move this to a element in GameData
         Unit.IndividualUnit sUnit = null;
-        for (Unit.IndividualUnit cur : allUnits.unitVector) {
-            if (cur.selected) {
-                sUnit = cur;
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
+                if (cur.selected) {
+                    sUnit = cur;
+                }
             }
         }
-        for (Unit.IndividualUnit cur : allUnits.unitVector) {
-            if (cur.touched) {
-                System.out.println("Unit is selected");
-                if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
-                    // if moveButton etc pressed, move instead of selecting
-                } else if (sUnit != null && cur.color != sUnit.color) {
-                    // if opposing teams, attack
-                    sUnit.target = cur;
-                    sUnit.currentxmove = cur.getMidX();
-                    sUnit.currentymove = cur.getMidY();
-                    sUnit.curState = GameDataTypes.EUnitState.Attack;
-                } else {
-                    cur.touched = false;
-                    cur.selected = true;
-                    if (sUnit != null) {
-                        sUnit.selected = false;
+
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
+                if (cur.touched) {
+                    System.out.println("Unit is selected");
+                    if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
+                        // if moveButton etc pressed, move instead of selecting
+                    } else if (sUnit != null && cur.color != sUnit.color) {
+                        // if opposing teams, attack
+                        sUnit.target = cur;
+                        sUnit.currentxmove = cur.getMidX();
+                        sUnit.currentymove = cur.getMidY();
+                        sUnit.curState = GameDataTypes.EUnitState.Attack;
+                    } else {
+                        cur.touched = false;
+                        cur.selected = true;
+                        if (sUnit != null) {
+                            sUnit.selected = false;
+                        }
                     }
                 }
             }
@@ -635,7 +646,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         float rightX = Math.max(touchStartX, position.x);
         float topY = Math.min(touchStartY, position.y);
         float bottomY = Math.max(touchStartY, position.y);
-
+/*
         while(counter < allUnits.unitVector.size()){
             Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
             // if (clicked within peasant || part of peasant within multi-select rectangle)
@@ -685,7 +696,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).getMidX();
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).getMidY();
             patrol = 0;
-        }
+        }*/
         //TODO
         //if (unit_selected == 0 && assetSelected == 1){
         //  if (assetSelected == Goldmine && mine == 1) {

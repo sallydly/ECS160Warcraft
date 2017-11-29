@@ -34,16 +34,23 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
 public class Unit {
-    public Vector<IndividualUnit> unitVector;
+    //public Vector<IndividualUnit> unitVector;
     public Vector<IndividualUnit> deleteUnits;
+    public Map<GameDataTypes.EPlayerColor, Vector<IndividualUnit>> unitMap;
     public int selectedUnitIndex;
 
-    private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures = new HashMap<GameDataTypes.EUnitType, TextureAtlas>();
+    private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures;
 
     public Unit() {
-        unitVector = new Vector<IndividualUnit>(50);
+        //unitVector = new Vector<IndividualUnit>(50);
+        unitMap = new HashMap<GameDataTypes.EPlayerColor, Vector<IndividualUnit>>();
+        unitTextures = new HashMap<GameDataTypes.EUnitType, TextureAtlas>();
         deleteUnits = new Vector<IndividualUnit>(20);
-        selectedUnitIndex = 0;
+
+        for (GameDataTypes.EPlayerColor c : GameDataTypes.EPlayerColor.values()) {
+            unitMap.put(c, new Vector<IndividualUnit>());
+        }
+
         unitTextures.put(GameDataTypes.EUnitType.Archer, new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")));
         unitTextures.put(GameDataTypes.EUnitType.Footman, new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")));
         unitTextures.put(GameDataTypes.EUnitType.Peasant, new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")));
@@ -277,7 +284,8 @@ public class Unit {
             }
         });
 
-        unitVector.add(newUnit);
+        AddToMap(newUnit);
+
         return newUnit;
     }
 
@@ -286,36 +294,46 @@ public class Unit {
         return AddUnit((float)upos.X(), (float)upos.Y(), inUnit, color);
     }
 
+    public void AddToMap(IndividualUnit in) {
+        unitMap.get(in.color).add(in);
+    }
+
+    public void RemoveFromMap(IndividualUnit in) {
+        unitMap.get(in.color).remove(in);
+    }
+
     public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
         Vector<IndividualUnit> toDelete = new Vector<IndividualUnit>();
-        for (IndividualUnit cur : unitVector) {
-            switch (cur.curState) {
-                case Idle:
-                    break;
-                case Move:
-                    UnitMoveState(cur, elapsedTime, map);
-                    break;
-                case Attack:
-                    UnitAttackState(cur, cur.target, elapsedTime, map);
-                    break;
-                case Patrol:
-                    UnitPatrolState(cur, elapsedTime, map);
-                    break;
-                case Mine:
-                    UnitMineState(cur, elapsedTime, map);
-                    break;
-                case Dead:
-                    if (UnitDeadState(cur, elapsedTime, map)) {
-                        toDelete.add(cur);
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid state");
-                    break;
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (IndividualUnit cur : unitMap.get(color)) {
+                switch (cur.curState) {
+                    case Idle:
+                        break;
+                    case Move:
+                        UnitMoveState(cur, elapsedTime, map);
+                        break;
+                    case Attack:
+                        UnitAttackState(cur, cur.target, elapsedTime, map);
+                        break;
+                    case Patrol:
+                        UnitPatrolState(cur, elapsedTime, map);
+                        break;
+                    case Mine:
+                        UnitMineState(cur, elapsedTime, map);
+                        break;
+                    case Dead:
+                        if (UnitDeadState(cur, elapsedTime, map)) {
+                            toDelete.add(cur);
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid state");
+                        break;
+                }
             }
         }
         for (IndividualUnit cur : toDelete) {
-            unitVector.remove(cur);
+            RemoveFromMap(cur);
         }
         toDelete.removeAllElements();
     }
@@ -461,7 +479,7 @@ public class Unit {
     public void updateVector() {
         if (!deleteUnits.isEmpty()) {
             for (IndividualUnit del : deleteUnits) {
-                unitVector.remove(del);
+                RemoveFromMap(del);
             }
             deleteUnits.removeAllElements();
         }
