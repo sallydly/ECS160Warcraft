@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
+import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
@@ -697,14 +698,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
+
         //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
         CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camerePosition.getTilePosition();
         int xi = tilePosition.X();
         int yi = tilePosition.Y();
         PlayerData player1 = gameData.playerData.get(0);
-
 
         // REMOVING RESOURCES
         int resourceRemove = 100;
@@ -733,7 +733,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
             chosenStatAsset.decrementHitPoints(75);
         }
-        */
+
         return false;
     }
 
