@@ -35,6 +35,8 @@ public class TileTypes {
         Stump,
         DeepWater,
         ShallowWater,
+        Seedling,
+        Adolescent,
         Max
     }
     public static int to_underlying(Enum enumerator) {

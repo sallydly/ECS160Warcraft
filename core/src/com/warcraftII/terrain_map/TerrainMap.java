@@ -51,12 +51,10 @@ public class TerrainMap {
         log = new Logger("TerrainMap", 2);
     }
 
-
     /*  The important get() functions of TerrainMap: */
     public boolean IsRendered(){
         return DRendered;
     }
-
 
     public ETileType TileType(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
@@ -71,11 +69,9 @@ public class TerrainMap {
         return DMap.get(yindex+1).get(xindex+1);
     }
 
-
     public ETileType TileType(TilePosition pos) {
         return TileType(pos.X(), pos.Y());
     }
-
 
     public int TileTypeIndex(int xindex, int yindex) {
         if((-1 > xindex)||(-1 > yindex)){
@@ -90,11 +86,9 @@ public class TerrainMap {
         return DMapIndices.get(yindex+1).get(xindex+1);
     }
 
-
     public int TileTypeIndex(TilePosition pos) {
         return TileTypeIndex(pos.X(), pos.Y());
     }
-
 
     public ETerrainTileType TerrainTileType(int xindex, int yindex){
         if((0 > xindex)||(0 > yindex)){
@@ -108,7 +102,6 @@ public class TerrainMap {
         }
         return DTerrainMap.get(yindex).get(xindex);
     }
-
 
     public ETerrainTileType TerrainTileType(TilePosition pos) {
         return TerrainTileType(pos.X(), pos.Y());
@@ -140,7 +133,6 @@ public class TerrainMap {
      * @return string gameMap name
      *
      */
-
     public String MapName(){
         return DMapName;
     }
@@ -155,7 +147,6 @@ public class TerrainMap {
      * @return int width of the gameMap
      *
      */
-
     public int Width() {
         if(DTerrainMap.size() > 0){
             return DTerrainMap.get(0).size()-1;
@@ -173,11 +164,9 @@ public class TerrainMap {
      * @return in height of the gameMap
      *
      */
-
     public int Height() {
         return DTerrainMap.size()-1;
     }
-
 
     /**
      * Checks if a tile type can be traversed
@@ -187,7 +176,6 @@ public class TerrainMap {
      * @return true if the type can be traversed
      *
      */
-
     public boolean IsTraversable(ETileType type){
         switch(type){
             case None:
@@ -222,11 +210,11 @@ public class TerrainMap {
             default:         return false;
         }
     }
+
     public boolean LoadMap(DataSource source) {
         CommentSkipLineDataSource LineSource = new CommentSkipLineDataSource(source, '#');
         return LoadMap(LineSource);
     }
-
 
     public boolean LoadMap(CommentSkipLineDataSource lineSource) {
         CommentSkipLineDataSource LineSource = lineSource;
@@ -398,6 +386,7 @@ public class TerrainMap {
         returnStatus = true;
         return returnStatus;
     }
+
     /**
      * Constructs the ETileType 2D vector gameMap (DMap) based on the
      * TerrainMap and adds a rock tile border around the gameMap
@@ -407,7 +396,6 @@ public class TerrainMap {
      * @return Nothing
      *
      */
-
     public void RenderTerrain(){
         DMap = new Vector<Vector<ETileType>>();
         DMap.setSize(DTerrainMap.size()+1);
