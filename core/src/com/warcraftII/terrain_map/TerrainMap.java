@@ -184,7 +184,8 @@ public class TerrainMap {
             case DarkDirt:
             case LightDirt:
             case Rubble:
-            case Stump:      return true;
+            case Stump:
+            case Seedling: return true;
             default:                    return false;
         }
     }
