@@ -67,6 +67,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton moveButton;
     private TextButton selectButton;
     private Label selectCount;
+    private TextureAtlas sidebarIconAtlas;
 
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -120,6 +121,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
         selectCount = new Label("", skin);
+        sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -336,6 +338,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
+        Table sidebarIconTable = new Table();
+        Image sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        sidebarIconTable.row();
+        sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
