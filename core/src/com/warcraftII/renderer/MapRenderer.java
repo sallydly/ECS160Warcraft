@@ -195,7 +195,6 @@ public class MapRenderer {
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
 
-            //HM: added for rubble
             AltTileIndex = 0;
             TileTypeNum = TileTypes.to_underlying(ETileType.Rubble);
             OuterVec = DTileTextures.get(TileTypeNum);
@@ -210,7 +209,8 @@ public class MapRenderer {
             }
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
-            //HM: end of added code
+
+
         }
 
         //HM: in case of rubble texture not render correctly, enable this code

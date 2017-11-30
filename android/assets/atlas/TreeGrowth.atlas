@@ -1,117 +1,425 @@
 
 TreeGrowth.png
-size: 128,256
+size: 1024,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 adolescent-1-0
-  rotate: false
-  xy: 2, 206
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-1-1
-  rotate: false
-  xy: 2, 172
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-2-0
-  rotate: false
-  xy: 36, 206
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-2-1
-  rotate: false
-  xy: 2, 138
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-4-0
-  rotate: false
-  xy: 36, 172
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-4-1
-  rotate: false
-  xy: 70, 206
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-8-0
-  rotate: false
-  xy: 2, 104
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-adolescent-8-1
-  rotate: false
-  xy: 36, 138
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-seedling-1-0
-  rotate: false
-  xy: 70, 172
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-seedling-1-1
   rotate: false
   xy: 2, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-seedling-2-0
-  rotate: false
-  xy: 36, 104
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-seedling-2-1
-  rotate: false
-  xy: 70, 138
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-seedling-4-0
+adolescent-1-1
   rotate: false
   xy: 2, 36
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-seedling-4-1
+adolescent-2-0
   rotate: false
   xy: 36, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
+adolescent-2-1
+  rotate: false
+  xy: 2, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-3-0
+  rotate: false
+  xy: 36, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-3-1
+  rotate: false
+  xy: 70, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-4-0
+  rotate: false
+  xy: 36, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-4-1
+  rotate: false
+  xy: 70, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-5-0
+  rotate: false
+  xy: 104, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-5-1
+  rotate: false
+  xy: 70, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-6-0
+  rotate: false
+  xy: 104, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-6-1
+  rotate: false
+  xy: 138, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-7-0
+  rotate: false
+  xy: 104, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-7-1
+  rotate: false
+  xy: 138, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-8-0
+  rotate: false
+  xy: 172, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-8-1
+  rotate: false
+  xy: 138, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-9-0
+  rotate: false
+  xy: 172, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-9-1
+  rotate: false
+  xy: 206, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-A-0
+  rotate: false
+  xy: 172, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-A-1
+  rotate: false
+  xy: 206, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-B-0
+  rotate: false
+  xy: 240, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-B-1
+  rotate: false
+  xy: 206, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-C-0
+  rotate: false
+  xy: 240, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-C-1
+  rotate: false
+  xy: 274, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-D-0
+  rotate: false
+  xy: 240, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-D-1
+  rotate: false
+  xy: 274, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-E-0
+  rotate: false
+  xy: 308, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-E-1
+  rotate: false
+  xy: 274, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-F-0
+  rotate: false
+  xy: 308, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+adolescent-F-1
+  rotate: false
+  xy: 342, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-1-0
+  rotate: false
+  xy: 308, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-1-1
+  rotate: false
+  xy: 342, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-2-0
+  rotate: false
+  xy: 376, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-2-1
+  rotate: false
+  xy: 342, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-3-0
+  rotate: false
+  xy: 376, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-3-1
+  rotate: false
+  xy: 410, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-4-0
+  rotate: false
+  xy: 376, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-4-1
+  rotate: false
+  xy: 410, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-5-0
+  rotate: false
+  xy: 444, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-5-1
+  rotate: false
+  xy: 410, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-6-0
+  rotate: false
+  xy: 444, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-6-1
+  rotate: false
+  xy: 478, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-7-0
+  rotate: false
+  xy: 444, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-7-1
+  rotate: false
+  xy: 478, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 seedling-8-0
   rotate: false
-  xy: 70, 104
+  xy: 512, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 seedling-8-1
   rotate: false
-  xy: 2, 2
+  xy: 478, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-9-0
+  rotate: false
+  xy: 512, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-9-1
+  rotate: false
+  xy: 546, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-A-0
+  rotate: false
+  xy: 512, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-A-1
+  rotate: false
+  xy: 546, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-B-0
+  rotate: false
+  xy: 580, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-B-1
+  rotate: false
+  xy: 546, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-C-0
+  rotate: false
+  xy: 580, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-C-1
+  rotate: false
+  xy: 614, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-D-0
+  rotate: false
+  xy: 580, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-D-1
+  rotate: false
+  xy: 614, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-E-0
+  rotate: false
+  xy: 648, 70
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-E-1
+  rotate: false
+  xy: 614, 2
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-F-0
+  rotate: false
+  xy: 648, 36
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+seedling-F-1
+  rotate: false
+  xy: 682, 70
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
