@@ -1,7 +1,7 @@
 # Relative path to PNG
 ./Terrain.png
 # Number of tiles
-293
+322
 # Tile Names
 shallow-water-F-0
 shallow-water-F-1
@@ -264,7 +264,7 @@ rock-UK-160
 rock-UK-161
 rock-UK-162
 rock-UK-163
-rock-0-0
+rubble-F-0
 bridge-UK-236
 bridge-UK-237
 stump-F-1
@@ -296,3 +296,32 @@ stump-D-0
 stump-D-1
 stump-E-0
 stump-E-1
+rubble-F-1
+rubble-1-0
+rubble-1-1
+rubble-2-0
+rubble-2-1
+rubble-3-0
+rubble-3-1
+rubble-4-0
+rubble-4-1
+rubble-5-0
+rubble-5-1
+rubble-6-0
+rubble-6-1
+rubble-7-0
+rubble-7-1
+rubble-8-0
+rubble-8-1
+rubble-9-0
+rubble-9-1
+rubble-A-0
+rubble-A-1
+rubble-B-0
+rubble-B-1
+rubble-C-0
+rubble-C-1
+rubble-D-0
+rubble-D-1
+rubble-E-0
+rubble-E-1

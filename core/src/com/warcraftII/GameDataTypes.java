@@ -23,6 +23,13 @@ public class GameDataTypes {
         Max
     }
 
+    public static String toString(EPlayerColor inColor) {
+        if (inColor == EPlayerColor.Max) {
+            return "none";
+        }
+        return inColor.toString().toLowerCase();
+    }
+
     public enum EAssetAction {
         None,
         Construct,
@@ -144,6 +151,53 @@ public class GameDataTypes {
         Max
     }
 
+    public static String toAbbr(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "n";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "e";
+            case SouthEast:
+                return "se";
+            case South:
+                return "s";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "w";
+            case NorthWest:
+                return "nw";
+            default:
+                return "n";
+        }
+    }
+
+    // TODO: delete this stupid shit
+    public static String toAbbrDeath(EDirection inDir) {
+        switch (inDir) {
+            case North:
+                return "ne";
+            case NorthEast:
+                return "ne";
+            case East:
+                return "ne";
+            case SouthEast:
+                return "se";
+            case South:
+                return "se";
+            case SouthWest:
+                return "sw";
+            case West:
+                return "sw";
+            case NorthWest:
+                return "nw";
+            default:
+                return "nw";
+        }
+    }
+
     public enum EUnitState {
         Idle,
         Move,
@@ -160,7 +214,8 @@ public class GameDataTypes {
         BuildScoutTower,
         BuildBlacksmith,
         BuildWall,
-        Patrol
+        Patrol,
+        Dead
     }
 
     public static int to_underlying(Enum enumerator) {
@@ -251,6 +306,63 @@ public class GameDataTypes {
                 return EStaticAssetType.Wall;
             default:
                 return EStaticAssetType.None;
+        }
+
+    }
+
+    public static EAssetType to_assetType(EStaticAssetType type) {
+        switch (type){
+            case None:
+                return EAssetType.None;
+            case GoldMine:
+                return EAssetType.GoldMine;
+            case TownHall:
+                return EAssetType.TownHall;
+            case Keep:
+                return EAssetType.Keep;
+            case Castle:
+                return EAssetType.Castle;
+            case Farm:
+                return EAssetType.Farm;
+            case Barracks:
+                return EAssetType.Barracks;
+            case LumberMill:
+                return EAssetType.LumberMill;
+            case Blacksmith:
+                return EAssetType.Blacksmith;
+            case ScoutTower:
+                return EAssetType.ScoutTower;
+            case GuardTower:
+                return EAssetType.GuardTower;
+            case CannonTower:
+                return EAssetType.CannonTower;
+            case Wall:
+                return EAssetType.Wall;
+            case Max:
+                return EAssetType.Max;
+            default:
+                return EAssetType.None;
+        }
+
+    }
+    public static EAssetType to_assetType(EUnitType type) {
+        switch (type){
+            case None:
+                return EAssetType.None;
+            case Peasant:
+                return EAssetType.Peasant;
+            case Footman:
+                return EAssetType.Footman;
+            case Archer:
+                return EAssetType.Archer;
+            case Ranger:
+                return EAssetType.Ranger;
+            case Knight:
+                return EAssetType.Knight;
+            case Max:
+                return EAssetType.Max;
+            default:
+                return EAssetType.None;
         }
 
     }

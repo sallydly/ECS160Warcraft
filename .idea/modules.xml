@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ECS160Android.iml" filepath="$PROJECT_DIR$/ECS160Android.iml" />
+      <module fileurl="file://C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\ECS160Android.iml" filepath="C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\ECS160Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/android.iml" filepath="$PROJECT_DIR$/android/android.iml" />
+      <module fileurl="file://C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\android\android.iml" filepath="C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\android\android.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\core\core.iml" filepath="C:\Users\lovick\OneDrive\ECS 160\week9\ECS160Android\core\core.iml" />
     </modules>
   </component>
 </project>

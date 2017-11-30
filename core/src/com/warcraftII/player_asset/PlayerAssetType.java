@@ -26,7 +26,7 @@ public class PlayerAssetType {
     protected EPlayerColor DColor;
     //protected Vector< Boolean > DCapabilities;
     //protected Vector< EAssetType > DAssetRequirements;
-    //protected Vector< PlayerUpgrade > DAssetUpgrades;
+    protected Vector< PlayerUpgrade > DAssetUpgrades;
     protected int DHitPoints;
     protected int DArmor;
     protected int DSight;
@@ -35,6 +35,7 @@ public class PlayerAssetType {
     protected int DSpeed;
     protected int DGoldCost;
     protected int DLumberCost;
+    protected int DStoneCost;
     protected int DFoodConsumption;
     protected int DBuildTime;
     protected int DAttackSteps;
@@ -149,6 +150,10 @@ public class PlayerAssetType {
         return DLumberCost;
     }
 
+    public int StoneCost() {
+        return DStoneCost;
+    }
+
     public int FoodConsumption() {
         return DFoodConsumption;
     }
@@ -176,14 +181,53 @@ public class PlayerAssetType {
     public int Range() {
         return DRange;
     }
-/*
-    public int ArmorUpgrade(){}
-    public int SightUpgrade(){}
-    public int SpeedUpgrade(){}
-    public int BasicDamageUpgrade(){}
-    public int PiercingDamageUpgrade(){}
-    public int RangeUpgrade(){}
-*/
+
+    public int SightUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getSight();
+        }
+        return ReturnValue;
+    }
+
+    public int ArmorUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getArmor();
+        }
+        return ReturnValue;
+    }
+
+    public int SpeedUpgrade() {
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getSpeed();
+        }
+        return ReturnValue;
+    }
+
+    public int BasicDamageUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getBasicDamage();
+        }
+        return ReturnValue;
+    }
+    public int PiercingDamageUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getPiercingDamage();
+        }
+        return ReturnValue;
+    }
+    public int RangeUpgrade(){
+        int ReturnValue = 0;
+        for(PlayerUpgrade Upgrade : DAssetUpgrades){
+            ReturnValue += Upgrade.getRange();
+        }
+        return ReturnValue;
+    }
+
     /*public boolean HasCapability(EAssetCapabilityType capability) {
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return false;
@@ -304,6 +348,9 @@ public class PlayerAssetType {
         PAssetType.DLumberCost  = Integer.parseInt(TempString);
 
         TempString = LineSource.read().trim();
+        PAssetType.DStoneCost  = Integer.parseInt(TempString);
+
+        TempString = LineSource.read().trim();
         PAssetType.DFoodConsumption = Integer.parseInt(TempString);
 
         TempString = LineSource.read().trim();
@@ -350,9 +397,18 @@ public class PlayerAssetType {
 
 
     public static StaticAsset ConstructStaticAsset(String type){
+        log.info("Constructing: " + type);
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }
+
+    public static int StaticAssetSize(EStaticAssetType type){
+        String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
+        PlayerAssetType playerAssetType = DRegistry.get(typeString);
+        return playerAssetType.Size();
+    }
+
+
     /*
     public static int MaxSight(){
 

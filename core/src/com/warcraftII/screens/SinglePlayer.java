@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -33,11 +34,17 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
+
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.position.*;
 import com.warcraftII.units.Unit;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import static java.lang.Math.round;
+
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
@@ -45,7 +52,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private GameData gameData;
     // More concise access to data members of gameData:
     private Unit allUnits;
-    public ArrayList<Unit.IndividualUnit> selectedUnits = new ArrayList<Unit.IndividualUnit>();
+    public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>();
     private SpriteBatch batch;
     private SpriteBatch sb;
 
@@ -103,13 +110,23 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
+    private int lastbuiltasset = 0; //DEBUG
+
+
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
+
+        // Fucking leave this on. Nothing updates without constant input if it's off.
+        Gdx.graphics.setContinuousRendering(true);
+
         // initialize easy-access reference variables.
         batch = gameData.batch = game.batch;
         allUnits = gameData.allUnits;
         sb = gameData.sb;
+
+        Gdx.graphics.setContinuousRendering(true);
+
         //Implemented just to achieve hard goal. Not needed
         this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
         this.shapeRenderer = new ShapeRenderer();
@@ -128,7 +145,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                allUnits.stopMovement();
+                //allUnits.stopMovement();
                 movement = 0;
                 patrol = 0;
                 attack = 0;
@@ -193,12 +210,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage = new Stage(new ScreenViewport());
 
 
-        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer);
-        gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman);
-        gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant);
-        gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger);
-
-
 //        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // Make Buttons for the Unit Actions
@@ -216,19 +227,23 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 return true;
             }
         });
-
+        */
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                allUnits.stopMovement();
-                movement = 0;
-                patrol = 0;
-                attack = 0;
-                mine = 0;
-                ability = 0;
+                for (Unit.IndividualUnit cur : allUnits.unitVector) {
+                    if (cur.selected) {
+                        cur.stopMovement();
+                    }
+                }
+                //movement = 0;
+                //patrol = 0;
+                //attack = 0;
+                //mine = 0;
+                //ability = 0;
             }
         });
-
+        /*
         attackButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -332,8 +347,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
+        //sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+        //sidebarTable.row();
         sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
@@ -399,8 +414,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
 //        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
 
-        multiplexer = new InputMultiplexer(sidebarStage);
-//        multiplexer.addProcessor(stage);
+        multiplexer = new InputMultiplexer(mapStage, sidebarStage);
+
         multiplexer.addProcessor(new GestureDetector(this));
         multiplexer.addProcessor(new InputProcessor() {
             @Override
@@ -431,7 +446,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchStartX = position.x;
                 touchStartY = position.y;
 
-                return true;
+                if (selectButton.isPressed()) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
             @Override
@@ -442,10 +461,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 Vector3 position = mapViewport.unproject(clickCoordinates);
                 touchEndX = position.x;
                 touchEndY = position.y;
-                if (selectButton.isPressed()) {
-                    selectUnits(position);
-                }
-
                 return true;
             }
 
@@ -464,6 +479,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 return true;
             }
         });
+
+        //multiplexer.addProcessor(new InputMultiplexer(mapStage));
+
         Gdx.input.setInputProcessor(multiplexer);
         // Gdx.input.setInputProcessor(stage);
         //Gdx.input.setInputProcessor(new GestureDetector(this));
@@ -472,6 +490,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         heightZoomRatio = gameData.map.Height() * gameData.TILE_HEIGHT / mapCamera.viewportHeight;
         widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
+
+        //gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Black);
+        //gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman, GameDataTypes.EPlayerColor.Green);
+        gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant, GameDataTypes.EPlayerColor.Orange);
+        gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
+
+        for (Unit.IndividualUnit unit : gameData.allUnits.unitVector) {
+            mapStage.addActor(unit);
+        }
     }
 
 
@@ -481,12 +508,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
+        gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
 
-        mapStage.getViewport().apply();
+        gameData.TimeStep();
+
+/*        mapStage.getViewport().apply();
         mapStage.act();
-        mapStage.draw();
+        mapStage.draw();*/
 
         batch.begin();
+
         orthomaprenderer.setView(mapCamera);
         orthomaprenderer.render();
 
@@ -507,23 +538,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
+
+        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+        allUnits.updateVector();
+
+/*
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
-        Texture selected = new Texture(Gdx.files.internal("img/select.png"));
-        int counter = 0;
-        while(counter < allUnits.unitVector.size()){
-            Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
-            //temp_peasant.draw(sb);
-            // TODO: This isn't a good way of doing the selection and should be improved
-            if (temp_peasant.selected) {
-                sb.draw(selected,temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
-            }
-            sb.draw(temp_peasant.curAnim.getKeyFrame(gameData.elapsedTime, true), temp_peasant.sprite.getX(), temp_peasant.sprite.getY());
-            counter+=1;
-        }
+        gameData.staticAssetRenderer.DrawEffects(sb,delta);
         sb.end();
+*/
 
-        sidebarStage.getViewport().apply();
+	    sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
 
@@ -532,6 +558,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         topbarStage.draw();
 
         allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+        mapStage.getViewport().apply();
+        mapStage.act();
+        mapStage.draw();
+
     }
 
     public void specialButtons() {
@@ -600,13 +630,79 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
+        Vector3 clickCoordinates = new Vector3(x,y,0);
+        Vector3 position = mapViewport.unproject(clickCoordinates);
+
+        // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
+        Unit.IndividualUnit sUnit = null;
+        for (Unit.IndividualUnit cur : allUnits.unitVector) {
+            if (cur.selected) {
+                sUnit = cur;
+            }
+        }
+        for (Unit.IndividualUnit cur : allUnits.unitVector) {
+            if (cur.touched) {
+                System.out.println("Unit is selected");
+                if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
+                    // if moveButton etc pressed, move instead of selecting
+                } else if (sUnit != null && cur.color != sUnit.color) {
+                    // if opposing teams, attack
+                    sUnit.target = cur;
+                    sUnit.currentxmove = cur.getMidX();
+                    sUnit.currentymove = cur.getMidY();
+                    sUnit.curState = GameDataTypes.EUnitState.Attack;
+                } else {
+                    cur.touched = false;
+                    cur.selected = true;
+                    if (sUnit != null) {
+                        sUnit.selected = false;
+                    }
+                }
+            }
+        }
+
+        if (sUnit != null) {
+            if (moveButton.isPressed()) {
+                sUnit.currentxmove = round(position.x);
+                sUnit.currentymove = round(position.y);
+                sUnit.curState = GameDataTypes.EUnitState.Move;
+            } else if (patrolButton.isPressed()) {
+                sUnit.currentxmove = round(position.x);
+                sUnit.currentymove = round(position.y);
+                sUnit.patrolxmove = sUnit.getMidX();
+                sUnit.patrolymove = sUnit.getMidY();
+                sUnit.curState = GameDataTypes.EUnitState.Patrol;
+            } else if (stopButton.isPressed()) {
+                // TODO: move this to just fire on pressing the stop button
+                //sUnit.stopMovement();
+            } else if (attackButton.isPressed()) {
+
+            } else {
+                // still need to check for mine, forest, attack(ish), etc
+                sUnit.selected = false;
+            }
+        }
+
+        //specialButtons(); We still need a variant of this function, but not here
+
+        //TODO
+        //if (unit_selected == 0 && assetSelected == 1){
+        //  if (assetSelected == Goldmine && mine == 1) {
+        //    allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Mine;
+        //  allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
+        // allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
+        //mine = 1;
+        //}
+        //}
+        return true;
+
+        //return false;
     }
 
     private void selectUnits(Vector3 position) {
         int counter = 0;
         int unit_selected = 0;
-        selectedUnits = new ArrayList<Unit.IndividualUnit>();
+        selectedUnits = new Vector<Unit.IndividualUnit>();
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -614,7 +710,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         float bottomY = Math.max(touchStartY, position.y);
 
         while(counter < allUnits.unitVector.size()){
-            Sprite temp_peasant = allUnits.unitVector.elementAt(counter).sprite;
+            Unit.IndividualUnit temp_peasant = allUnits.unitVector.elementAt(counter);
             // if (clicked within peasant || part of peasant within multi-select rectangle)
             if ((temp_peasant.getX() <= position.x
                     && temp_peasant.getX() + temp_peasant.getWidth() >= position.x
@@ -659,8 +755,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).curState = GameDataTypes.EUnitState.Patrol;
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentymove = round(position.y);
             allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).currentxmove = round(position.x);
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getX();
-            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).sprite.getY();
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolxmove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).getMidX();
+            allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).patrolymove = allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).getMidY();
             patrol = 0;
         }
         //TODO
@@ -680,12 +776,63 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        // readySound.play();
+        /*
+        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        PlayerData player1 = gameData.playerData.get(0);
+
+
+        // REMOVING RESOURCES
+        int resourceRemove = 100;
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+
+
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
+        if (chosenStatAsset == null){
+            System.out.println("No asset here...building");
+            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
+            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
+
+            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
+                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
+                lastbuiltasset++;
+            }
+        }
+        else {
+            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
+            chosenStatAsset.decrementHitPoints(75);
+        }
+        */
         return false;
     }
 
     @Override
     public boolean longPress(float x, float y) {
+        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        int xi = tilePosition.X();
+        int yi = tilePosition.Y();
+        log.info("Tile position: " + xi +" " + yi);
+        int resourceRemove = 200;
+        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
@@ -701,7 +848,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        if (selectButton.isPressed()) {
+        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed() || moveButton.isPressed()) {
 
             return false;
         }
@@ -811,5 +958,54 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    private void KimisTestFunction(){
+      //TESTING REMOVELUMBER
+        TilePosition tposunit = new TilePosition(12,1);
+        TilePosition tree1 = new TilePosition(11,0);
+        TilePosition tree2 = new TilePosition(12,1);
+        TilePosition tree3 = new TilePosition(13,2);
+
+        gameData.RemoveLumber(tree1,tposunit,400);
+        gameData.RemoveLumber(tree2,tposunit,400);
+        gameData.RemoveLumber(tree3,tposunit,400);
+
+        // TESTING STATICASSETAT
+        TilePosition sassetAt = new TilePosition(0,0);
+        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
+        if (sasset != null){
+            System.out.println(sasset.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset here");
+        }
+
+        TilePosition sassetAt1 = new TilePosition(0,1);
+        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
+        if (sasset1 != null){
+            System.out.println(sasset1.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 1 here");
+        }
+
+        TilePosition sassetAt2 = new TilePosition(15,1);
+        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
+        if (sasset2 != null){
+            System.out.println(sasset2.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 2 here");
+        }
+
+        TilePosition sassetAt3 = new TilePosition(1,30);
+        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
+        if (sasset3 != null){
+            System.out.println(sasset3.assetType().Name());
+        }
+        else{
+            System.out.println("no mr. asset 3 here");
+        }
     }
 }

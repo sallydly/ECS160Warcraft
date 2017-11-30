@@ -99,7 +99,6 @@ public class MapSelection implements Screen {
 
         AssetDecoratedMap.LoadMaps(Gdx.files.internal("map"));
 
-
         FileHandle dirHandle;
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             dirHandle = Gdx.files.internal("map_previews");
@@ -122,10 +121,9 @@ public class MapSelection implements Screen {
             fileNameToImageButtonMap.put(fileName, button);
         }
 
-
         for (final String mapName : AssetDecoratedMap.GetMapNames()) {
             //AssetDecoratedMap.GetMapNames() returns a string with a \r at the end, gotta remove it
-            orderedMapNames.add(mapName.replace("\r", ""));
+            orderedMapNames.add(mapName.trim());
 
             //Set a ClickListener on the TextButton
             TextButton textButton = new TextButton(mapName, skin);
@@ -133,7 +131,7 @@ public class MapSelection implements Screen {
             textButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.DMapName = mapName.replace("\r", "");
+                    game.DMapName = mapName;
                     game.setScreen(new SinglePlayer(game));
                 }
             });
@@ -142,12 +140,12 @@ public class MapSelection implements Screen {
 
             //Set a ClickListener on the ImageButton
             //`mapNameToFileName.get(MapName))` returns the filename e.g. "bay.PNG"
-            String fileName = mapNameToFileName.get(mapName.replace("\r", ""));
+            String fileName = mapNameToFileName.get(mapName.trim());
             ImageButton temp = fileNameToImageButtonMap.get(fileName);
             temp.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.DMapName = mapName.replace("\r", "");
+                    game.DMapName = mapName;
                     game.setScreen(new SinglePlayer(game));
                 }
             });
@@ -164,7 +162,7 @@ public class MapSelection implements Screen {
 
         //Bottom row has a preview of the map, and you can click on it
         for (String mapName : orderedMapNames) {
-            String fileName =  mapNameToFileName.get(mapName.replace("\r", ""));
+            String fileName =  mapNameToFileName.get(mapName.trim());
             ImageButton imageButton = fileNameToImageButtonMap.get(fileName);
             menuTable.add(imageButton);
         }
@@ -185,6 +183,8 @@ public class MapSelection implements Screen {
             game.setScreen(new MainMenu(game));
         }
         game.batch.end();
+
+        
     }
 
     @Override

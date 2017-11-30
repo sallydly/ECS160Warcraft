@@ -58,7 +58,7 @@ public class RouterMap {
         int MapWidth = resmap.Width();
         int MapHeight = resmap.Height();
         //TODO: Verify if this is correct coordinate!
-        UnitPosition unitPosition = new UnitPosition(Math.round(asset.sprite.getX()), Math.round(asset.sprite.getY()));
+        UnitPosition unitPosition = new UnitPosition(Math.round(asset.getX()), Math.round(asset.getY()));
         int StartX = unitPosition.X();
         int StartY = unitPosition.Y();
         /*int StartX = asset.TilePositionX(); //TODO: for unit class

@@ -4,21 +4,21 @@ package com.warcraftII.terrain_map;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
-import com.warcraftII.GameDataTypes.EPlayerColor;
-import com.warcraftII.Tokenizer;
-import com.warcraftII.data_source.CommentSkipLineDataSource;
-import com.warcraftII.data_source.DataSource;
-import com.warcraftII.data_source.FileDataSource;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.UnitPosition;
+import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
-import com.warcraftII.terrain_map.TileTypes.ETerrainTileType;
+import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.data_source.*;
+import com.warcraftII.Tokenizer;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
 import com.warcraftII.terrain_map.initialization.SResourceInitialization;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -159,7 +159,7 @@ public class AssetDecoratedMap extends TerrainMap {
                 log.debug("Loaded map " + fh.name());
             }
             //TempMap.RenderTerrain();  // Shouldn't need to do this. Its in RenderMap()
-            DMapNameTranslation.put(TempMap.MapName().replace("\r", ""), DAllMaps.size());
+            DMapNameTranslation.put(TempMap.MapName(), DAllMaps.size());
             DAllMaps.add(TempMap);
         }
         //Log.d(ASSETDEC, "Maps loaded\n");
@@ -237,93 +237,76 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 */
 
-    /**
-     * Add an asset to the list of a player's assets
-     *
-     * @param[in] asset Asset to add
-     *
-     * @return true if asset added
-     *
-     */
-// TODO: uncomment when playerasset is available
 
-    void AddStaticAsset(StaticAsset asset){
-        DStaticAssets.add(asset);
-    }
-
-
-    /**
-     * Remove an asset from a player's list of assets
-     *
-     * @param[in] asset Asset to remove
-     *
-     * @return true if asset removed
-     *
-     */
-// TODO: uncomment when playerasset is available
-
-    void RemoveStaticAsset(StaticAsset asset){
-        DStaticAssets.remove(asset);
-    }
     /**
      * Determine if an asset can be placed at a certain tile position
      *
+     *
      * @param[in] pos TilePosition object of the position where you want to place the asset
      * @param[in] size The size of the asset you want to place
-     * @param[in] ignoreasset An asset to ignore when checking if two assets will overlap
+     * OR
+     * @param[in] asset Static Asset that you want to place.
      *
      * @return true if the asset can be placed at that position, false if not
      *
      */
-//TODO: Fix when PlayerAsset is available
-    /*
-    boolean CanPlaceAsset(TilePosition pos, int size, PlayerAsset ignoreasset){
+
+
+    public boolean CanPlaceStaticAsset(TilePosition pos, EStaticAssetType assetType) {
+        return CanPlaceStaticAsset(pos, PlayerAssetType.StaticAssetSize(assetType));
+    }
+
+
+
+    public boolean CanPlaceStaticAsset(TilePosition pos, int size){
         int RightX, BottomY;
 
         for(int YOff = 0; YOff < size; YOff++){
             for(int XOff = 0; XOff < size; XOff++){
                 ETileType TileTerrainType = TileType(pos.X() + XOff, pos.Y() + YOff);
 
-                //if((ETileType.Grass != TileTerrainType)&&(ETileType.Dirt != TileTerrainType)&&(ETileType.Stump != TileTerrainType)&&(ETileType.Rubble != TileTerrainType)){
                 if(!CanPlaceOn(TileTerrainType)){
                     return false;
                 }
             }
         }
+
         RightX = pos.X() + size;
         BottomY = pos.Y() + size;
+
         if(RightX >= Width()){
             return false;
         }
         if(BottomY >= Height()){
             return false;
         }
-        for(PlayerAsset Asset : DAssets){
-            int Offset = EAssetType.GoldMine == Asset.Type() ? 1 : 0;
 
-            if(EAssetType.None == Asset.Type()){
+        for(StaticAsset Asset : DStaticAssets){
+            int Offset = EStaticAssetType.GoldMine == Asset.staticAssetType() ? 1 : 0;
+
+            if(EStaticAssetType.None == Asset.staticAssetType()){
                 continue;
             }
-            if(ignoreasset == Asset){
+            /*if(ignoreasset == Asset){
+                continue;
+            }*/
+            if(RightX <= Asset.tilePositionX() - Offset){
                 continue;
             }
-            if(RightX <= Asset.TilePositionX() - Offset){
+            if(pos.X() >= (Asset.tilePositionX() + Asset.Size() + Offset)){
                 continue;
             }
-            if(pos.X() >= (Asset.TilePositionX() + Asset.Size() + Offset)){
+            if(BottomY <= Asset.tilePositionY() - Offset){
                 continue;
             }
-            if(BottomY <= Asset.TilePositionY() - Offset){
-                continue;
-            }
-            if(pos.Y() >= (Asset.TilePositionY() + Asset.Size() + Offset)){
+            if(pos.Y() >= (Asset.tilePositionY() + Asset.Size() + Offset)){
                 continue;
             }
             return false;
         }
         return true;
     }
-*/
+
     /**
      * Find a valid tile position to place a new asset
      *
@@ -433,28 +416,33 @@ public class AssetDecoratedMap extends TerrainMap {
  * @param[in] color The player the nearest asset should belong to
  * @param[in] type The type of asset to find
  *
- * @return pointer to the nearest asset
+ * @return pointer to the nearest asset -- will be null if no such asset exists
  *
  */
-//TODO: Fix??
-/*
-    PlayerAsset FindNearestAsset(CPixelPosition &pos, EPlayerColor color, EAssetType type){
-        std.shared_ptr< CPlayerAsset > BestAsset;
+
+    StaticAsset FindNearestStaticAsset(UnitPosition pos, EPlayerColor color, EStaticAssetType type){
+        StaticAsset BestAsset =  new StaticAsset();
         int BestDistanceSquared = -1;
 
-        for(auto &Asset : DAssets){
-            if((Asset.Type() == type)&&(Asset.Color() == color)&&(EAssetAction.Construct != Asset.Action())){
-                int CurrentDistance = Asset.Position().DistanceSquared(pos);
+        for(StaticAsset SAsset : DStaticAssets){
+            if((SAsset.staticAssetType() == type)&&(SAsset.owner() == color)&&(EAssetAction.Construct != SAsset.Action())){
+                UnitPosition StatAssetUPos = new UnitPosition(SAsset.tilePosition());
+                int CurrentDistance = StatAssetUPos.distanceSquared(pos);
 
                 if((-1 == BestDistanceSquared)||(CurrentDistance < BestDistanceSquared)){
                     BestDistanceSquared = CurrentDistance;
-                    BestAsset = Asset;
+                    BestAsset = SAsset;
                 }
             }
         }
-        return BestAsset;
+        if (BestDistanceSquared != -1){
+            return BestAsset;
+        }
+        else{
+            return null;
+        }
     }
-*/
+
 
     /**
      * Remove lumber from a given tile position and update the partials map
@@ -577,7 +565,10 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 
+
+    //TODO: for now Rock-0-0 is used for Rubble; should be changed to use textures in stone file on canvas later
     public boolean RemoveStone(TilePosition pos, TilePosition from, int amount){
+        log.info("RemoveStone");
         boolean tileChange = false;
 
         int Index = 0;
@@ -586,7 +577,7 @@ public class AssetDecoratedMap extends TerrainMap {
             for(int XOff = 0; XOff < 2; XOff++){
                 int XPos = pos.X() + XOff;
                 int YPos = pos.Y() + YOff;
-                int bool = (ETerrainTileType.Forest == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
+                int bool = (ETerrainTileType.Rock == DTerrainMap.get(YPos).get(XPos)) ? 1 : 0;
                 Index = Index | ((bool == 1 && (DPartials.get(YPos).get(XPos) != 0)) ? 1<<(YOff * 2 + XOff) : 0);
             }
         }
@@ -689,6 +680,7 @@ public class AssetDecoratedMap extends TerrainMap {
         DResourceInitializationList = new ArrayList<SResourceInitialization>();
         DAssetInitializationList = new ArrayList<SAssetInitialization>();
         DPlayers = new ArrayList<EPlayerColor>();
+        DStaticAssets = new ArrayList<StaticAsset>();
 
         String TempString;
         Vector< String > Tokens;
@@ -831,19 +823,17 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 
     /**
-     * Get function, return the list of assets DAssets
+     * Get function, return the list of Staticassets DAssets
      *
      * @param[in] Nothing
      *
      * @return DAssets
      *
      */
-    // TODO: Uncomment when PlayerAsset is available
-    /*
-    public List< PlayerAsset > Assets(){
-        return DAssets;
+
+    public List< StaticAsset > StaticAssets(){
+        return DStaticAssets;
     }
-*/
 
     /**
      * Get function, return the list of player (colors)
@@ -1125,6 +1115,52 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 */
 
+    public StaticAsset StaticAssetAt(TilePosition tpos){
+        for (StaticAsset statAsset : DStaticAssets){
+            boolean inXlimits, inYlimits;
+            int Size = statAsset.assetType().Size();
+            inXlimits = tpos.X() >= statAsset.tilePositionX() && tpos.X() < statAsset.tilePositionX() + Size;
+            inYlimits = tpos.Y() >= statAsset.tilePositionY() && tpos.Y() < statAsset.tilePositionY() + Size;
+            if (inXlimits && inYlimits) {
+                return statAsset;
+            }
+
+        }
+        return null;
+    }
+
+
+
+    /**
+     * Add an asset to the list of a player's assets
+     *
+     * @param[in] asset Asset to add
+     *
+     * @return nothing
+     *
+     *
+     */
+// TODO: uncomment when playerasset is available
+
+    public void AddStaticAsset(StaticAsset asset){
+        DStaticAssets.add(asset);
+    }
+
+    /**
+     * Remove an asset from a player's list of assets
+     *
+     * @param[in] asset Asset to remove
+     *
+     * @return nothing
+     *
+     */
+    public void RemoveStaticAsset(StaticAsset asset){
+        DStaticAssets.remove(asset);
+    }
+
+    public boolean StaticAssetExists(StaticAsset asset) {
+        return DStaticAssets.contains(asset);
+    }
 
 
 }

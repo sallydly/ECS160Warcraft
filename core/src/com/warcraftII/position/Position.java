@@ -34,14 +34,18 @@ public class Position {
 
     protected static int DMapHeight;
     protected static int DMapWidth;
-    
+
+    /**
+     *
+     */
+
 
     /*
      * Should call initVectors once a Position object is instantiated
      */
-        /*
-    * Should call initVectors once a Position object is instantiated
-    */
+    /*
+     * Should call initVectors once a Position object is instantiated
+     */
     static {
         initVectors();
     }
@@ -179,7 +183,7 @@ public class Position {
     /*
      * Gets the distance squared between two Positions
      */
-    protected int distanceSquared(Position pos) {
+    public int distanceSquared(Position pos) {
         int deltaX = pos.DX - DX;
         int deltaY = pos.DY - DY;
 
