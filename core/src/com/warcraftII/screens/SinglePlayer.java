@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
@@ -65,6 +66,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public int ability;
     private InputMultiplexer multiplexer;
 
+    Skin skin;
+
     private TextButton stopButton;
     private TextButton patrolButton;
     private TextButton attackButton;
@@ -74,6 +77,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton moveButton;
     private TextButton selectButton;
     private Label selectCount;
+    private TextureAtlas sidebarIconAtlas;
 
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -85,8 +89,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private FitViewport sidebarViewport;
     private Stage sidebarStage;
 
-    private Table sidebarTable;
+    private OrthographicCamera topbarCamera;
+    private FitViewport topbarViewport;
+    private Stage topbarStage;
 
+    private Table sidebarTable;
+    private Table topbarTable;
 
     private float prevZoom = 1;
     // mapCamera zoom levels to fit map height/width
@@ -124,7 +132,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         this.shapeRenderer = new ShapeRenderer();
         //add the menu and pause buttons
         TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
-        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
+        skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         moveButton = new TextButton("Move", skin);
         stopButton = new TextButton("Stop", skin);
         patrolButton = new TextButton("Patrol", skin);
@@ -133,6 +141,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
         selectCount = new Label("", skin);
+        sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -257,16 +266,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(attackButton);
 
 	    mapCamera = new OrthographicCamera();
-        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight(), mapCamera);
+        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .95f, mapCamera);
         mapStage = new Stage(mapViewport);
 
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
-        // set size of map viewport to 75% of the screen width and 100% height
-        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight(), false);
+        // set size of map viewport to 75% of the screen width and 93% height
+        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .95f), false);
         // position map viewport on right 75% of the screen
-        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Gdx.graphics.getHeight());
+        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .95f));
         mapStage.getViewport().apply();
 
         sidebarCamera = new OrthographicCamera();
@@ -283,6 +292,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.getViewport().setScreenBounds(0, 0, Math.round(Gdx.graphics.getWidth() * .25f), Gdx.graphics.getHeight());
         sidebarStage.getViewport().apply();
 
+        //topbar
+        topbarCamera = new OrthographicCamera();
+        topbarViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Math.round(Gdx.graphics.getHeight() * .05f), topbarCamera);
+        topbarStage = new Stage(topbarViewport);
+
+        topbarStage.getViewport().apply();
+        topbarStage.act();
+        topbarStage.draw();
+        // set size of topbar viewport to 75% of the screen width and 7% height
+        topbarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .05f), false);
+        // position topbar viewport on right 75% of the screen and 7% on top
+        topbarStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), Math.round(Gdx.graphics.getHeight() * .95f), Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .05f));
+        topbarStage.getViewport().apply();
+
         // set background texture image for sidebar menu
         // code adapted from https://libgdx.info/basic_image/
         Texture backgroundImageTexture = new Texture("img/Texture.png");
@@ -295,6 +318,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         backgroundImage.setPosition(0, 0);
         sidebarStage.addActor(backgroundImage);
 
+        // set background texture image for topbar
+        TextureRegion topbackgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
+        topbackgroundImageTextureRegion.setRegion(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+
+        Image topbackgroundImage = new Image(topbackgroundImageTextureRegion);
+        topbarStage.addActor(topbackgroundImage);
+
 
         // table for layout of sidebar
         sidebarTable = new Table();
@@ -303,6 +333,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
         sidebarStage.draw();
+
+
 
         /*
         Label nameLabel = new Label("Name:", skin);
@@ -315,7 +347,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).height(300).colspan(2);
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
@@ -325,8 +357,53 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.row();
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
+
+        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
+        Table sidebarIconTable = new Table();
+        Image sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        sidebarIconTable.row();
+        sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
+
+        //Table for the topbar
+        topbarTable = new Table();
+        topbarTable.setDebug(true, true); // TODO: remove when done laying out table
+        topbarTable.setFillParent(true);
+        topbarStage.addActor(topbarTable);
+
+        //TextureRegions to split the mini icons for the topbar
+        Texture miniIcons = new Texture(Gdx.files.internal("img/MiniIcons.png"));
+        TextureRegion gold = new TextureRegion(miniIcons, 0, 0,16,16);
+        TextureRegion lumber = new TextureRegion(miniIcons, 0, 16,16,16);
+        TextureRegion food = new TextureRegion(miniIcons, 0, 32,16,16);
+        TextureRegion oil = new TextureRegion(miniIcons, 0, 48,16,16);
+
+        //Images of gold, lumber, food and oil
+        Image goldImage = new Image(gold);
+        Image lumberImage = new Image(lumber);
+        Image foodImage = new Image(food);
+        Image oilImage = new Image(oil);
+
+        //Textfields to keep track for gold, lumber, food and oil
+        TextField goldCount = new TextField("", skin);
+        TextField lumberCount = new TextField("", skin);
+        TextField foodCount = new TextField("", skin);
+        TextField oilCount = new TextField("", skin);
+
+        topbarTable.add(goldImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(goldCount).height(topbarStage.getHeight());
+        topbarTable.add(lumberImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(lumberCount).height(topbarStage.getHeight());
+        topbarTable.add(foodImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(foodCount).height(topbarStage.getHeight());
+        topbarTable.add(oilImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(oilCount).height(topbarStage.getHeight());
+        topbarStage.draw();
+
+
 
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
 //        sidebarStage.getViewport().getCamera().update();
@@ -475,9 +552,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 	    sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
+
+        topbarStage.getViewport().apply();
+        topbarStage.act();
+        topbarStage.draw();
+
+        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
+
     }
 
     public void specialButtons() {
@@ -548,6 +632,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
+
+        // do not use this handler when touchDown is on selectButton
+        if (selectButton.isPressed()) {
+            return false;
+        }
 
         // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
         Unit.IndividualUnit sUnit = null;
