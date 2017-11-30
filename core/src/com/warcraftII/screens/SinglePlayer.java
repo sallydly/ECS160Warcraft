@@ -347,8 +347,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
         sidebarTable.row();
-        //sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
-        //sidebarTable.row();
+        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
         sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
@@ -632,6 +632,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
+
+        // do not use this handler when touchDown is on selectButton
+        if (selectButton.isPressed()) {
+            return false;
+        }
 
         // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
         Unit.IndividualUnit sUnit = null;
