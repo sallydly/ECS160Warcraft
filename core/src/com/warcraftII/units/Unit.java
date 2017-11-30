@@ -269,7 +269,7 @@ public class Unit {
         newUnit.setWidth(texture.getRegionWidth());
         newUnit.setHeight(texture.getRegionHeight());
         newUnit.setBounds(newUnit.getX(), newUnit.getY(), newUnit.getWidth(), newUnit.getHeight());
-        newUnit.setDebug(true);
+        //newUnit.setDebug(true);
         newUnit.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
