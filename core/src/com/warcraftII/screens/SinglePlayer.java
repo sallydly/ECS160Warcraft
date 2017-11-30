@@ -51,7 +51,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private GameData gameData;
     // More concise access to data members of gameData:
     private Unit allUnits;
-    public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>();
+    public Vector<Unit.IndividualUnit> selectedUnits;
     private SpriteBatch batch;
     private SpriteBatch sb;
 
@@ -109,6 +109,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
+        selectedUnits = gameData.selectedUnits;
 
         // Fucking leave this on. Nothing updates without constant input if it's off.
         Gdx.graphics.setContinuousRendering(true);
@@ -225,12 +226,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
-                    for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
-                        if (cur.selected) {
-                            cur.stopMovement();
-                        }
-                    }
+                for (Unit.IndividualUnit cur : selectedUnits) {
+                    cur.stopMovement();
                 }
                 //movement = 0;
                 //patrol = 0;
@@ -491,6 +488,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
+
+        batch.begin();
+        Texture selBox = new Texture(Gdx.files.internal("img/select.png"));
+        for (Unit.IndividualUnit sel : selectedUnits) {
+            batch.draw(selBox, sel.getX(), sel.getY());
+        }
+        batch.end();
+
     }
 
     public void specialButtons() {
@@ -564,60 +569,60 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
 
-        // TODO: maybe move this to a element in GameData
-        Unit.IndividualUnit sUnit = null;
-        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
-            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
-                if (cur.selected) {
-                    sUnit = cur;
+        // TODO: maybe move this to a element in GameData?
+        boolean newSelection = false;
+        for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
+            if (cur.touched) {
+                newSelection = true;
+                if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
+                    // should be handled below
+                } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
+                    for (Unit.IndividualUnit sel : selectedUnits) {
+                        sel.target = cur;
+                        sel.currentxmove = cur.getMidX();
+                        sel.currentymove = cur.getMidY();
+                        sel.curState = GameDataTypes.EUnitState.Attack;
+                    }
+                } else {
+                    cur.touched = false;
+                    for (Unit.IndividualUnit sel : selectedUnits) {
+                        // maybe set selected to false?
+                    }
+                    selectedUnits.removeAllElements();
+                    selectedUnits.add(cur);
                 }
             }
         }
 
-        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
-            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
-                if (cur.touched) {
-                    System.out.println("Unit is selected");
-                    if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
-                        // if moveButton etc pressed, move instead of selecting
-                    } else if (sUnit != null && cur.color != sUnit.color) {
-                        // if opposing teams, attack
-                        sUnit.target = cur;
-                        sUnit.currentxmove = cur.getMidX();
-                        sUnit.currentymove = cur.getMidY();
-                        sUnit.curState = GameDataTypes.EUnitState.Attack;
-                    } else {
-                        cur.touched = false;
-                        cur.selected = true;
-                        if (sUnit != null) {
-                            sUnit.selected = false;
-                        }
+        boolean delete = false;
+        if (!selectedUnits.isEmpty()) {
+            for (Unit.IndividualUnit sUnit : selectedUnits) {
+                if (moveButton.isPressed()) {
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+                    sUnit.curState = GameDataTypes.EUnitState.Move;
+                } else if (patrolButton.isPressed()) {
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+                    sUnit.patrolxmove = sUnit.getMidX();
+                    sUnit.patrolymove = sUnit.getMidY();
+                    sUnit.curState = GameDataTypes.EUnitState.Patrol;
+                } else if (stopButton.isPressed()) {
+
+                } else if (attackButton.isPressed()) {
+
+                } else if (buildButton.isPressed()) { // Replace this when Camera gets us buttons
+                    // REMOVE WHEN DONE TESTING
+                    //sUnit.curState = GameDataTypes.EUnitState.BuildBarracks;
+                } else {
+                    // still need to check for mine, forest, attack(ish), etc
+                    if (!newSelection) {
+                        delete = true;
                     }
                 }
             }
-        }
-
-        if (sUnit != null) {
-            if (moveButton.isPressed()) {
-                sUnit.currentxmove = round(position.x);
-                sUnit.currentymove = round(position.y);
-                sUnit.curState = GameDataTypes.EUnitState.Move;
-            } else if (patrolButton.isPressed()) {
-                sUnit.currentxmove = round(position.x);
-                sUnit.currentymove = round(position.y);
-                sUnit.patrolxmove = sUnit.getMidX();
-                sUnit.patrolymove = sUnit.getMidY();
-                sUnit.curState = GameDataTypes.EUnitState.Patrol;
-            } else if (stopButton.isPressed()) {
-
-            } else if (attackButton.isPressed()) {
-
-            } else if (buildButton.isPressed()) { // Replace this when Camera gets us buttons
-                // REMOVE WHEN DONE TESTING
-                //sUnit.curState = GameDataTypes.EUnitState.BuildBarracks;
-            } else {
-                // still need to check for mine, forest, attack(ish), etc
-                sUnit.selected = false;
+            if (delete) {
+                selectedUnits.removeAllElements();
             }
         }
 

@@ -81,7 +81,7 @@ public class Unit {
         // Or we can include it as requirements for addUnit, but that makes init harder
         public int foodConsumed = 1;
 
-        public boolean selected = false;
+        //public boolean selected = false;
         public boolean touched = false;
         public float currentxmove;
         public float currentymove;
@@ -142,10 +142,10 @@ public class Unit {
         @Override
         public void draw (Batch batch, float parentAlpha) {
             batch.draw(curTexture, getX(), getY());
-            if (selected) {
+            /*if (selected) {
                 Texture sel = new Texture(Gdx.files.internal("img/select.png"));
                 batch.draw(sel, getX(), getY());
-            }
+            }*/
         }
 
         @Override
@@ -401,7 +401,7 @@ public class Unit {
             cur.setTouchable(Touchable.disabled);
             //deleteUnits.add(this);
         }
-        cur.selected = false;
+
         cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
         if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
             return true;
@@ -483,6 +483,16 @@ public class Unit {
             }
             deleteUnits.removeAllElements();
         }
+    }
+
+    public Vector<IndividualUnit> GetAllUnits() {
+        Vector<IndividualUnit> unitVector = new Vector<IndividualUnit>();
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (IndividualUnit cur : unitMap.get(color)) {
+                unitVector.add(cur);
+            }
+        }
+        return unitVector;
     }
 
 }
