@@ -28,6 +28,8 @@ public class TerrainMap {
     protected Vector<Vector<ETerrainTileType>> DTerrainMap;
     protected Vector<Vector<Byte>> DPartials; // uint8_t in C++ converts to Byte in Java, except Byte is signed (and it with 0xFF to get unsigned val)
     protected Vector<Vector<Integer>> DMapIndices;
+    // the current state of tree growth, 0 = forest, 1 = adolescent, 2 = seedling 3 = stump
+    protected Vector<Vector<Integer>> DTreeGrowthState;
     protected boolean DRendered;
     protected String DMapName;
     protected String DMapDescription;
@@ -47,6 +49,7 @@ public class TerrainMap {
         this.DMap = map.DMap;
         this.DMapIndices = map.DMapIndices;
         this.DRendered = map.DRendered;
+        this.DTreeGrowthState = map.DTreeGrowthState;
 
         log = new Logger("TerrainMap", 2);
     }
@@ -404,6 +407,18 @@ public class TerrainMap {
         DMapIndices = new Vector<Vector<Integer>>();
         DMapIndices.setSize(DTerrainMap.size()+1);
 
+        DTreeGrowthState = new Vector<Vector<Integer>>();
+        //DTreeGrowthState does not include rock border
+        DTreeGrowthState.setSize(DTerrainMap.size()-1);
+        for(int i = 0; i < DTreeGrowthState.size(); i++) {
+            Vector<Integer> internalVector = new Vector<Integer>();
+            internalVector.setSize(DTerrainMap.get(i).size()-1);
+            for(int j = 0; j < internalVector.size(); j++) {
+                internalVector.set(j, 3);
+            }
+            DTreeGrowthState.set(i, internalVector);
+        }
+
         for (int i = 0; i < DMap.size(); i++){
             Vector<ETileType> newVec1 = new Vector<ETileType>();
             newVec1.setSize(DTerrainMap.get(0).size() + 1);
@@ -455,12 +470,6 @@ public class TerrainMap {
         ETerrainTileType LL = DTerrainMap.get(y + 1).get(x);
         ETerrainTileType LR = DTerrainMap.get(y + 1).get(x + 1);
 
-//        //HM: added to update Partial map
-//        Byte ULP = DPartials.get(y).get(x);
-//        Byte URP = DPartials.get(y).get(x + 1);
-//        Byte LLP = DPartials.get(y + 1).get(x);
-//        Byte LRP = DPartials.get(y + 1).get(x + 1);
-
         int TypeIndex = ((DPartials.get(y).get(x) & 0x8) >> 3) | ((DPartials.get(y).get(x + 1) & 0x4) >> 1) | ((DPartials.get(y + 1).get(x) & 0x2) << 1) | ((DPartials.get(y + 1).get(x + 1) & 0x1) << 3);
 
         if ((ETerrainTileType.DarkGrass == UL) || (ETerrainTileType.DarkGrass == UR) || (ETerrainTileType.DarkGrass == LL) || (ETerrainTileType.DarkGrass == LR)) {
@@ -511,15 +520,24 @@ public class TerrainMap {
             TypeIndex &= (ETerrainTileType.Forest == UR) ? 0xF : 0xD;
             TypeIndex &= (ETerrainTileType.Forest == LL) ? 0xF : 0xB;
             TypeIndex &= (ETerrainTileType.Forest == LR) ? 0xF : 0x7;
-//            TypeIndex &= (ETerrainTileType.Forest == UL && !ULP.equals(new Byte((byte)0))) ? 0xF : 0xE;
-//            TypeIndex &= (ETerrainTileType.Forest == UR && !URP.equals(new Byte((byte)0))) ? 0xF : 0xD;
-//            TypeIndex &= (ETerrainTileType.Forest == LL && !LLP.equals(new Byte((byte)0))) ? 0xF : 0xB;
-//            TypeIndex &= (ETerrainTileType.Forest == LR && !LRP.equals(new Byte((byte)0))) ? 0xF : 0x7;
             if (TypeIndex != 0) {
                 Type = ETileType.Forest;
                 Index = TypeIndex;
             } else {
-                Type = ETileType.Stump;
+                switch(DTreeGrowthState.get(y).get(x)) {
+                    case 3:
+                        Type = ETileType.Stump;
+                        break;
+                    case 2:
+                        Type = ETileType.Seedling;
+                        break;
+                    case 1:
+                        Type = ETileType.Adolescent;
+                        break;
+                    default:
+                        Type = ETileType.Forest;
+                }
+                //Type = ETileType.Stump;
                 log.debug("I am stump");
                 Index = ((ETerrainTileType.Forest == UL) ? 0x1 : 0x0) | ((ETerrainTileType.Forest == UR) ? 0x2 : 0x0) | ((ETerrainTileType.Forest == LL) ? 0x4 : 0x0) | ((ETerrainTileType.Forest == LR) ? 0x8 : 0x0);
             }
