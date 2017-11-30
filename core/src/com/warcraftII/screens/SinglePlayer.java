@@ -645,9 +645,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     }
                 } else {
                     cur.touched = false;
-                    for (Unit.IndividualUnit sel : selectedUnits) {
-                        // maybe set selected to false?
-                    }
                     selectedUnits.removeAllElements();
                     selectedUnits.add(cur);
                 }
@@ -701,8 +698,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
 */
         //Add to sidebar selected peasants
-        selectCount.setText(Integer.toString(selectedUnits.size()));
-        sidebarStage.draw();
+        //selectCount.setText(Integer.toString(selectedUnits.size()));
+        //sidebarStage.draw();
 
         return newSelection;
     }
