@@ -21,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Warcraft;
-import com.warcraftII.screens.options.Options;
+import com.warcraftII.screens.options.SoundOptions;
 
 public class MainMenu implements Screen {
     private Warcraft game;
@@ -109,8 +109,7 @@ public class MainMenu implements Screen {
         menuTable.row();
 
         TextButton singlePlayerButton = new TextButton("Single Player Game", skin);
-        TextButton multiPlayerButton = new TextButton("Multi Player Game", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
+        TextButton optionsButton = new TextButton("Sound Options", skin);
 
         Label.LabelStyle buttonLabelStyle = new Label.LabelStyle();
         buttonLabelStyle.font = kingthings16;
@@ -118,8 +117,6 @@ public class MainMenu implements Screen {
 
         singlePlayerButton.getLabel().setFontScale(2, 2);
         singlePlayerButton.getLabel().setStyle(buttonLabelStyle);
-        multiPlayerButton.getLabel().setFontScale(2, 2);
-        multiPlayerButton.getLabel().setStyle(buttonLabelStyle);
         optionsButton.getLabel().setFontScale(2, 2);
         optionsButton.getLabel().setStyle(buttonLabelStyle);
 
@@ -130,24 +127,15 @@ public class MainMenu implements Screen {
             }
         });
 
-        multiPlayerButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MultiPlayer(game));
-            }
-        });
-
         optionsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Options(game));
+                game.setScreen(new SoundOptions(game));
             }
         });
 
         menuTable.add(singlePlayerButton).uniformX();
         menuTable.row().pad(100, 0 , 100, 0);
-        menuTable.add(multiPlayerButton).uniformX();
-        menuTable.row();
         menuTable.add(optionsButton).uniformX();
         menuTable.row();
         // empty row for more space
