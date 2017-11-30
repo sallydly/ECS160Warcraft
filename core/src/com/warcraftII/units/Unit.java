@@ -16,7 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
@@ -31,6 +33,7 @@ import static com.warcraftII.GameDataTypes.EAssetCapabilityType.BuildSimple;
 import static com.warcraftII.GameDataTypes.EAssetCapabilityType.Repair;
 import static com.warcraftII.GameDataTypes.EAssetCapabilityType.StandGround;
 import static java.lang.Math.pow;
+import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
 public class Unit {
@@ -302,7 +305,7 @@ public class Unit {
         unitMap.get(in.color).remove(in);
     }
 
-    public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
+    public void UnitStateHandler(float elapsedTime, GameData gData) {
         Vector<IndividualUnit> toDelete = new Vector<IndividualUnit>();
         for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
             for (IndividualUnit cur : unitMap.get(color)) {
@@ -310,19 +313,19 @@ public class Unit {
                     case Idle:
                         break;
                     case Move:
-                        UnitMoveState(cur, elapsedTime, map);
+                        UnitMoveState(cur, elapsedTime, gData);
                         break;
                     case Attack:
-                        UnitAttackState(cur, cur.target, elapsedTime, map);
+                        UnitAttackState(cur, cur.target, elapsedTime, gData);
                         break;
                     case Patrol:
-                        UnitPatrolState(cur, elapsedTime, map);
+                        UnitPatrolState(cur, elapsedTime, gData);
                         break;
                     case Mine:
-                        UnitMineState(cur, elapsedTime, map);
+                        UnitMineState(cur, elapsedTime, gData);
                         break;
                     case Dead:
-                        if (UnitDeadState(cur, elapsedTime, map)) {
+                        if (UnitDeadState(cur, elapsedTime, gData)) {
                             toDelete.add(cur);
                         }
                         break;
@@ -338,16 +341,16 @@ public class Unit {
         toDelete.removeAllElements();
     }
 
-    private void UnitMineState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    private void UnitMineState(IndividualUnit cur, float deltaTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove - 1) || (cur.getMidY() != cur.currentymove - 1)) {
             // mine
         }
         else
-            UnitMoveState(cur, deltaTime, map);
+            UnitMoveState(cur, deltaTime, gData);
     }
 
-    private void UnitPatrolState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
-        if (UnitMove(cur, deltaTime, map)) {
+    private void UnitPatrolState(IndividualUnit cur, float deltaTime, GameData gData) {
+        if (UnitMove(cur, deltaTime, gData)) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -357,7 +360,7 @@ public class Unit {
         }
     }
 
-    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, AssetDecoratedMap map) {
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, GameData gData) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
         if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
             // TODO: do animation, check current keyframe, and only then attack
@@ -380,7 +383,7 @@ public class Unit {
             } else {
                 cur.currentxmove = tar.getMidX();
                 cur.currentymove = tar.getMidY();
-                UnitMove(cur, deltaTime, map);
+                UnitMove(cur, deltaTime, gData);
             }
             // if not, move closer, setting currentxmove and currentymove as needed
         } else {
@@ -391,7 +394,7 @@ public class Unit {
         }
     }
 
-    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, GameData gData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {
             // TODO: make a fucking function to return these animations
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
@@ -410,14 +413,14 @@ public class Unit {
         }
     }
 
-    private void UnitMoveState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
-        if (UnitMove(cur, deltaTime, map)) {
+    private void UnitMoveState(IndividualUnit cur, float deltaTime, GameData gData) {
+        if (UnitMove(cur, deltaTime, gData)) {
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
 
     // Returns true if it's reached the destination, false if it hasn't
-    public boolean UnitMove(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    public boolean UnitMove(IndividualUnit cur, float deltaTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
             // TODO: do actual pathfinding
 
@@ -474,6 +477,42 @@ public class Unit {
             // Maybe 0 out currentxmove and currentymove at some point
             return true;
         }
+    }
+
+
+    // Yes this is also silly. But it's the way the Linux code had the states.
+    private void UnitBuildTownHall(IndividualUnit cur, float deltaTime, GameData gData) {
+        TilePosition tilePos = new TilePosition(round(cur.currentxmove), round(cur.currentymove));
+
+        // Check build time
+
+        if (gData.map.CanPlaceStaticAsset(tilePos, GameDataTypes.EStaticAssetType.TownHall)) {
+            gData.playerData.get(0).ConstructStaticAsset(tilePos, GameDataTypes.EAssetType.TownHall, gData.map);
+        }
+    }
+
+    private void UnitBuildFarm(IndividualUnit cur, float deltaTime, GameData gData) {
+
+    }
+
+    private void UnitBuildBarracks(IndividualUnit cur, float deltaTime, GameData gData) {
+
+    }
+
+    private void UnitBuildLumberMill(IndividualUnit cur, float deltaTime, GameData gData) {
+
+    }
+
+    private void UnitBuildScoutTower(IndividualUnit cur, float deltaTime, GameData gData) {
+
+    }
+
+    private void UnitBuildBlacksmith(IndividualUnit cur, float deltaTime, GameData gData) {
+
+    }
+
+    private void UnitBuildWall(IndividualUnit cur, float deltaTime, GameData gData) {
+
     }
 
     public void updateVector() {

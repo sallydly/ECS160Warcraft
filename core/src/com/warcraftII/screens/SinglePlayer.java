@@ -506,10 +506,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
-
-        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
-        allUnits.updateVector();
-
 /*
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
@@ -525,7 +521,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         topbarStage.act();
         topbarStage.draw();
 
-        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+        allUnits.UnitStateHandler(gameData.elapsedTime, gameData);
+        allUnits.updateVector();
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
@@ -664,10 +661,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         boolean newSelection = false;
 
         selectedUnits.removeAllElements();
-        System.out.println("Within LeftX: "+leftX+" and RightX: "+rightX);
-        System.out.println("Within TopY: "+topY+" and BottomY: "+bottomY);
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()){
-            System.out.println("CurX: "+cur.getX()+"; CurY: "+cur.getY());
             // if (clicked within peasant || part of peasant within multi-select rectangle)
             if ((cur.getX() <= position.x
                     && cur.getX() + cur.getWidth() >= position.x

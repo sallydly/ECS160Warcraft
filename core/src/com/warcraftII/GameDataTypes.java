@@ -174,7 +174,6 @@ public class GameDataTypes {
         }
     }
 
-    // TODO: delete this stupid shit
     public static String toAbbrDeath(EDirection inDir) {
         switch (inDir) {
             case North:
