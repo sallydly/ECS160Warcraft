@@ -251,16 +251,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        stage.addActor(attackButton);
 
 	    mapCamera = new OrthographicCamera();
-        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .93f, mapCamera);
+        mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .95f, mapCamera);
         mapStage = new Stage(mapViewport);
 
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
         // set size of map viewport to 75% of the screen width and 93% height
-        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .93f), false);
+        mapStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .95f), false);
         // position map viewport on right 75% of the screen
-        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .93f));
+        mapStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), 0, Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .95f));
         mapStage.getViewport().apply();
 
         sidebarCamera = new OrthographicCamera();
@@ -279,16 +279,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         //topbar
         topbarCamera = new OrthographicCamera();
-        topbarViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Math.round(Gdx.graphics.getHeight() * .07f), topbarCamera);
+        topbarViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Math.round(Gdx.graphics.getHeight() * .05f), topbarCamera);
         topbarStage = new Stage(topbarViewport);
 
         topbarStage.getViewport().apply();
         topbarStage.act();
         topbarStage.draw();
         // set size of topbar viewport to 75% of the screen width and 7% height
-        topbarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .07f), false);
+        topbarStage.getViewport().update(Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .05f), false);
         // position topbar viewport on right 75% of the screen and 7% on top
-        topbarStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), Math.round(Gdx.graphics.getHeight() * .93f), Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .07f));
+        topbarStage.getViewport().setScreenBounds(Math.round(Gdx.graphics.getWidth() * .25f), Math.round(Gdx.graphics.getHeight() * .95f), Math.round(Gdx.graphics.getWidth() * .75f), Math.round(Gdx.graphics.getHeight() * .05f));
         topbarStage.getViewport().apply();
 
         // set background texture image for sidebar menu
