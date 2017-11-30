@@ -692,7 +692,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
         //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
         CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camerePosition.getTilePosition();
@@ -726,9 +725,20 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         else {
             System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-            chosenStatAsset.decrementHitPoints(75);
+            if (chosenStatAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine){
+                if (chosenStatAsset.CurrentCommand().DAction == GameDataTypes.EAssetAction.MineGold)
+                {
+                    chosenStatAsset.EndMining();
+                }
+                else
+                {
+                    chosenStatAsset.StartMining();
+                }
+            }
+            else {
+                chosenStatAsset.decrementHitPoints(75);
+            }
         }
-        */
         return false;
     }
 
@@ -876,52 +886,4 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     }
 
-    private void KimisTestFunction(){
-      //TESTING REMOVELUMBER
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-
-        gameData.RemoveLumber(tree1,tposunit,400);
-        gameData.RemoveLumber(tree2,tposunit,400);
-        gameData.RemoveLumber(tree3,tposunit,400);
-
-        // TESTING STATICASSETAT
-        TilePosition sassetAt = new TilePosition(0,0);
-        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
-        if (sasset != null){
-            System.out.println(sasset.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset here");
-        }
-
-        TilePosition sassetAt1 = new TilePosition(0,1);
-        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
-        if (sasset1 != null){
-            System.out.println(sasset1.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 1 here");
-        }
-
-        TilePosition sassetAt2 = new TilePosition(15,1);
-        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
-        if (sasset2 != null){
-            System.out.println(sasset2.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 2 here");
-        }
-
-        TilePosition sassetAt3 = new TilePosition(1,30);
-        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
-        if (sasset3 != null){
-            System.out.println(sasset3.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 3 here");
-        }
-    }
-}
+  }
