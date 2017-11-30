@@ -72,8 +72,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton patrolButton;
     private TextButton attackButton;
     private TextButton newAbility;
-    private TextButton menuButton;
-    private TextButton pauseButton;
     private TextButton moveButton;
     private TextButton selectButton;
     private Label selectCount;
@@ -137,8 +135,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton = new TextButton("Stop", skin);
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
-        menuButton = new TextButton("Menu", skin);
-        pauseButton = new TextButton("Pause", skin);
         selectButton = new TextButton("Select", skin);
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
@@ -344,9 +340,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
          */
 
         //add buttons to the sidebar menu
-        sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
-        sidebarTable.add(pauseButton).width(sidebarStage.getWidth() * .5f);
-        sidebarTable.row();
         sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
