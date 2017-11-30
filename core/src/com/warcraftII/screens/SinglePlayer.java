@@ -117,7 +117,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         this.game = game;
         gameData = new GameData(game.DMapName); // IMPORTANT
 
-        // Fucking leave this on. Nothing updates without constant input if it's off.
+        // Leave this on. Nothing updates without constant input if it's off.
         Gdx.graphics.setContinuousRendering(true);
 
         // initialize easy-access reference variables.
@@ -157,7 +157,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // TODO: add if statement for if multi-select button is activated
         // get current finger position for drag select rectangle
         // convert x and y from screen coordinates to viewport coordinates
         Vector3 clickCoordinates = new Vector3(x, y, 0);
@@ -165,7 +164,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndX = position.x;
         touchEndY = position.y;
 
-        // TODO: uncomment following lines to enable panning when multi select button is not activated (else statement)
         // adjust pointer drag amount by mapCamera zoom level
         if(!selectButton.isPressed()) {
             deltaX *= mapCamera.zoom;
@@ -206,11 +204,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.align(Align.bottomLeft);
         */
-
-//        stage = new Stage(new ScreenViewport());
-
-
-//        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
@@ -260,11 +253,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });*/
 
-//        stage.addActor(movementButton);
-//        stage.addActor(stopButton);
-//        stage.addActor(patrolButton);
-//        stage.addActor(attackButton);
-
 	    mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .95f, mapCamera);
         mapStage = new Stage(mapViewport);
@@ -279,7 +267,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.getViewport().apply();
 
         sidebarCamera = new OrthographicCamera();
-//        sidebarCamera.setToOrtho(false, Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight());
         sidebarViewport = new FitViewport(Gdx.graphics.getWidth() * .25f, Gdx.graphics.getHeight(), sidebarCamera);
         sidebarStage = new Stage(sidebarViewport);
 
@@ -333,15 +320,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
         sidebarStage.draw();
-
-
-
-        /*
-        Label nameLabel = new Label("Name:", skin);
-        TextField nameText = new TextField("", skin);
-        Label addressLabel = new Label("Address:", skin);
-        TextField addressText = new TextField("", skin);
-         */
 
         //add buttons to the sidebar menu
         sidebarTable.add(menuButton).width(sidebarStage.getWidth() * .5f);
@@ -403,16 +381,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         topbarTable.add(oilCount).height(topbarStage.getHeight());
         topbarStage.draw();
 
-
-
-//        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
-//        sidebarStage.getViewport().getCamera().update();
-
-
         gameData.RenderMap(); // renders the map.
         orthomaprenderer = new OrthogonalTiledMapRenderer(gameData.tiledMap);
-
-//        camera.position.set(camera.viewportWidth, camera.viewportHeight, 0);
 
         multiplexer = new InputMultiplexer(mapStage, sidebarStage);
 
@@ -511,10 +481,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
 
         gameData.TimeStep();
-
-/*        mapStage.getViewport().apply();
-        mapStage.act();
-        mapStage.draw();*/
 
         batch.begin();
 
@@ -700,8 +666,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //}
         //}
         return true;
-
-        //return false;
     }
 
     private void selectUnits(Vector3 position) {
