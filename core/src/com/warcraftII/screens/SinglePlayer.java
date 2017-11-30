@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
@@ -58,6 +59,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public int ability;
     private InputMultiplexer multiplexer;
 
+    Skin skin;
+
     private TextButton stopButton;
     private TextButton patrolButton;
     private TextButton attackButton;
@@ -84,7 +87,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Stage topbarStage;
 
     private Table sidebarTable;
-
+    private Table topbarTable;
 
     private float prevZoom = 1;
     // mapCamera zoom levels to fit map height/width
@@ -112,7 +115,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         this.shapeRenderer = new ShapeRenderer();
         //add the menu and pause buttons
         TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
-        Skin skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
+        skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         moveButton = new TextButton("Move", skin);
         stopButton = new TextButton("Stop", skin);
         patrolButton = new TextButton("Patrol", skin);
@@ -339,6 +342,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.row();
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
+
         TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
         Table sidebarIconTable = new Table();
         Image sidebarIconImage = new Image(region);
@@ -348,6 +352,43 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
+
+        //Table for the topbar
+        topbarTable = new Table();
+        topbarTable.setDebug(true, true); // TODO: remove when done laying out table
+        topbarTable.setFillParent(true);
+        topbarStage.addActor(topbarTable);
+
+        //TextureRegions to split the mini icons for the topbar
+        Texture miniIcons = new Texture(Gdx.files.internal("img/MiniIcons.png"));
+        TextureRegion gold = new TextureRegion(miniIcons, 0, 0,16,16);
+        TextureRegion lumber = new TextureRegion(miniIcons, 0, 16,16,16);
+        TextureRegion food = new TextureRegion(miniIcons, 0, 32,16,16);
+        TextureRegion oil = new TextureRegion(miniIcons, 0, 48,16,16);
+
+        //Images of gold, lumber, food and oil
+        Image goldImage = new Image(gold);
+        Image lumberImage = new Image(lumber);
+        Image foodImage = new Image(food);
+        Image oilImage = new Image(oil);
+
+        //Textfields to keep track for gold, lumber, food and oil
+        TextField goldCount = new TextField("", skin);
+        TextField lumberCount = new TextField("", skin);
+        TextField foodCount = new TextField("", skin);
+        TextField oilCount = new TextField("", skin);
+
+        topbarTable.add(goldImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(goldCount).height(topbarStage.getHeight());
+        topbarTable.add(lumberImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(lumberCount).height(topbarStage.getHeight());
+        topbarTable.add(foodImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(foodCount).height(topbarStage.getHeight());
+        topbarTable.add(oilImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(oilCount).height(topbarStage.getHeight());
+        topbarStage.draw();
+
+
 
 //        sidebarStage.getViewport().getCamera().lookAt(0,0,0);
 //        sidebarStage.getViewport().getCamera().update();
