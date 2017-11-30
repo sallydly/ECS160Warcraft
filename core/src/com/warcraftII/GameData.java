@@ -59,7 +59,7 @@ public class GameData {
     public Vector<PlayerData> playerData;
     public UnitActions unitActions;
     public Unit allUnits;
-
+    public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>(9);
     public float elapsedTime;
     public float cumulativeTime = 0; // for slowing down timestep a bit.
 
