@@ -1,16 +1,14 @@
 package com.warcraftII.units;
 
-import com.warcraftII.GameDataTypes.*;
-import com.warcraftII.player_asset.PlayerAsset;
+import com.warcraftII.GameDataTypes.EAssetCapabilityType;
+import com.warcraftII.GameDataTypes.EPlayerColor;
+import com.warcraftII.GameDataTypes.EUnitType;
 import com.warcraftII.player_asset.PlayerData;
-import com.warcraftII.renderer.GraphicTileset;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import static com.warcraftII.GameDataTypes.EAssetAction.Capability;
 import static com.warcraftII.GameDataTypes.to_underlying;
 
 public class UnitActionRenderer {
@@ -26,10 +24,12 @@ public class UnitActionRenderer {
         DPlayerData = player;
         DPlayerColor = color;
 
-        DCommandIndices = new Vector<Integer>(to_underlying(EAssetCapabilityType.Max));
+        DCommandIndices = new Vector<Integer>();
+        DCommandIndices.setSize(to_underlying(EAssetCapabilityType.Max));
 //        DFullIconWidth = DIconTileset->TileWidth() + DBevel->Width() * 2;
 //        DFullIconHeight = DIconTileset->TileHeight() + DBevel->Width() * 2;
         DDisplayedCommands = new Vector<EAssetCapabilityType>(9);
+        DDisplayedCommands.setSize(9);
         for(int i = 0; i < DDisplayedCommands.size(); i++){
             DDisplayedCommands.set(i, EAssetCapabilityType.None);
         }

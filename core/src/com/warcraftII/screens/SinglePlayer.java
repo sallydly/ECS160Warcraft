@@ -8,18 +8,15 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -34,14 +31,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
-
 import com.warcraftII.player_asset.StaticAsset;
-import com.warcraftII.player_asset.PlayerData;
-import com.warcraftII.position.*;
+import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.TilePosition;
 import com.warcraftII.units.Unit;
+import com.warcraftII.units.UnitActionRenderer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.Math.round;
@@ -93,6 +88,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Stage topbarStage;
 
     private Table sidebarTable;
+    private Table sidebarIconTable;
     private Table topbarTable;
 
     private float prevZoom = 1;
@@ -329,16 +325,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
 
-        Table sidebarIconTable = new Table();
-        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
+        sidebarIconTable = new Table();
+        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
         Image sidebarIconImage = new Image(region);
         sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
         region = sidebarIconAtlas.findRegion("alchemist");
         sidebarIconImage = new Image(region);
         sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-        region = sidebarIconAtlas.findRegion("altar");
-        sidebarIconImage = new Image(region);
-        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+
+        if (selectedUnits.size() > 0) {
+            region = sidebarIconAtlas.findRegion("altar");
+            sidebarIconImage = new Image(region);
+            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        }
         sidebarIconTable.row();
         sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
@@ -541,6 +540,24 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.end();
         }
 
+        // determine context buttons based on selected units
+        UnitActionRenderer unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
+        Vector<GameDataTypes.EAssetCapabilityType> capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        log.info(capabilities.toString());
+        sidebarIconTable.clearChildren();
+        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
+        Image sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        region = sidebarIconAtlas.findRegion("alchemist");
+        sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+
+        if (selectedUnits.size() > 0) {
+            region = sidebarIconAtlas.findRegion("altar");
+            sidebarIconImage = new Image(region);
+            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        }
+        sidebarIconTable.row();
     }
 
     public void specialButtons() {
