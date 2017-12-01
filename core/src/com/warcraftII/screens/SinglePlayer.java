@@ -329,9 +329,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
 
-        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
         Table sidebarIconTable = new Table();
+        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
         Image sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        region = sidebarIconAtlas.findRegion("alchemist");
+        sidebarIconImage = new Image(region);
+        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+        region = sidebarIconAtlas.findRegion("altar");
+        sidebarIconImage = new Image(region);
         sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
         sidebarIconTable.row();
         sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
