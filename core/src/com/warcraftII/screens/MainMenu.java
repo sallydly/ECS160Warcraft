@@ -134,9 +134,9 @@ public class MainMenu implements Screen {
             }
         });
 
-        menuTable.add(singlePlayerButton).uniformX();
+        menuTable.add(singlePlayerButton).uniformX().height(150);
         menuTable.row().pad(100, 0 , 100, 0);
-        menuTable.add(optionsButton).uniformX();
+        menuTable.add(optionsButton).uniformX().height(150);
         menuTable.row();
         // empty row for more space
         menuTable.add().expandY();

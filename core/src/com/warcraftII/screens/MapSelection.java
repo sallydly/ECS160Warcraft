@@ -155,7 +155,7 @@ public class MapSelection implements Screen {
 
         //Top row has the name of the map, and you can click on it
         for (TextButton textButton : textButtons) {
-            menuTable.add(textButton).pad(0,50,100,50).uniformX();
+            menuTable.add(textButton).pad(0,50,100,50).uniformX().height(150);
         }
 
         menuTable.row().pad(20);
