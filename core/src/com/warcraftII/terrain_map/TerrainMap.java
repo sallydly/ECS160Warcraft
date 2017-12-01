@@ -414,7 +414,7 @@ public class TerrainMap {
             Vector<Integer> internalVector = new Vector<Integer>();
             internalVector.setSize(DTerrainMap.get(i).size()-1);
             for(int j = 0; j < internalVector.size(); j++) {
-                internalVector.set(j, 3);
+                internalVector.set(j, 1);
             }
             DTreeGrowthState.set(i, internalVector);
         }
@@ -534,8 +534,12 @@ public class TerrainMap {
                     case 1:
                         Type = ETileType.Adolescent;
                         break;
-                    default:
+                    case 0:
                         Type = ETileType.Forest;
+                        break;
+                    default:
+                        //if when forest is cut down and rubble is shown -> indicates error
+                        Type = ETileType.Rubble;
                 }
                 //Type = ETileType.Stump;
                 log.debug("I am stump");
@@ -603,7 +607,7 @@ public class TerrainMap {
      * This function changes the tile to match the surrounding terrain,
      * for example used when lumber is removed from forest tile
      *
-     * @param[in] xindex The x coordinate of the tile
+     * @param[in] xindex The x coo3rdinate of the tile
      * @param[in] yindex The y coordinate of the tile
      * @param[in] val New value of partial at the coordinate
      *

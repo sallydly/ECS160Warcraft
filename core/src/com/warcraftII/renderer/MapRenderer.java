@@ -31,6 +31,8 @@ import java.util.Vector;
 public class MapRenderer {
     private static Logger log = new Logger("MapRenderer", 2);
     TextureAtlas DTerrainTextures = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
+    //for tree growth atlas
+    TextureAtlas DTreeGrowth = new TextureAtlas(Gdx.files.internal("atlas/TreeGrowth.atlas"));
     TerrainMap DMap;
     Vector<Vector<Vector<TextureRegion> > > DTileTextures;
     int DMapHeight;
@@ -210,7 +212,35 @@ public class MapRenderer {
             OuterVec.set(Index,InnerVec);
             DTileTextures.set(TileTypeNum, OuterVec);
 
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Seedling);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
+            while(true){
+                TextureRegion textureRegion = DTreeGrowth.findRegion("seedling-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
 
+            AltTileIndex = 0;
+            TileTypeNum = TileTypes.to_underlying(ETileType.Adolescent);
+            OuterVec = DTileTextures.get(TileTypeNum);
+            InnerVec = new Vector<TextureRegion>();
+            while(true){
+                TextureRegion textureRegion = DTreeGrowth.findRegion("adolescent-" + indexStr + "-" + Integer.toString(AltTileIndex));
+                if(null == textureRegion){
+                    break;
+                }
+                InnerVec.add(textureRegion);
+                AltTileIndex++;
+            }
+            OuterVec.set(Index,InnerVec);
+            DTileTextures.set(TileTypeNum, OuterVec);
         }
 
         //HM: in case of rubble texture not render correctly, enable this code
