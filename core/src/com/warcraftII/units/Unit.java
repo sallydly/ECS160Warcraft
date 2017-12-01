@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
@@ -90,6 +91,7 @@ public class Unit {
         public float currentymove;
         public float patrolxmove;
         public float patrolymove;
+        public TilePosition buildPos = null;
         public boolean attackEnd = true;
         public float frameTime = 0.1f;
         public float animStart = 0;
@@ -329,6 +331,9 @@ public class Unit {
                             toDelete.add(cur);
                         }
                         break;
+                    case BuildTownHall:
+                        UnitBuildTownHall(cur, elapsedTime, gData);
+                        break;
                     default:
                         System.out.println("Invalid state");
                         break;
@@ -482,13 +487,14 @@ public class Unit {
 
     // Yes this is also silly. But it's the way the Linux code had the states.
     private void UnitBuildTownHall(IndividualUnit cur, float deltaTime, GameData gData) {
-        TilePosition tilePos = new TilePosition(round(cur.currentxmove), round(cur.currentymove));
 
         // Check build time
 
-        if (gData.map.CanPlaceStaticAsset(tilePos, GameDataTypes.EStaticAssetType.TownHall)) {
-            gData.playerData.get(0).ConstructStaticAsset(tilePos, GameDataTypes.EAssetType.TownHall, gData.map);
+        if (gData.map.CanPlaceStaticAsset(cur.buildPos, GameDataTypes.EStaticAssetType.TownHall)) {
+            gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, GameDataTypes.EAssetType.TownHall, gData.map);
         }
+
+        cur.curState = GameDataTypes.EUnitState.Idle;
     }
 
     private void UnitBuildFarm(IndividualUnit cur, float deltaTime, GameData gData) {

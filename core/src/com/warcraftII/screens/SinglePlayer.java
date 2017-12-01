@@ -75,6 +75,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton newAbility;
     private TextButton moveButton;
     private TextButton selectButton;
+    private TextButton buildButton;
     private Label selectCount;
     private TextureAtlas sidebarIconAtlas;
 
@@ -138,6 +139,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
+        buildButton = new TextButton("Build", skin);
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         /*stopButton.addListener(new ClickListener() {
@@ -211,6 +213,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
         patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
         attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
+        buildButton.setPosition(5, 90+(4*Gdx.graphics.getHeight() / 10));
         /*moveButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -327,6 +330,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarTable.row();
         sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(buildButton).width(sidebarStage.getWidth()).height(200).colspan(2);
         sidebarTable.row();
 
         TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("cancel");
@@ -606,12 +611,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
-        Vector3 position = mapViewport.unproject(clickCoordinates);
+        Vector3 position = mapCamera.unproject(clickCoordinates);
 
         touchEndX = position.x;
         touchEndY = position.y;
         touchStartX = position.x;
         touchStartY = position.y;
+
+        System.out.println("touchDown: X: "+position.x+"; Y: "+position.y);
 
         // TODO: maybe move this to a element in GameData?
         boolean newSelection;
@@ -719,6 +726,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     usedCount += 1;
                 } else if (attackButton.isPressed()) {
                     usedCount += 1;
+                } else if (buildButton.isPressed()) {
+                    // TODO: why
+                    //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
+                    //sUnit.buildPos = cameraPosition.getTilePosition();
+                    CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)((position.y - Gdx.graphics.getHeight()*.05)/.95), mapCamera);
+
+                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    System.out.println("buildPos: X: "+sUnit.buildPos.X()+"; Y: "+sUnit.buildPos.Y());
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
+                    usedCount += 1;
                 } else {
                     // still need to check for mine, forest, attack(ish), etc
                     // THIS SHOULD PROBABLY CHECK FOR IF ANY OF THE SELECTED HAVE THE CAPABILITY TO DO WHATEVER ACTION IT SHOULD BE
@@ -736,9 +755,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
+/*
         //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)((y - Gdx.graphics.getHeight()*.05)/.95), mapCamera);
         TilePosition tilePosition = camerePosition.getTilePosition();
         int xi = tilePosition.X();
         int yi = tilePosition.Y();
@@ -756,7 +775,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
         gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
 
-
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
         if (chosenStatAsset == null){
             System.out.println("No asset here...building");
@@ -773,6 +791,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             chosenStatAsset.decrementHitPoints(75);
         }
         */
+        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)((y - Gdx.graphics.getHeight()*.05)/.95), mapCamera);
+        TilePosition tilePosition = camerePosition.getTilePosition();
+        System.out.println("camerePos X:"+camerePosition.X()+"; Y: "+camerePosition.Y());
+        System.out.println("tilePos X: "+tilePosition.X()+"; y: "+tilePosition.Y());
         return false;
     }
 
