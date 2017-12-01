@@ -14,80 +14,90 @@ public class UnitActionRenderer {
     protected Vector<EAssetCapabilityType> DDisplayedCommands;
     protected EPlayerColor DPlayerColor;
 
-    void DrawUnitAction(List<PlayerAsset> selectionlist, EAssetCapabilityType currentaction) {
+    void DrawUnitAction(List<Unit.IndividualUnit> selectionlist, EAssetCapabilityType currentaction) {
         boolean AllSame = true;
         boolean IsFirst = true;
         boolean Moveable = true;
         boolean HasCargo = false;
-        EAssetType UnitType = EAssetType.None;
+
+        //old value of UnitType -> EAssetType UnitType = EAssetType.None;
+        EUnitType unitType = EUnitType.None;
+
 
         Collections.fill(DDisplayedCommands, EAssetCapabilityType.None);
 
         if (selectionlist.size() == 0) {
             return;
         }
-        for (PlayerAsset asset : selectionlist) {
+        for (Unit.IndividualUnit unit : selectionlist) {
             //if selection is somehow not your team color, exit function
-            if (!DPlayerColor.equals(asset.Color())) {
+            if (!DPlayerColor.equals(unit.color)) {
                 return;
             }
 
             if (IsFirst) {
-                UnitType = asset.Type();
+                unitType = unit.unitClass;
                 IsFirst = false;
-                Moveable = 0 < asset.Speed();
-            } else if (!UnitType.equals(asset.Type())) {
+                Moveable = 0 < unit.speed;
+            } else if (!unitType.equals(unit.unitClass)) {
                 AllSame = false;
             }
 
-            if (asset.Lumber() != 0 || asset.Gold() != 0) {
-                HasCargo = true;
-            }
+//            FIXME: Not sure how to deal with this since IndividualUnit
+//              doesnt keep track of cargo rn
+//
+//            if (asset.Lumber() != 0 || asset.Gold() != 0) {
+//                HasCargo = true;
+//            }
         }
 
-        PlayerAsset asset = null;
+        Unit.IndividualUnit unit = null;
         if (selectionlist.size() > 0) {
-            asset = selectionlist.get(0);
+            unit = selectionlist.get(0);
         }
 
         if (EAssetCapabilityType.None.equals(currentaction)) {
             if (Moveable) {
 
-                DDisplayedCommands.set(0, HasCargo ? EAssetCapabilityType.Convey : EAssetCapabilityType.Move);
+                DDisplayedCommands.set(0, EAssetCapabilityType.Move);
                 DDisplayedCommands.set(1, EAssetCapabilityType.StandGround);
                 DDisplayedCommands.set(2, EAssetCapabilityType.Attack);
-                if (!asset.equals(null)) {
-                    if (asset.HasCapability(EAssetCapabilityType.Repair)) {
+                if (!(unit == null)) {
+                    if (unit.hasCapability(EAssetCapabilityType.Repair)) {
                         DDisplayedCommands.set(3, EAssetCapabilityType.Repair);
                     }
-                    else if (asset.HasCapability(EAssetCapabilityType.Patrol)) {
+                    else if (unit.hasCapability(EAssetCapabilityType.Patrol)) {
                         DDisplayedCommands.set(3, EAssetCapabilityType.Patrol);
                     }
-                    if (asset.HasCapability(EAssetCapabilityType.Mine)) {
+                    if (unit.hasCapability(EAssetCapabilityType.Mine)) {
                         DDisplayedCommands.set(4, EAssetCapabilityType.Mine);
                     }
-                    if (asset.HasCapability(EAssetCapabilityType.BuildSimple) && (1 == selectionlist.size())) {
+
+                    //NOTE: figure out second boolean expression!
+                    if (unit.hasCapability(EAssetCapabilityType.BuildSimple) && (1 == selectionlist.size())) {
                         DDisplayedCommands.set(6, EAssetCapabilityType.BuildSimple);
                     }
                 }
             } else {
-                if (!asset.equals(null)) {
-                    if ((EAssetAction.Construct.equals(asset.Action())) || (Capability.equals(asset.Action()))) {
-                        DDisplayedCommands.set(DDisplayedCommands.size() - 1, EAssetCapabilityType.Cancel);
-                    } else {
+                if (!(unit == null)) {
+                    //this first if adds a cancel button, but we don't have the Action() method handy
+                    //  because we switched to IndividualUnit instead of playerasset
+//                    if ((EAssetAction.Construct.equals(unit.Action())) || (Capability.equals(unit.Action()))) {
+//                        DDisplayedCommands.set(DDisplayedCommands.size() - 1, EAssetCapabilityType.Cancel);
+//                    } else {
                         int Index = 0;
-                        for (EAssetCapabilityType Capability : asset.Capabilities()) {
+                        for (EAssetCapabilityType Capability : unit.abilities) {
                             DDisplayedCommands.set(Index, Capability);
                             Index++;
                             if (DDisplayedCommands.size() <= Index) {
                                 break;
                             }
                         }
-                    }
+//                    }
                 }
             }
         } else if (EAssetCapabilityType.BuildSimple == currentaction) {
-            if (!asset.equals(null)) {
+            if (!(unit == null)) {
                 int Index = 0;
                 List<EAssetCapabilityType> capabilityList = new ArrayList<EAssetCapabilityType>();
                 capabilityList.add(EAssetCapabilityType.BuildFarm);
@@ -103,7 +113,7 @@ public class UnitActionRenderer {
                 capabilityList.add(EAssetCapabilityType.BuildWall);
 
                 for (EAssetCapabilityType Capability : capabilityList) {
-                    if (asset.HasCapability(Capability)) {
+                    if (unit.hasCapability(Capability)) {
                         DDisplayedCommands.set(Index, Capability);
                         Index++;
                         if (DDisplayedCommands.size() <= Index) {

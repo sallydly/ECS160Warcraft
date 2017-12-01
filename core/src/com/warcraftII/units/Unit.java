@@ -29,9 +29,7 @@ import com.warcraftII.terrain_map.TileTypes;
 
 //import org.omg.CORBA.UNKNOWN;
 
-import static com.warcraftII.GameDataTypes.EAssetCapabilityType.BuildSimple;
-import static com.warcraftII.GameDataTypes.EAssetCapabilityType.Repair;
-import static com.warcraftII.GameDataTypes.EAssetCapabilityType.StandGround;
+import static com.warcraftII.GameDataTypes.EAssetCapabilityType.*;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
@@ -158,6 +156,10 @@ public class Unit {
             //if (curState == GameDataTypes.EUnitState.Dead) {
             //    remove();
             //}
+        }
+
+        public boolean hasCapability(GameDataTypes.EAssetCapabilityType capabilityType) {
+            return this.abilities.contains(capabilityType);
         }
 
     }
