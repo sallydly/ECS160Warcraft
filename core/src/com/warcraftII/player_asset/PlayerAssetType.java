@@ -421,6 +421,11 @@ public class PlayerAssetType {
         return playerAssetType.Size();
     }
 
+    public static Vector<Boolean> AssetTypeCapabilities(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.Capabilities();
+    }
 
     /*
     public static int MaxSight(){
