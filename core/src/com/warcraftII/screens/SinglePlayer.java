@@ -30,6 +30,7 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
@@ -46,6 +47,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private Logger log = new Logger("SinglePlayer", 2);
     private Warcraft game;
     private GameData gameData;
+    private Music music;
     // More concise access to data members of gameData:
     private Unit allUnits;
     public Vector<Unit.IndividualUnit> selectedUnits;
@@ -126,8 +128,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         Gdx.graphics.setContinuousRendering(true);
 
-        //Implemented just to achieve hard goal. Not needed
-        this.readySound = Gdx.audio.newMusic(Gdx.files.internal("data/snd/basic/ready.wav"));
+        //randomly play one of 5 game.mp3 files
+        int musicNum = (int) (Math.random() * 5) + 1;
+        assert musicNum >=1 && musicNum <= 5;
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/game" + musicNum + ".mp3"));
+        this.music.setVolume( (Volume.getMusicVolume() / 100));
+        this.music.setLooping(true);
+
         this.shapeRenderer = new ShapeRenderer();
         //add the menu and pause buttons
         TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
@@ -181,6 +188,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void show() {
+        music.play();
+
         movement = 0;
         attack = 0;
         patrol = 0;

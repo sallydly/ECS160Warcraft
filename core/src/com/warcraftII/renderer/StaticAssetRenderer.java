@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Logger;
 
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.Volume;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.StaticAsset;
@@ -472,7 +473,7 @@ public class StaticAssetRenderer {
                 DCurrentSound.stop(DSoundID);
             }
             DCurrentSound = sound;
-            DSoundID = sound.play();
+            DSoundID = sound.play(Volume.getMusicVolume()/100);
         }
 
         protected void StopSound(){
