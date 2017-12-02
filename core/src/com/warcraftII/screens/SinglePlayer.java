@@ -64,7 +64,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     Skin skin;
 
-    private TextButton stopButton;
+    private TextButton standGroundButton;
     private TextButton patrolButton;
     private TextButton attackButton;
     private TextButton newAbility;
@@ -107,6 +107,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private int lastbuiltasset = 0; //DEBUG
 
+    UnitActionRenderer unitActionRenderer;
+    private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
+
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -130,13 +133,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         TextureAtlas atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         moveButton = new TextButton("Move", skin);
-        stopButton = new TextButton("Stop", skin);
+        standGroundButton = new TextButton("Stand Ground", skin);
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
-        /*stopButton.addListener(new ClickListener() {
+        unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
+
+        /*standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //allUnits.stopMovement();
@@ -190,23 +195,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         };
 */
 
-/* Do we need this code???
-        tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
-        tile.setScale(5);
-        tile.setPosition(300, 300);
-        table = new Table(skin);
-        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.align(Align.bottomLeft);
-        */
 
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
 
 
-        moveButton.setPosition(5 , 10);
-        stopButton.setPosition(5 , 30+(1*Gdx.graphics.getHeight() / 10));
-        patrolButton.setPosition(5 , 50+(2*Gdx.graphics.getHeight() / 10));
-        attackButton.setPosition(5, 70+(3*Gdx.graphics.getHeight() / 10));
         /*moveButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -215,7 +208,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });
         */
-        stopButton.addListener(new ClickListener() {
+        standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 for (Unit.IndividualUnit cur : selectedUnits) {
@@ -312,37 +305,26 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
         sidebarStage.draw();
+        fillSideBarTable();
 
-        //add buttons to the sidebar menu
-        sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(stopButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(selectCount).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
 
-        sidebarIconTable = new Table();
-        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
-        Image sidebarIconImage = new Image(region);
-        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-        region = sidebarIconAtlas.findRegion("alchemist");
-        sidebarIconImage = new Image(region);
-        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+//        sidebarIconTable = new Table();
+//        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
+//        Image sidebarIconImage = new Image(region);
+//        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+//        region = sidebarIconAtlas.findRegion("alchemist");
+//        sidebarIconImage = new Image(region);
+//        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+//
+//        if (selectedUnits.size() > 0) {
+//            region = sidebarIconAtlas.findRegion("altar");
+//            sidebarIconImage = new Image(region);
+//            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+//        }
+//        sidebarIconTable.row();
+//        sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
+//        sidebarTable.row();
 
-        if (selectedUnits.size() > 0) {
-            region = sidebarIconAtlas.findRegion("altar");
-            sidebarIconImage = new Image(region);
-            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-        }
-        sidebarIconTable.row();
-        sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarStage.draw();
 
         //Table for the topbar
         topbarTable = new Table();
@@ -476,8 +458,115 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 mapStage.addActor(cur);
             }
         }
+
+
     }
 
+    private void fillSideBarTable() {
+        sidebarTable.clearChildren();
+
+        // determine context buttons based on selected units
+        capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        log.info(capabilities.toString());
+
+        for(GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+            switch(capabilityType) {
+                case None:
+                    break;
+                case Move:
+                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
+                    break;
+                case Repair:
+                    break;
+                case Mine:
+                    break;
+                case BuildSimple:
+                    break;
+                case BuildAdvanced:
+                    break;
+                case Convey:
+                    break;
+                case Cancel:
+                    break;
+                case BuildWall:
+                    break;
+                case Attack:
+                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
+                    break;
+                case StandGround:
+                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
+                    break;
+                case Patrol:
+                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
+                    break;
+                case WeaponUpgrade1:
+                    break;
+                case WeaponUpgrade2:
+                    break;
+                case WeaponUpgrade3:
+                    break;
+                case ArrowUpgrade1:
+                    break;
+                case ArrowUpgrade2:
+                    break;
+                case ArrowUpgrade3:
+                    break;
+                case ArmorUpgrade1:
+                    break;
+                case ArmorUpgrade2:
+                    break;
+                case ArmorUpgrade3:
+                    break;
+                case Longbow:
+                    break;
+                case RangerScouting:
+                    break;
+                case Marksmanship:
+                    break;
+                case Max:
+                    break;
+
+                case BuildPeasant:
+                    break;
+                case BuildFootman:
+                    break;
+                case BuildArcher:
+                    break;
+                case BuildRanger:
+                    break;
+                case BuildFarm:
+                    break;
+                case BuildTownHall:
+                    break;
+                case BuildBarracks:
+                    break;
+                case BuildLumberMill:
+                    break;
+                case BuildBlacksmith:
+                    break;
+                case BuildKeep:
+                    break;
+                case BuildCastle:
+                    break;
+                case BuildScoutTower:
+                    break;
+                case BuildGuardTower:
+                    break;
+                case BuildCannonTower:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarStage.draw();
+    }
 
 
     @Override
@@ -522,6 +611,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.act();
         sidebarStage.draw();
 
+
         topbarStage.getViewport().apply();
         topbarStage.act();
         topbarStage.draw();
@@ -532,6 +622,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.act();
         mapStage.draw();
 
+
+
         for (Unit.IndividualUnit sel : selectedUnits) {
             shapeRenderer.setProjectionMatrix(mapCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -540,24 +632,21 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.end();
         }
 
-        // determine context buttons based on selected units
-        UnitActionRenderer unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
-        Vector<GameDataTypes.EAssetCapabilityType> capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
-        log.info(capabilities.toString());
-        sidebarIconTable.clearChildren();
-        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
-        Image sidebarIconImage = new Image(region);
-        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-        region = sidebarIconAtlas.findRegion("alchemist");
-        sidebarIconImage = new Image(region);
-        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
 
-        if (selectedUnits.size() > 0) {
-            region = sidebarIconAtlas.findRegion("altar");
-            sidebarIconImage = new Image(region);
-            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-        }
-        sidebarIconTable.row();
+////        sidebarIconTable.clearChildren();
+//        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
+////        Image sidebarIconImage = new Image(region);
+////        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+////        region = sidebarIconAtlas.findRegion("alchemist");
+////        sidebarIconImage = new Image(region);
+////        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+
+//        if (selectedUnits.size() > 0) {
+//            region = sidebarIconAtlas.findRegion("altar");
+////            sidebarIconImage = new Image(region);
+////            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
+//        }
+//        sidebarIconTable.row();
     }
 
     public void specialButtons() {
@@ -652,9 +741,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean singleSelectUpdate() {
+
+        fillSideBarTable();
+
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             if (cur.touched) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed()) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
@@ -675,6 +767,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean multiSelectUpdate(Vector3 position) {
+
+        fillSideBarTable();
 
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
@@ -738,7 +832,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sUnit.patrolymove = sUnit.getMidY();
                     sUnit.curState = GameDataTypes.EUnitState.Patrol;
                     usedCount += 1;
-                } else if (stopButton.isPressed()) {
+                } else if (standGroundButton.isPressed()) {
                     usedCount += 1;
                 } else if (attackButton.isPressed()) {
                     usedCount += 1;
@@ -831,7 +925,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || stopButton.isPressed() || moveButton.isPressed()) {
+        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || moveButton.isPressed()) {
 
             return false;
         }

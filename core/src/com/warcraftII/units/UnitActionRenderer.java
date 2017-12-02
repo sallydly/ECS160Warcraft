@@ -6,6 +6,7 @@ import com.warcraftII.GameDataTypes.EUnitType;
 import com.warcraftII.player_asset.PlayerData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -85,17 +86,18 @@ public class UnitActionRenderer {
         //old value of UnitType -> EAssetType UnitType = EAssetType.None;
         EUnitType unitType = EUnitType.None;
 
-        //Collections.fill(DDisplayedCommands, EAssetCapabilityType.None);
-        DDisplayedCommands.add(EAssetCapabilityType.None);
+        Collections.fill(DDisplayedCommands, EAssetCapabilityType.None);
+        //DDisplayedCommands.add(EAssetCapabilityType.None);
 
         if (selectionlist.size() == 0) {
             return DDisplayedCommands;
         }
         for (Unit.IndividualUnit unit : selectionlist) {
             //if selection is somehow not your team color, exit function
-            if (!DPlayerColor.equals(unit.color)) {
-                return DDisplayedCommands;
-            }
+            //FIXME: commented out for now
+//            if (!DPlayerColor.equals(unit.color)) {
+//                return DDisplayedCommands;
+//            }
 
             if (IsFirst) {
                 unitType = unit.unitClass;
