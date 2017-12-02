@@ -164,15 +164,15 @@ public class PlayerData {
 
     public StaticAsset ConstructStaticAsset(TilePosition tpos, EAssetType type, AssetDecoratedMap map){
         if (!GameDataTypes.is_static(type))
-            return;
+            return null;
 
         StaticAsset ConsAsset = CreateStaticAsset(
                 PlayerAssetType.TypeToName(type));
         ConsAsset.tilePosition(tpos);
         ConsAsset.owner(DColor);
-        /*if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
-            InitAsset.gold(DGold);
-        }*/
+        if(EStaticAssetType.GoldMine == ConsAsset.staticAssetType()){
+            ConsAsset.gold(DGold);
+        }
 
         SAssetCommand constructCommand = new SAssetCommand();
         constructCommand.DAction = GameDataTypes.EAssetAction.Construct;

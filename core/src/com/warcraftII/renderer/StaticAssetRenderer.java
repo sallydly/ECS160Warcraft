@@ -418,7 +418,6 @@ public class StaticAssetRenderer {
 
                             GraphicTileset.RemoveTile(assetLayer,XPos,YPos,StatAsset.Size());
 
-
                             UnitPosition newUPos = new UnitPosition(StatAsset.tilePosition());
                             Sprite newSprite = new Sprite();
                             newSprite.setPosition(newUPos.X() - Position.halfTileWidth(), newUPos.Y() - StatAsset.assetType().Size() * Position.tileHeight());
