@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import static java.lang.Math.round;
+import static java.lang.Math.sqrt;
 
 
 public class SinglePlayer implements Screen, GestureDetector.GestureListener{
@@ -109,6 +110,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
+    //For wall building:
+    private boolean wallStarted = false;
+
     private int lastbuiltasset = 0; //DEBUG
 
 
@@ -155,7 +159,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        // get current finger position for drag select rectangle
+   /*     // get current finger position for drag select rectangle
         // convert x and y from screen coordinates to viewport coordinates
         Vector3 clickCoordinates = new Vector3(x, y, 0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
@@ -174,7 +178,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             calculateCameraBounds();
             mapCamera.update();
         }
-
+*/ //temp disable to debug
         return true;
     }
 
@@ -409,6 +413,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchStartX = position.x;
                 touchStartY = position.y;
 
+
                 if (selectButton.isPressed()) {
                     return true;
                 } else {
@@ -425,6 +430,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
+                //if(buildButton.isPressed())
+                {
+                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
+                    TilePosition tpos = new TilePosition(upos);
+                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map)) {
+                        gameData.playerData.get(1).ConstructStaticAsset(tpos,GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.TownHall),gameData.map);
+                    }
+                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+
+                }
+
+                //if wallbuilding
+                {
+                    wallStarted = false;
+                }
+
                 if (selectButton.isPressed()) {
                     boolean newSelection = multiSelectUpdate(position);
                     updateSelected(position);
@@ -435,6 +456,38 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
+                Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = mapViewport.unproject(clickCoordinates);
+                touchEndX = position.x;
+                touchEndY = position.y;
+                //if(buildButton.isPressed())
+                {
+                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
+                    TilePosition tpos = new TilePosition(upos);
+                    gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map);
+                }
+
+                //if wallbuilding
+                {
+                    UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+                    TilePosition tpos = new TilePosition(upos);
+                    if(!wallStarted) {
+                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.Wall), gameData.map);
+                            wallStarted =  true;
+                        } else {
+                            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.Wall, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
+                            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                            wallStarted = false;
+                        }
+                    } else //wall already started
+                    {
+                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.Wall), gameData.map);
+                        }
+                    }
+                }
+
                 return true;
             }
 
@@ -613,6 +666,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
+
+        //if(buildButton.isPressed())
+        {
+            UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+            TilePosition tpos = new TilePosition(upos);
+            //TODO: determine the type to be built...and the player color
+            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.TownHall, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
+        }
+
         // TODO: maybe move this to a element in GameData?
         boolean newSelection;
         if (selectButton.isPressed()) {
@@ -625,8 +687,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             selectedUnits.removeAllElements();
         }
 
+
         return true;
     }
+
 
     private boolean singleSelectUpdate() {
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
@@ -778,21 +842,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean longPress(float x, float y) {
-        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        log.info("Tile position: " + xi +" " + yi);
-        int resourceRemove = 200;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 

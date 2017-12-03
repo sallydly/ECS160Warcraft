@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.Logger;
 
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.player_asset.StaticAsset;
@@ -55,8 +56,13 @@ public class StaticAssetRenderer {
     private static int[] DConstructionStages; // Gives the max construction stage # for each type.
 
     private static Animation<TextureRegion> BuildingDeathAnim, LargeFireAnim, SmallFireAnim;
+    private static Texture placeGoodTexture, placeBadTexture;
 
     private Map<StaticAsset, BuildingEffect> DEffectMapping;
+
+    private StaticAsset shadowStaticAsset;
+    private Sprite placementStatusBox;
+    private boolean lastCanPlace;
 
     private List<StaticAsset> DeathRowBuildings;
 
@@ -143,6 +149,9 @@ public class StaticAssetRenderer {
         BuildingDeathAnim = new Animation<TextureRegion>(0.25f, animationTextures.findRegions("buildingdeath"), Animation.PlayMode.NORMAL);
         LargeFireAnim = new Animation<TextureRegion>(0.2f, animationTextures.findRegions("large-fire"), Animation.PlayMode.LOOP_RANDOM);
         SmallFireAnim = new Animation<TextureRegion>(0.2f, animationTextures.findRegions("small-fire"), Animation.PlayMode.LOOP_RANDOM);
+        placeGoodTexture = new Texture(Gdx.files.internal("img/Marker_place-good.png"));
+        placeBadTexture = new Texture(Gdx.files.internal("img/Marker_place-bad.png"));
+
     }
 
     private static boolean IsColored(EStaticAssetType type) {
@@ -482,6 +491,11 @@ public class StaticAssetRenderer {
 
 // To be called in the render() step of singleplayer, between sb.begin() and sb.end()
     public void DrawEffects(SpriteBatch sb, float deltaTime) {
+        if (placementStatusBox != null){
+            Texture placeTexture = lastCanPlace ? placeGoodTexture : placeBadTexture;
+            sb.draw(placeTexture,placementStatusBox.getX(),placementStatusBox.getY(),
+                    placementStatusBox.getWidth(), placementStatusBox.getHeight()) ;
+        }
 
         for(Iterator<Map.Entry<StaticAsset, BuildingEffect>> it = DEffectMapping.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<StaticAsset, BuildingEffect> entry = it.next();
@@ -500,6 +514,88 @@ public class StaticAssetRenderer {
             }
         }
     }
+
+
+    public void CreateShadowAsset(EStaticAssetType type, EPlayerColor color, TilePosition pos, TiledMap tmap, AssetDecoratedMap map){
+        TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
+
+        shadowStaticAsset = PlayerAssetType.ConstructStaticAsset(PlayerAssetType.TypeToName(GameDataTypes.to_assetType(type)));
+        shadowStaticAsset.owner(color);
+        shadowStaticAsset.tilePosition(pos);
+
+        String colorName = DPlayerColorToString.get(color);
+        TextureAtlas textures = DStaticAssetTextures.get(shadowStaticAsset.staticAssetType());
+
+        String tileName;
+
+        if (IsColored(shadowStaticAsset.staticAssetType()))
+        {
+            tileName = colorName + "place";
+        }
+        else
+        {
+            tileName = "place";
+        }
+        //log.info("tileName: " + tileName);
+        int XPos = shadowStaticAsset.tilePosition().X();
+        //flipping Y because TiledMap sets (0,0) as bottom left, while game files think of (0,0) as top left
+        int YPos = map.Height() - shadowStaticAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+        GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
+
+        UnitPosition newUPos = new UnitPosition(shadowStaticAsset.tilePosition());
+        placementStatusBox = new Sprite();
+        placementStatusBox.setPosition(newUPos.X() - Position.halfTileWidth(), newUPos.Y() - shadowStaticAsset.assetType().Size() * Position.tileHeight());
+        placementStatusBox.setSize(Position.tileWidth() * shadowStaticAsset.assetType().Size(), Position.tileWidth() * shadowStaticAsset.assetType().Size());
+
+        lastCanPlace = map.CanPlaceStaticAsset(shadowStaticAsset.tilePosition(), shadowStaticAsset.Size());
+    }
+
+    public boolean MoveShadowAsset(TilePosition pos, TiledMap tmap, AssetDecoratedMap map){
+        if (shadowStaticAsset != null ) {
+            TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
+
+            int XPos = shadowStaticAsset.tilePosition().X();
+            int YPos = map.Height() - shadowStaticAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+            GraphicTileset.RemoveTile(assetLayer, XPos, YPos, shadowStaticAsset.Size());
+
+            shadowStaticAsset.tilePosition(pos);
+            int newXPos = shadowStaticAsset.tilePosition().X();
+            int newYPos = map.Height() - shadowStaticAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+
+            String colorName = DPlayerColorToString.get(shadowStaticAsset.owner());
+            TextureAtlas textures = DStaticAssetTextures.get(shadowStaticAsset.staticAssetType());
+
+            String tileName;
+
+            if (IsColored(shadowStaticAsset.staticAssetType())) {
+                tileName = colorName + "place";
+            } else {
+                tileName = "place";
+            }
+            GraphicTileset.DrawTile(textures, assetLayer, newXPos, newYPos, tileName);
+
+            UnitPosition newUPos = new UnitPosition(shadowStaticAsset.tilePosition());
+            placementStatusBox.setPosition(newUPos.X() - Position.halfTileWidth(), newUPos.Y() - shadowStaticAsset.assetType().Size() * Position.tileHeight());
+            placementStatusBox.setSize(Position.tileWidth() * shadowStaticAsset.assetType().Size(), Position.tileWidth() * shadowStaticAsset.assetType().Size());
+
+            lastCanPlace = map.CanPlaceStaticAsset(shadowStaticAsset.tilePosition(), shadowStaticAsset.Size());
+            return lastCanPlace;
+        }
+        return false;
+    }
+
+    public void DestroyShadowAsset(TiledMap tmap, AssetDecoratedMap map) {
+        if (shadowStaticAsset != null ) {
+            TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
+
+            int XPos = shadowStaticAsset.tilePosition().X();
+            int YPos = map.Height() - shadowStaticAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+            GraphicTileset.RemoveTile(assetLayer, XPos, YPos, shadowStaticAsset.Size());
+        }
+        shadowStaticAsset = null;
+        placementStatusBox = null;
+    }
+
 
     public int UpdateFrequency(){
         return DUpdateFrequency;
