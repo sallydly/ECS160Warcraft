@@ -17,12 +17,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.position.RouterMap;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.GameData;
 import com.warcraftII.terrain_map.TileTypes;
 
 //import org.omg.CORBA.UNKNOWN;
@@ -289,6 +290,16 @@ public class Unit {
         return newUnit;
     }
 
+    public Vector<IndividualUnit> GetAllUnits() {
+        Vector<IndividualUnit> unitVector = new Vector<IndividualUnit>();
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (IndividualUnit cur : unitMap.get(color)) {
+                unitVector.add(cur);
+            }
+        }
+        return unitVector;
+    }
+
     public IndividualUnit AddUnit(TilePosition tpos, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor color){
         UnitPosition upos = new UnitPosition(tpos);
         return AddUnit((float)upos.X(), (float)upos.Y(), inUnit, color);
@@ -302,7 +313,7 @@ public class Unit {
         unitMap.get(in.color).remove(in);
     }
 
-    public void UnitStateHandler(float elapsedTime, AssetDecoratedMap map) {
+    public void UnitStateHandler(float elapsedTime, GameData gameData) {
         Vector<IndividualUnit> toDelete = new Vector<IndividualUnit>();
         for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
             for (IndividualUnit cur : unitMap.get(color)) {
@@ -310,19 +321,19 @@ public class Unit {
                     case Idle:
                         break;
                     case Move:
-                        UnitMoveState(cur, elapsedTime, map);
+                        UnitMoveState(cur, elapsedTime, gameData);
                         break;
                     case Attack:
-                        UnitAttackState(cur, cur.target, elapsedTime, map);
+                        UnitAttackState(cur, cur.target, elapsedTime, gameData);
                         break;
                     case Patrol:
-                        UnitPatrolState(cur, elapsedTime, map);
+                        UnitPatrolState(cur, elapsedTime, gameData);
                         break;
                     case Mine:
-                        UnitMineState(cur, elapsedTime, map);
+                        UnitMineState(cur, elapsedTime, gameData);
                         break;
                     case Dead:
-                        if (UnitDeadState(cur, elapsedTime, map)) {
+                        if (UnitDeadState(cur, elapsedTime, gameData)) {
                             toDelete.add(cur);
                         }
                         break;
@@ -338,16 +349,16 @@ public class Unit {
         toDelete.removeAllElements();
     }
 
-    private void UnitMineState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    private void UnitMineState(IndividualUnit cur, float deltaTime, GameData gameData) {
         if ((cur.getMidX() != cur.currentxmove - 1) || (cur.getMidY() != cur.currentymove - 1)) {
             // mine
         }
         else
-            UnitMoveState(cur, deltaTime, map);
+            UnitMoveState(cur, deltaTime, gameData);
     }
 
-    private void UnitPatrolState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
-        if (UnitMove(cur, deltaTime, map)) {
+    private void UnitPatrolState(IndividualUnit cur, float deltaTime, GameData gameData) {
+        if (UnitMove(cur, deltaTime, gameData)) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -357,7 +368,7 @@ public class Unit {
         }
     }
 
-    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, AssetDecoratedMap map) {
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, GameData gameData) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
         if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
             // TODO: do animation, check current keyframe, and only then attack
@@ -380,7 +391,7 @@ public class Unit {
             } else {
                 cur.currentxmove = tar.getMidX();
                 cur.currentymove = tar.getMidY();
-                UnitMove(cur, deltaTime, map);
+                UnitMove(cur, deltaTime, gameData);
             }
             // if not, move closer, setting currentxmove and currentymove as needed
         } else {
@@ -391,7 +402,7 @@ public class Unit {
         }
     }
 
-    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, GameData gameData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {
             // TODO: make a fucking function to return these animations
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
@@ -410,16 +421,19 @@ public class Unit {
         }
     }
 
-    private void UnitMoveState(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
-        if (UnitMove(cur, deltaTime, map)) {
+    private void UnitMoveState(IndividualUnit cur, float deltaTime, GameData gameData) {
+        if (UnitMove(cur, deltaTime, gameData)) {
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
 
     // Returns true if it's reached the destination, false if it hasn't
-    public boolean UnitMove(IndividualUnit cur, float deltaTime, AssetDecoratedMap map) {
+    public boolean UnitMove(IndividualUnit cur, float deltaTime, GameData gameData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
             // TODO: do actual pathfinding
+            RouterMap routerMap = new RouterMap();
+            GameDataTypes.EDirection direction = routerMap.FindRoute(gameData, GetAllUnits(), cur);
+            Gdx.app.log("Unit >> RouterMap", "Move " + direction.name());
 
             boolean north, south, east, west;
             north = south = west = east = false;

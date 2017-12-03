@@ -40,13 +40,17 @@ public class RouterMap {
 
     ArrayList< ArrayList< Integer > > DMap;
     ArrayList< SSearchTarget > DSearchTargets;
-    static GameDataTypes.EDirection DIdealSearchDirection = GameDataTypes.EDirection.North;
-    static int DMapWidth = 1;
+    GameDataTypes.EDirection DIdealSearchDirection;
+    int DMapWidth = 1;
+
     static final int SEARCH_STATUS_UNVISITED = -1;
     static final int SEARCH_STATUS_VISITED = -2;
     static final int SEARCH_STATUS_OCCUPIED = -3;
 
-    public RouterMap(){ }
+    public RouterMap(){
+        DIdealSearchDirection = GameDataTypes.EDirection.North;
+        DMapWidth = 1;
+    }
 
     static boolean MovingAway(GameDataTypes.EDirection dir1, GameDataTypes.EDirection dir2){
         int Value;
@@ -61,11 +65,20 @@ public class RouterMap {
     }
 
     //TODO: could change so assetdecorated map has all units?
-    public GameDataTypes.EDirection FindRoute(AssetDecoratedMap resmap, GameData gameData, HashMap<GameDataTypes.EPlayerColor, Vector<Unit.IndividualUnit>> unitMap, Unit.IndividualUnit asset){
+    public GameDataTypes.EDirection FindRoute(GameData gameData, Vector<Unit.IndividualUnit> allUnits, Unit.IndividualUnit asset){
+        AssetDecoratedMap resmap = gameData.map;
         int MapWidth = resmap.Width();
         int MapHeight = resmap.Height();
+        DMap = new ArrayList<ArrayList<Integer>>();
+        /*for (int i = 0; i < MapHeight+1; i++){
+            ArrayList<Integer> tempList = new ArrayList<Integer>();
+            for (int j = 0; j < MapWidth+1; j++){
+                tempList.add(SEARCH_STATUS_UNVISITED);
+            }
+            DMap.add(tempList);
+        }*/
         //TODO: Verify if this is correct coordinate!
-        UnitPosition unitPosition = new UnitPosition(Math.round(asset.sprite.getX()), Math.round(asset.sprite.getY()));
+        UnitPosition unitPosition = new UnitPosition(Math.round(asset.getX()), Math.round(asset.getY()));
         int StartX = unitPosition.X();
         int StartY = unitPosition.Y();
         /*int StartX = asset.TilePositionX(); //TODO: for unit class
@@ -74,14 +87,13 @@ public class RouterMap {
         TerrainMap terrainMap = new TerrainMap();
         SSearchTarget CurrentSearch = new SSearchTarget(), BestSearch = new SSearchTarget(), TempSearch = new SSearchTarget();
         TilePosition CurrentTile, TargetTile, TempTile = new TilePosition();
-        GameDataTypes.EDirection SearchDirecitons[] = {GameDataTypes.EDirection.North, GameDataTypes.EDirection.East, GameDataTypes.EDirection.South, GameDataTypes.EDirection.West};
+        GameDataTypes.EDirection SearchDirections[] = {GameDataTypes.EDirection.North, GameDataTypes.EDirection.East, GameDataTypes.EDirection.South, GameDataTypes.EDirection.West};
         int ResMapXOffsets[] = {0,1,0,-1};
         int ResMapYOffsets[] = {-1,0,1,0};
         int DiagCheckXOffset[] = {0,1,1,1,0,-1,-1,-1};
         int DiagCheckYOffset[] = {-1,-1,0,1,1,1,0,-1};
-        int SearchDirectionCount = SearchDirecitons.length/ GameDataTypes.EDirection.values().length;
+        int SearchDirectionCount = SearchDirections.length/ GameDataTypes.EDirection.values().length;
         GameDataTypes.EDirection LastInDirection, DirectionBeforeLast;
-        //TODO: Can LinkedLists work??
         Queue< SSearchTarget > SearchQueue = new LinkedList<SSearchTarget>();
 
         UnitPosition targetPosition = new UnitPosition(Math.round(asset.currentxmove), Math.round(asset.currentymove));
@@ -181,7 +193,7 @@ public class RouterMap {
         //ADD TO LOOK THROUGH LIST OF UNITS
         for (Unit.IndividualUnit eachUnit : allUnits){
             if (asset != eachUnit){   //does this check work?
-                UnitPosition eachUnitPosition = new UnitPosition(Math.round(eachUnit.sprite.getX()), Math.round(eachUnit.sprite.getY()));
+                UnitPosition eachUnitPosition = new UnitPosition(Math.round(eachUnit.getX()), Math.round(eachUnit.getY()));
                 DMap.get(eachUnitPosition.Y() + 1).set(eachUnitPosition.X() + 1, SEARCH_STATUS_OCCUPIED);
             }
         }
@@ -209,7 +221,7 @@ public class RouterMap {
                 TempTile.X(CurrentSearch.DX + ResMapXOffsets[Index]);
                 TempTile.Y(CurrentSearch.DY + ResMapYOffsets[Index]);
                 if((SEARCH_STATUS_UNVISITED == DMap.get(TempTile.Y() + 1).get(TempTile.X() + 1))
-                        || MovingAway(SearchDirecitons[Index], GameDataTypes.EDirection.values()[(SEARCH_STATUS_OCCUPIED - DMap.get(TempTile.Y() + 1).get(TempTile.X() + 1))])){
+                        || MovingAway(SearchDirections[Index], GameDataTypes.EDirection.values()[(SEARCH_STATUS_OCCUPIED - DMap.get(TempTile.Y() + 1).get(TempTile.X() + 1))])){
                     DMap.get(TempTile.Y() + 1).set(TempTile.X() + 1, Index);
                     TileTypes.ETileType CurTileType = resmap.TileType(TempTile.X(), TempTile.Y());
                     //if((CTerrainMap::ETileType::Grass == CurTileType)||(CTerrainMap::ETileType::Dirt == CurTileType)||(CTerrainMap::ETileType::Stump == CurTileType)||(CTerrainMap::ETileType::Rubble == CurTileType)||(CTerrainMap::ETileType::None == CurTileType)){
@@ -219,7 +231,7 @@ public class RouterMap {
                         TempSearch.DSteps = CurrentSearch.DSteps + 1;
                         TempSearch.DTileType = CurTileType;
                         TempSearch.DTargetDistanceSquared = TempTile.distanceSquared(TargetTile);
-                        TempSearch.DInDirection = SearchDirecitons[Index];
+                        TempSearch.DInDirection = SearchDirections[Index];
                         SearchQueue.add(TempSearch);
                     }
                 }
@@ -243,7 +255,7 @@ public class RouterMap {
                 Gdx.app.exit();
             }
             DirectionBeforeLast = LastInDirection;
-            LastInDirection = SearchDirecitons[Index];
+            LastInDirection = SearchDirections[Index];
             CurrentTile.decrementX(ResMapXOffsets[Index]);
             CurrentTile.decrementY(ResMapYOffsets[Index]);
         }

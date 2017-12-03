@@ -475,7 +475,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         batch.end();
 
 
-        allUnits.UnitStateHandler(gameData.elapsedTime, gameData.map);
+        allUnits.UnitStateHandler(gameData.elapsedTime, gameData);
         allUnits.updateVector();
 
 /*
