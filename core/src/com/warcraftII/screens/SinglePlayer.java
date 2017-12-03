@@ -564,6 +564,34 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
 
+        //Asset Selection code here...I assume will override all others...?
+        UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+        TilePosition tpos = new TilePosition(upos);
+
+        //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
+        //or:
+        //Vector<Boolean> capabilities;
+
+        isAssetSelected = false;
+
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
+
+        if (chosenStatAsset != null) {
+            isAssetSelected = true;
+            selectedAsset = chosenStatAsset;
+        }
+        else {
+            isAssetSelected = false;
+        }
+
+        //Returns capabilities:
+        if (isAssetSelected){
+            //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
+            //capabilities = selectedAsset.assetType().Capabilities();//booleans
+        }
+
+
+
         // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
         Unit.IndividualUnit sUnit = null;
         for (Unit.IndividualUnit cur : allUnits.unitVector) {
@@ -707,7 +735,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+/*        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
         CameraPosition camPosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camPosition.getTilePosition();
         Vector<GameDataTypes.EAssetCapabilityType> capabilities;
@@ -718,12 +746,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (chosenStatAsset != null) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
-            capabilities = selectedAsset.Capabilities();
+            capabilities = selectedAsset.assetType().CapabilitiesVector();
         }
         else {
             isAssetSelected = false;
         }
-
+*/
         return false;
 
     }

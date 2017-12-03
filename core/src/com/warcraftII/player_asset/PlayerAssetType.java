@@ -238,7 +238,12 @@ public class PlayerAssetType {
         return DCapabilities.get(GameDataTypes.to_underlying(capability));
     }
 
-    public Vector< EAssetCapabilityType > Capabilities(){
+    public Vector< Boolean > Capabilities(){
+        return DCapabilities;
+    }
+
+
+    public Vector< EAssetCapabilityType > CapabilitiesVector(){
         Vector< EAssetCapabilityType > ReturnVector = new Vector<EAssetCapabilityType>();
         List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
 
@@ -420,6 +425,17 @@ public class PlayerAssetType {
         String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
         PlayerAssetType playerAssetType = DRegistry.get(typeString);
         return playerAssetType.Size();
+    }
+
+    public static Vector<Boolean> AssetTypeCapabilities(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.Capabilities();
+    }
+    public static Vector<EAssetCapabilityType> AssetTypeCapabilitiesVector(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.CapabilitiesVector();
     }
 
 
