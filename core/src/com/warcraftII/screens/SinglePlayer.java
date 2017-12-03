@@ -35,6 +35,7 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Warcraft;
 
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.position.*;
@@ -114,6 +115,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     //For wall building:
      private boolean wallStarted = false;
+
+     //DEBUG:
+     //TODO: Determine this from the button
+     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.Wall;
 
 
 
@@ -430,22 +435,31 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
                 //if(buildButton.isPressed())
-                if(false)
+                //Co-opting the move button for now...
+                if(moveButton.isPressed())
                 {
                     UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
                     TilePosition tpos = new TilePosition(upos);
+
+                    //centering the staticasset about the touch:
+                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+
+                    if(typetobebuilt == GameDataTypes.EStaticAssetType.Wall)
+                    {
+                        gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                        wallStarted = false;
+                        return false;
+                    }
+
+
                     if (gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map)) {
-                        gameData.playerData.get(1).ConstructStaticAsset(tpos,GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.TownHall),gameData.map);
+                        gameData.playerData.get(1).ConstructStaticAsset(tpos,typetobebuilt,gameData.map);
                     }
                     gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
 
                 }
 
-                //if wallbuilding
-                {
-                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
-                    wallStarted = false;
-                }
 
                 if (selectButton.isPressed()) {
                     boolean newSelection = multiSelectUpdate(position);
@@ -460,34 +474,40 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 Vector3 position = mapViewport.unproject(clickCoordinates);
                 touchEndX = position.x;
                 touchEndY = position.y;
-                //if(buildButton.isPressed())
-                {
-                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
-                    TilePosition tpos = new TilePosition(upos);
-                    gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map);
-                }
 
-                //if wallbuilding
-                {
-                    UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+
+                //if(buildButton.isPressed())
+                //Co-opting the move button for now...
+                if(moveButton.isPressed()) {
+                    UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
-                    if(!wallStarted) {
-                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
-                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
-                            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
-                            wallStarted =  true;
-                        } else {
-                            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.Wall, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
-                            wallStarted = false;
+                    //centering the staticasset about the touch:
+                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
+                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
+
+                    if (typetobebuilt == GameDataTypes.EStaticAssetType.Wall) {
+
+                        if (!wallStarted) {
+                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                                gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
+                                gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
+                                wallStarted = true;
+                            } else {
+                                gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map);
+                                wallStarted = false;
+                            }
+                        } else //wall already started
+                        {
+                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                                gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
+                            }
                         }
-                    } else //wall already started
-                    {
-                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
-                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
-                        }
+                        return false;
+                    } else {
+
+                        gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map);
                     }
                 }
-
                 return true;
             }
 
@@ -682,13 +702,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-
         //if(buildButton.isPressed())
-        {
+        //Co-opting the move button for now...
+        if(moveButton.isPressed()) {
             UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
             TilePosition tpos = new TilePosition(upos);
+
+            //centering the staticasset about the touch:
+            tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+            tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+
             //TODO: determine the type to be built...and the player color
-            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.TownHall, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
+            gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
         }
 
         //Asset Selection code here...I assume will override all others...?
@@ -841,58 +866,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
-        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        PlayerData player1 = gameData.playerData.get(0);
-        // REMOVING RESOURCES
-        int resourceRemove = 100;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
-        if (chosenStatAsset == null){
-            System.out.println("No asset here...building");
-            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
-            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
-            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
-                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
-                lastbuiltasset++;
-            }
-        }
-        else {
-            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-            chosenStatAsset.decrementHitPoints(75);
-        }
-        */
         return false;
     }
 
+
     @Override
     public boolean longPress(float x, float y) {
-        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        log.info("Tile position: " + xi +" " + yi);
-        int resourceRemove = 200;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
@@ -1018,54 +997,5 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
-    }
-
-    private void KimisTestFunction(){
-        //TESTING REMOVELUMBER
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-
-        gameData.RemoveLumber(tree1,tposunit,400);
-        gameData.RemoveLumber(tree2,tposunit,400);
-        gameData.RemoveLumber(tree3,tposunit,400);
-
-        // TESTING STATICASSETAT
-        TilePosition sassetAt = new TilePosition(0,0);
-        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
-        if (sasset != null){
-            System.out.println(sasset.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset here");
-        }
-
-        TilePosition sassetAt1 = new TilePosition(0,1);
-        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
-        if (sasset1 != null){
-            System.out.println(sasset1.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 1 here");
-        }
-
-        TilePosition sassetAt2 = new TilePosition(15,1);
-        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
-        if (sasset2 != null){
-            System.out.println(sasset2.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 2 here");
-        }
-
-        TilePosition sassetAt3 = new TilePosition(1,30);
-        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
-        if (sasset3 != null){
-            System.out.println(sasset3.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 3 here");
-        }
     }
 }
