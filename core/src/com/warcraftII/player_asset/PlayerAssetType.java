@@ -437,8 +437,6 @@ public class PlayerAssetType {
         return pat.Capabilities();
     }
 
-    }
-
     public static Vector<EAssetCapabilityType> AssetTypeCapabilitiesVector(EAssetType type){
         String name = TypeToName(type);
         PlayerAssetType pat = DRegistry.get(name);

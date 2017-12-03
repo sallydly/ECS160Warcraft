@@ -452,7 +452,7 @@ public class PlayerAsset {
     };
 
     public Vector<GameDataTypes.EAssetCapabilityType> Capabilities() {
-        return DType.Capabilities();
+        return DType.CapabilitiesVector();
     };
 
 //    bool MoveStep(std::vector< std::vector< std::shared_ptr< CPlayerAsset > > > &occupancymap, std::vector< std::vector< bool > > &diagonals);

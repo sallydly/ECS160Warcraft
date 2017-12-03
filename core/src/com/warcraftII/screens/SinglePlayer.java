@@ -35,6 +35,7 @@ import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActionRenderer;
 
