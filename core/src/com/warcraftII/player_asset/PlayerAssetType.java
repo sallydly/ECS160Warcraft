@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Map;
 
+
 import static com.warcraftII.GameDataTypes.to_underlying;
 
 /**
@@ -27,7 +28,7 @@ public class PlayerAssetType {
     protected EAssetType DType;
     protected EPlayerColor DColor;
     protected Vector< Boolean > DCapabilities;
-    //protected Vector< EAssetType > DAssetRequirements;
+    protected Vector< EAssetType > DAssetRequirements;
     protected Vector< PlayerUpgrade > DAssetUpgrades;
     protected int DHitPoints;
     protected int DArmor;
@@ -102,6 +103,9 @@ public class PlayerAssetType {
     }
 
     public PlayerAssetType() {
+        DCapabilities = new Vector<Boolean>();
+        DAssetRequirements = new Vector<EAssetType>();
+        DAssetUpgrades =  new Vector<PlayerUpgrade>();
     }
 
     public PlayerAssetType(PlayerAssetType res) {
@@ -231,47 +235,43 @@ public class PlayerAssetType {
     }
 
     public boolean HasCapability(EAssetCapabilityType capability) {
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return false;
         }
-        return DCapabilities.get(to_underlying(capability));
+        return DCapabilities.get(GameDataTypes.to_underlying(capability));
     }
 
-    public Vector<EAssetCapabilityType> Capabilities() {
-        Vector<EAssetCapabilityType> ReturnVector = new Vector<EAssetCapabilityType>();
-
-        for(int Index = to_underlying(EAssetCapabilityType.None); Index < to_underlying(EAssetCapabilityType.Max); Index++){
-            if(DCapabilities.get(Index)){
-                // https://stackoverflow.com/questions/6692664/how-to-get-enum-value-from-index-in-java
-                // TODO: may need to create static copy of enum to improve performance
-                ReturnVector.add(EAssetCapabilityType.values()[Index]);
-            }
-        }
-        return ReturnVector;
+    public Vector< Boolean > Capabilities(){
+        return DCapabilities;
     }
 
-    /*public void AddCapability(EAssetCapabilityType capability){
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+    /*public Vector<EAssetCapabilityType> CapabilityVector(){
+        for
+        return DCapabilities;
+    }*/
+
+    public void AddCapability(EAssetCapabilityType capability){
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return;
         }
-        DCapabilities[to_underlying(capability)] = true;
+        DCapabilities.set(GameDataTypes.to_underlying(capability), true);
     }
 
     public void RemoveCapability(EAssetCapabilityType capability){
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return;
         }
-        DCapabilities[to_underlying(capability)] = false;
+        DCapabilities.set(GameDataTypes.to_underlying(capability), false);
     }
-
+/*
     public void AddUpgrade(std.shared_ptr< CPlayerUpgrade > upgrade){
         DAssetUpgrades.push_back(upgrade);
     }
-
+*/
     public Vector< EAssetType > AssetRequirements() {
         return DAssetRequirements;
     }
-    */
+
     public static EAssetType NameToType(String name){
         if (null == DNameTypeTranslation.get(name))
             return EAssetType.None;
@@ -280,10 +280,10 @@ public class PlayerAssetType {
     }
 
     public static String TypeToName(EAssetType type){
-        if((0 > to_underlying(type))||(to_underlying(type) >= DTypeStrings.size())){
+        if((0 > GameDataTypes.to_underlying(type))||(GameDataTypes.to_underlying(type) >= DTypeStrings.size())){
             return "";
         }
-        return DTypeStrings.get(to_underlying(type));
+        return DTypeStrings.get(GameDataTypes.to_underlying(type));
     }
 
     public static boolean LoadTypes(){
@@ -318,7 +318,7 @@ public class PlayerAssetType {
         
         AssetType = NameToType(Name);
         
-        if((EAssetType.None == AssetType) && (!Name.equals(DTypeStrings.get(to_underlying(EAssetType.None))))){
+        if((EAssetType.None == AssetType) && (!Name.equals(DTypeStrings.get(GameDataTypes.to_underlying(EAssetType.None))))){
             log.error("Unknown resource type: " + Name);
             return false;
         }
@@ -387,21 +387,23 @@ public class PlayerAssetType {
         TempString = LineSource.read().trim();
         CapabilityCount = Integer.parseInt(TempString);
 
-        //PAssetType.DCapabilities.resize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
-        /*for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++){
-            // PAssetType.DCapabilities[Index] = false;
+        PAssetType.DCapabilities.setSize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
+        for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++) {
+            PAssetType.DCapabilities.set(Index, false);
         }
-        */
+
+
         for(int Index = 0; Index < CapabilityCount; Index++){
             TempString = LineSource.read().trim();
-            //PAssetType.AddCapability(CPlayerCapability.NameToType(TempString));
+            PAssetType.AddCapability(PlayerCapability.nameToType(TempString));
         }
 
         TempString = LineSource.read().trim();
         AssetRequirementCount = Integer.parseInt(TempString);
 
         for(int Index = 0; Index < AssetRequirementCount; Index++){
-            //PAssetType.DAssetRequirements.push_back(NameToType(TempString));
+            TempString = LineSource.read().trim();
+            PAssetType.DAssetRequirements.add(NameToType(TempString));
         }
 
         ReturnStatus = true;
@@ -416,11 +418,16 @@ public class PlayerAssetType {
     }
 
     public static int StaticAssetSize(EStaticAssetType type){
-        String typeString = DTypeStrings.get(to_underlying(GameDataTypes.to_assetType(type)));
+        String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
         PlayerAssetType playerAssetType = DRegistry.get(typeString);
         return playerAssetType.Size();
     }
 
+    public static Vector<Boolean> AssetTypeCapabilities(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.Capabilities();
+    }
 
     /*
     public static int MaxSight(){

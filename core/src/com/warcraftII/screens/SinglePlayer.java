@@ -641,12 +641,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
-/*
+    //This draws any fire/building explosion animations
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         gameData.staticAssetRenderer.DrawEffects(sb,delta);
         sb.end();
-*/
+
 
 	    sidebarStage.getViewport().apply();
         sidebarStage.act();
