@@ -10,6 +10,7 @@ import com.warcraftII.data_source.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Map;
 
@@ -108,6 +109,7 @@ public class PlayerAssetType {
     }
 
     public PlayerAssetType(PlayerAssetType res) {
+        DCapabilities = new Vector<Boolean>();
     }
 
 
@@ -240,18 +242,17 @@ public class PlayerAssetType {
         return DCapabilities.get(to_underlying(capability));
     }
 
-//    public Vector< Boolean > Capabilities(){
-//        return DCapabilities;
-//    }
+    public Vector< Boolean > Capabilities(){
+        return DCapabilities;
+    }
 
-    public Vector<EAssetCapabilityType> Capabilities() {
+    public Vector<EAssetCapabilityType> CapabilitiesVector() {
         Vector<EAssetCapabilityType> ReturnVector = new Vector<EAssetCapabilityType>();
+        List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
 
         for(int Index = to_underlying(EAssetCapabilityType.None); Index < to_underlying(EAssetCapabilityType.Max); Index++){
             if(DCapabilities.get(Index)){
-                // https://stackoverflow.com/questions/6692664/how-to-get-enum-value-from-index-in-java
-                // TODO: may need to create static copy of enum to improve performance
-                ReturnVector.add(EAssetCapabilityType.values()[Index]);
+                ReturnVector.add(values.get(Index));
             }
         }
         return ReturnVector;
@@ -261,7 +262,7 @@ public class PlayerAssetType {
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return;
         }
-        DCapabilities.set(GameDataTypes.to_underlying(capability), true);
+        DCapabilities.set(to_underlying(capability), true);
     }
 
     public void RemoveCapability(EAssetCapabilityType capability){
@@ -394,11 +395,11 @@ public class PlayerAssetType {
         TempString = LineSource.read().trim();
         CapabilityCount = Integer.parseInt(TempString);
 
-        PAssetType.DCapabilities.setSize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
+        PAssetType.DCapabilities.setSize(to_underlying(EAssetCapabilityType.Max));
+
         for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++) {
             PAssetType.DCapabilities.set(Index, false);
         }
-
 
         for(int Index = 0; Index < CapabilityCount; Index++){
             TempString = LineSource.read().trim();
@@ -430,11 +431,20 @@ public class PlayerAssetType {
         return playerAssetType.Size();
     }
 
-//    public static Vector<Boolean> AssetTypeCapabilities(EAssetType type){
-//        String name = TypeToName(type);
-//        PlayerAssetType pat = DRegistry.get(name);
-//        return pat.Capabilities();
-//    }
+    public static Vector<Boolean> AssetTypeCapabilities(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.Capabilities();
+    }
+
+    }
+
+    public static Vector<EAssetCapabilityType> AssetTypeCapabilitiesVector(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.CapabilitiesVector();
+    }
+
 
     /*
     public static int MaxSight(){

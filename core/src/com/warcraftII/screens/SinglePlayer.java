@@ -54,7 +54,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private SpriteBatch batch;
     private SpriteBatch sb;
 
-
     private int movement;
     public int attack;
     public int patrol;
@@ -76,7 +75,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton selectButton;
     private Label selectCount;
     private TextureAtlas sidebarIconAtlas;
-
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
     private OrthographicCamera mapCamera;
@@ -114,6 +112,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     UnitActionRenderer unitActionRenderer;
     private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
 
+    private boolean isAssetSelected;
+    private StaticAsset selectedAsset;
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -209,10 +209,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         };
 */
 
-
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
-
 
         /*moveButton.addListener(new InputListener() {
             @Override
@@ -243,7 +241,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 return true;
             }
         });
-
         patrolButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -252,7 +249,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         });*/
 
-	    mapCamera = new OrthographicCamera();
+        mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .95f, mapCamera);
         mapStage = new Stage(mapViewport);
 
@@ -321,7 +318,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.draw();
         fillSideBarTable();
 
-
 //        sidebarIconTable = new Table();
 //        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
 //        Image sidebarIconImage = new Image(region);
@@ -338,7 +334,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 //        sidebarIconTable.row();
 //        sidebarTable.add(sidebarIconTable).width(sidebarStage.getWidth()).height(sidebarStage.getWidth()).colspan(2);
 //        sidebarTable.row();
-
 
         //Table for the topbar
         topbarTable = new Table();
@@ -472,8 +467,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 mapStage.addActor(cur);
             }
         }
-
-
     }
 
     private void fillSideBarTable() {
@@ -584,7 +577,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
-
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
     }
@@ -621,17 +613,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
-    //This draws any fire/building explosion animations
+        //This draws any fire/building explosion animations
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();
         gameData.staticAssetRenderer.DrawEffects(sb,delta);
         sb.end();
 
-
-	    sidebarStage.getViewport().apply();
+        sidebarStage.getViewport().apply();
         sidebarStage.act();
         sidebarStage.draw();
-
 
         topbarStage.getViewport().apply();
         topbarStage.act();
@@ -643,6 +633,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.act();
         mapStage.draw();
 
+        // Asset selection box drawing
+        if (isAssetSelected == true) {
+
+            int size = selectedAsset.Size();
+            int xPos = selectedAsset.positionX();
+            int yPos = gameData.map.Height() - selectedAsset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
+
+            shapeRenderer.setProjectionMatrix(mapCamera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, size * gameData.TILE_HEIGHT, size * gameData.TILE_HEIGHT);
+            shapeRenderer.end();
+        }
 
 
         for (Unit.IndividualUnit sel : selectedUnits) {
@@ -652,22 +655,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.rect(sel.getX(), sel.getY(), sel.getWidth(), sel.getHeight());
             shapeRenderer.end();
         }
-
-
-////        sidebarIconTable.clearChildren();
-//        TextureAtlas.AtlasRegion region = sidebarIconAtlas.findRegion("build-simple");
-////        Image sidebarIconImage = new Image(region);
-////        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-////        region = sidebarIconAtlas.findRegion("alchemist");
-////        sidebarIconImage = new Image(region);
-////        sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-
-//        if (selectedUnits.size() > 0) {
-//            region = sidebarIconAtlas.findRegion("altar");
-////            sidebarIconImage = new Image(region);
-////            sidebarIconTable.add(sidebarIconImage).width(sidebarStage.getWidth() / 3).height(sidebarStage.getWidth() / 3);
-//        }
-//        sidebarIconTable.row();
     }
 
     public void specialButtons() {
@@ -746,6 +733,33 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
+        //Asset Selection code here...I assume will override all others...?
+        UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
+        TilePosition tpos = new TilePosition(upos);
+
+        //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
+        //or:
+        //Vector<Boolean> capabilities;
+
+        isAssetSelected = false;
+
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
+
+        if (chosenStatAsset != null) {
+            isAssetSelected = true;
+            selectedAsset = chosenStatAsset;
+        } else {
+            isAssetSelected = false;
+        }
+
+        //Returns capabilities:
+        if (isAssetSelected) {
+            //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
+            //capabilities = selectedAsset.assetType().Capabilities();//booleans
+            selectedUnits.removeAllElements(); // Removes all currently selected units?
+            return false; //Ignores all other asset selection?
+        }
+
         // TODO: maybe move this to a element in GameData?
         boolean newSelection;
         if (selectButton.isPressed()) {
@@ -764,8 +778,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean singleSelectUpdate() {
-
-
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             if (cur.touched) {
                 if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed()) {
@@ -789,8 +801,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean multiSelectUpdate(Vector3 position) {
-
-
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -881,8 +891,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         int xi = tilePosition.X();
         int yi = tilePosition.Y();
         PlayerData player1 = gameData.playerData.get(0);
-
-
         // REMOVING RESOURCES
         int resourceRemove = 100;
         gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
@@ -893,14 +901,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
         gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
         gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-
-
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
         if (chosenStatAsset == null){
             System.out.println("No asset here...building");
             //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
             GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
-
             if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
                 player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
                 lastbuiltasset++;
@@ -1059,7 +1064,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private void KimisTestFunction(){
-      //TESTING REMOVELUMBER
+        //TESTING REMOVELUMBER
         TilePosition tposunit = new TilePosition(12,1);
         TilePosition tree1 = new TilePosition(11,0);
         TilePosition tree2 = new TilePosition(12,1);

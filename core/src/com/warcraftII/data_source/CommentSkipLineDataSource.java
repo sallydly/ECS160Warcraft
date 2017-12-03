@@ -42,7 +42,7 @@ public class CommentSkipLineDataSource extends LineDataSource
 
             if(tempLine.charAt(0) == DCommentChar) {
                 DIsAfterComment = true;
-                log.info("Line is a comment");
+                //log.info("Line is a comment");
                 continue;
             }
 

@@ -778,7 +778,7 @@ public class AssetDecoratedMap extends TerrainMap {
 
                     if(DPartials.get(RowIndex).get(ColIndex) > 0) {
                         Initlumb = InitialLumber;
-                        log.info("Lumber at:"+ String.valueOf(RowIndex) + " "+String.valueOf(ColIndex));
+                        //log.info("Lumber at:"+ String.valueOf(RowIndex) + " "+String.valueOf(ColIndex));
                     }
                     else {
                         Initlumb = 0;
