@@ -473,7 +473,7 @@ public class StaticAssetRenderer {
                 DCurrentSound.stop(DSoundID);
             }
             DCurrentSound = sound;
-            DSoundID = sound.play(Volume.getMusicVolume()/100);
+            DSoundID = sound.play(Volume.getFxVolume()/100);
         }
 
         protected void StopSound(){

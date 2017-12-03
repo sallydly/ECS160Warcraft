@@ -55,8 +55,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private SpriteBatch sb;
 
 
-    private Music readySound;
-
     private int movement;
     public int attack;
     public int patrol;
@@ -729,6 +727,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
 
+        fillSideBarTable();
+
         touchEndX = position.x;
         touchEndY = position.y;
         touchStartX = position.x;
@@ -751,7 +751,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean singleSelectUpdate() {
 
-        fillSideBarTable();
 
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             if (cur.touched) {
@@ -777,7 +776,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean multiSelectUpdate(Vector3 position) {
 
-        fillSideBarTable();
 
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
