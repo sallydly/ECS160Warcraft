@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Map;
 
+import static com.warcraftII.GameDataTypes.to_underlying;
+
 /**
  * Created by Kimi on 11/12/2017.
  */
@@ -24,7 +26,7 @@ public class PlayerAssetType {
     protected String DName;
     protected EAssetType DType;
     protected EPlayerColor DColor;
-    //protected Vector< Boolean > DCapabilities;
+    protected Vector< Boolean > DCapabilities;
     //protected Vector< EAssetType > DAssetRequirements;
     protected Vector< PlayerUpgrade > DAssetUpgrades;
     protected int DHitPoints;
@@ -228,16 +230,27 @@ public class PlayerAssetType {
         return ReturnValue;
     }
 
-    /*public boolean HasCapability(EAssetCapabilityType capability) {
+    public boolean HasCapability(EAssetCapabilityType capability) {
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return false;
         }
-        return DCapabilities[to_underlying(capability)];
+        return DCapabilities.get(to_underlying(capability));
     }
 
-    public Vector< EAssetCapabilityType > Capabilities(){}
+    public Vector<EAssetCapabilityType> Capabilities() {
+        Vector<EAssetCapabilityType> ReturnVector = new Vector<EAssetCapabilityType>();
 
-    public void AddCapability(EAssetCapabilityType capability){
+        for(int Index = to_underlying(EAssetCapabilityType.None); Index < to_underlying(EAssetCapabilityType.Max); Index++){
+            if(DCapabilities.get(Index)){
+                // https://stackoverflow.com/questions/6692664/how-to-get-enum-value-from-index-in-java
+                // TODO: may need to create static copy of enum to improve performance
+                ReturnVector.add(EAssetCapabilityType.values()[Index]);
+            }
+        }
+        return ReturnVector;
+    }
+
+    /*public void AddCapability(EAssetCapabilityType capability){
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return;
         }
@@ -267,10 +280,10 @@ public class PlayerAssetType {
     }
 
     public static String TypeToName(EAssetType type){
-        if((0 > GameDataTypes.to_underlying(type))||(GameDataTypes.to_underlying(type) >= DTypeStrings.size())){
+        if((0 > to_underlying(type))||(to_underlying(type) >= DTypeStrings.size())){
             return "";
         }
-        return DTypeStrings.get(GameDataTypes.to_underlying(type));
+        return DTypeStrings.get(to_underlying(type));
     }
 
     public static boolean LoadTypes(){
@@ -305,7 +318,7 @@ public class PlayerAssetType {
         
         AssetType = NameToType(Name);
         
-        if((EAssetType.None == AssetType) && (!Name.equals(DTypeStrings.get(GameDataTypes.to_underlying(EAssetType.None))))){
+        if((EAssetType.None == AssetType) && (!Name.equals(DTypeStrings.get(to_underlying(EAssetType.None))))){
             log.error("Unknown resource type: " + Name);
             return false;
         }
@@ -403,7 +416,7 @@ public class PlayerAssetType {
     }
 
     public static int StaticAssetSize(EStaticAssetType type){
-        String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
+        String typeString = DTypeStrings.get(to_underlying(GameDataTypes.to_assetType(type)));
         PlayerAssetType playerAssetType = DRegistry.get(typeString);
         return playerAssetType.Size();
     }
