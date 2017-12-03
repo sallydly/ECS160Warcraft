@@ -710,6 +710,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
         CameraPosition camPosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
         TilePosition tilePosition = camPosition.getTilePosition();
+        Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
@@ -717,6 +718,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (chosenStatAsset != null) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
+            capabilities = selectedAsset.Capabilities();
         }
         else {
             isAssetSelected = false;
