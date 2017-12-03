@@ -314,6 +314,22 @@ public class StaticAsset extends PlayerAsset{
     public int Step(int step){ return DStep = step; }
     public  int IncrementStep() { return DStep = DStep + 1;}
 
+    public void StartMining(){
+        if (staticAssetType() == EStaticAssetType.GoldMine){
+            SAssetCommand constructCommand = new SAssetCommand();
+            constructCommand.DAction = EAssetAction.MineGold;
+            EnqueueCommand(constructCommand);
+        }
+    }
+
+    public void EndMining(){
+        if(staticAssetType() == EStaticAssetType.GoldMine){
+            if (CurrentCommand().DAction ==  EAssetAction.MineGold){
+                PopCommand();
+            }
+
+        }
+    }
 
 }
 
