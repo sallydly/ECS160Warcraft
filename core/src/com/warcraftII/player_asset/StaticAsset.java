@@ -210,6 +210,8 @@ public class StaticAsset extends PlayerAsset{
         return GameDataTypes.to_staticAssetType(type());
     }
 
+    public Vector< EAssetCapabilityType > Capabilities() { return DType.Capabilities(); };
+
     public PlayerAssetType assetType() {
         return DType;
     }

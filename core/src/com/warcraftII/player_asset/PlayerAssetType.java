@@ -10,6 +10,7 @@ import com.warcraftII.data_source.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class PlayerAssetType {
     protected String DName;
     protected EAssetType DType;
     protected EPlayerColor DColor;
-    //protected Vector< Boolean > DCapabilities;
+    protected Vector< Boolean > DCapabilities;
     //protected Vector< EAssetType > DAssetRequirements;
     protected Vector< PlayerUpgrade > DAssetUpgrades;
     protected int DHitPoints;
@@ -100,9 +101,11 @@ public class PlayerAssetType {
     }
 
     public PlayerAssetType() {
+        DCapabilities = new Vector<Boolean>();
     }
 
     public PlayerAssetType(PlayerAssetType res) {
+        DCapabilities = new Vector<Boolean>();
     }
 
 
@@ -228,29 +231,40 @@ public class PlayerAssetType {
         return ReturnValue;
     }
 
-    /*public boolean HasCapability(EAssetCapabilityType capability) {
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+    public boolean HasCapability(EAssetCapabilityType capability) {
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return false;
         }
-        return DCapabilities[to_underlying(capability)];
+        return DCapabilities.get(GameDataTypes.to_underlying(capability));
     }
 
-    public Vector< EAssetCapabilityType > Capabilities(){}
+    public Vector< EAssetCapabilityType > Capabilities(){
+        Vector< EAssetCapabilityType > ReturnVector = new Vector<EAssetCapabilityType>();
+        List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
+
+        for(int Index = GameDataTypes.to_underlying(EAssetCapabilityType.None); Index < GameDataTypes.to_underlying(EAssetCapabilityType.Max); Index++){
+            if(DCapabilities.get(Index)){
+                ReturnVector.add(values.get(Index));
+            }
+        }
+
+        return ReturnVector;
+    }
 
     public void AddCapability(EAssetCapabilityType capability){
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return;
         }
-        DCapabilities[to_underlying(capability)] = true;
+        DCapabilities.set(GameDataTypes.to_underlying(capability), true);
     }
 
     public void RemoveCapability(EAssetCapabilityType capability){
-        if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
+        if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
             return;
         }
-        DCapabilities[to_underlying(capability)] = false;
+        DCapabilities.set(GameDataTypes.to_underlying(capability), false);
     }
-
+/*
     public void AddUpgrade(std.shared_ptr< CPlayerUpgrade > upgrade){
         DAssetUpgrades.push_back(upgrade);
     }
@@ -276,7 +290,7 @@ public class PlayerAssetType {
     public static boolean LoadTypes(){
         boolean ReturnStatus = false;
         DRegistry = new HashMap<String, PlayerAssetType>();
-        
+
         FileHandle ResDirectory = Gdx.files.internal("res");
         FileHandle[] DatFileArray = ResDirectory.list(".dat");
         for (FileHandle fh : DatFileArray) {
@@ -374,14 +388,14 @@ public class PlayerAssetType {
         TempString = LineSource.read().trim();
         CapabilityCount = Integer.parseInt(TempString);
 
-        //PAssetType.DCapabilities.resize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
-        /*for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++){
-            // PAssetType.DCapabilities[Index] = false;
+        PAssetType.DCapabilities.setSize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
+        for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++){
+             PAssetType.DCapabilities.set(Index, false);
         }
-        */
+
         for(int Index = 0; Index < CapabilityCount; Index++){
             TempString = LineSource.read().trim();
-            //PAssetType.AddCapability(CPlayerCapability.NameToType(TempString));
+            PAssetType.AddCapability(PlayerCapability.nameToType(TempString));
         }
 
         TempString = LineSource.read().trim();
