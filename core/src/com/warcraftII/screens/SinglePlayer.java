@@ -727,8 +727,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Vector3 clickCoordinates = new Vector3(x,y,0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
 
-        fillSideBarTable();
-
         touchEndX = position.x;
         touchEndY = position.y;
         touchStartX = position.x;
@@ -744,6 +742,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
+        } else {
+            fillSideBarTable();
         }
 
         return true;
