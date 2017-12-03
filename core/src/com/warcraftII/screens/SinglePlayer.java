@@ -756,7 +756,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
-        } else {
+        } else if (!selectButton.isPressed()){
             fillSideBarTable();
         }
 
