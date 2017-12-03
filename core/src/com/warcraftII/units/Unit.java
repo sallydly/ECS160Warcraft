@@ -333,8 +333,26 @@ public class Unit {
                             toDelete.add(cur);
                         }
                         break;
+                    case BuildBarracks:
+                        UnitBuildBarracks(cur, elapsedTime, gData);
+                        break;
+                    case BuildBlacksmith:
+                        UnitBuildBlacksmith(cur, elapsedTime, gData);
+                        break;
+                    case BuildFarm:
+                        UnitBuildFarm(cur, elapsedTime, gData);
+                        break;
+                    case BuildLumberMill:
+                        UnitBuildLumberMill(cur, elapsedTime, gData);
+                        break;
+                    case BuildScoutTower:
+                        UnitBuildScoutTower(cur, elapsedTime, gData);
+                        break;
                     case BuildTownHall:
                         UnitBuildTownHall(cur, elapsedTime, gData);
+                        break;
+                    case BuildWall:
+                        UnitBuildWall(cur, elapsedTime, gData);
                         break;
                     default:
                         System.out.println("Invalid state");
@@ -348,16 +366,16 @@ public class Unit {
         toDelete.removeAllElements();
     }
 
-    private void UnitMineState(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitMineState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove - 1) || (cur.getMidY() != cur.currentymove - 1)) {
             // mine
         }
         else
-            UnitMoveState(cur, deltaTime, gData);
+            UnitMoveState(cur, totalTime, gData);
     }
 
-    private void UnitPatrolState(IndividualUnit cur, float deltaTime, GameData gData) {
-        if (UnitMove(cur, deltaTime, gData)) {
+    private void UnitPatrolState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (UnitMove(cur, totalTime, gData)) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -367,30 +385,29 @@ public class Unit {
         }
     }
 
-    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, GameData gData) {
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float totalTime, GameData gData) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
         if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
-            // TODO: do animation, check current keyframe, and only then attack
             // check if tar within cur.range of cur
             if (sqrt(pow((tar.getMidX()-cur.getMidX()), 2)  + pow((tar.getMidY()-cur.getMidY()), 2)) <= cur.range*50) {
                 if (cur.attackEnd) {
                     cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-attack-"+GameDataTypes.toAbbr(cur.direction)));
                     cur.attackEnd = false;
-                    cur.animStart = deltaTime;
+                    cur.animStart = totalTime;
                 }
-                if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
+                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
                     // TODO: make this use the projectiles
 
                 } else {
-                    cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
+                    cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
                 }
             } else {
                 cur.currentxmove = tar.getMidX();
                 cur.currentymove = tar.getMidY();
-                UnitMove(cur, deltaTime, gData);
+                UnitMove(cur, totalTime, gData);
             }
             // if not, move closer, setting currentxmove and currentymove as needed
         } else {
@@ -401,33 +418,33 @@ public class Unit {
         }
     }
 
-    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, GameData gData) {
+    private boolean UnitDeadState(IndividualUnit cur, float totalTime, GameData gData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {
             // TODO: make a fucking function to return these animations
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
             cur.curAnim.setPlayMode(Animation.PlayMode.NORMAL);
-            cur.animStart = deltaTime;
+            cur.animStart = totalTime;
             cur.curHP = -101;
             cur.setTouchable(Touchable.disabled);
             //deleteUnits.add(this);
         }
 
-        cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
-        if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
+        cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
+        if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
             return true;
         } else {
             return false;
         }
     }
 
-    private void UnitMoveState(IndividualUnit cur, float deltaTime, GameData gData) {
-        if (UnitMove(cur, deltaTime, gData)) {
+    private void UnitMoveState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (UnitMove(cur, totalTime, gData)) {
             cur.curState = GameDataTypes.EUnitState.Idle;
         }
     }
 
     // Returns true if it's reached the destination, false if it hasn't
-    public boolean UnitMove(IndividualUnit cur, float deltaTime, GameData gData) {
+    public boolean UnitMove(IndividualUnit cur, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
             // TODO: do actual pathfinding
 
@@ -474,12 +491,12 @@ public class Unit {
             }
 
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
-            cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, true);
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
 
             return false;
         } else {
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegion(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction), 0));
-            cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, true);
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
             //cur.setPosition(cur.currentxmove, cur.currentymove);
             // Maybe 0 out currentxmove and currentymove at some point
             return true;
@@ -488,7 +505,7 @@ public class Unit {
 
 
     // Yes this is also silly. But it's the way the Linux code had the states.
-    private void UnitBuildTownHall(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildTownHall(IndividualUnit cur, float totalTime, GameData gData) {
 
         // Check build time
 
@@ -499,27 +516,27 @@ public class Unit {
         cur.curState = GameDataTypes.EUnitState.Idle;
     }
 
-    private void UnitBuildFarm(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildFarm(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
-    private void UnitBuildBarracks(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildBarracks(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
-    private void UnitBuildLumberMill(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildLumberMill(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
-    private void UnitBuildScoutTower(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildScoutTower(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
-    private void UnitBuildBlacksmith(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildBlacksmith(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
-    private void UnitBuildWall(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitBuildWall(IndividualUnit cur, float totalTime, GameData gData) {
 
     }
 
