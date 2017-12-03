@@ -370,6 +370,17 @@ public class StaticAssetRenderer {
                         GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
                         break;
 
+                    case MineGold:
+                        //Should only be GoldMine
+                        if (StatAsset.staticAssetType() == EStaticAssetType.GoldMine) {
+                            stateName = "active";
+                            tileName = stateName;
+                        } else { // any other static asset
+                            stateName = "inactive";
+                            tileName = colorName + stateName;
+                        }
+                        GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
+                        break;
 
                     case Construct:
                         int ActionSteps = DConstructionStages[GameDataTypes.to_underlying(StatAsset.staticAssetType())] + 1;

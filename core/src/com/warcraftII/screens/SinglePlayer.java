@@ -114,6 +114,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private boolean wallStarted = false;
 
     private int lastbuiltasset = 0; //DEBUG
+    private boolean isAssetSelected;
+    private StaticAsset selectedAsset;
 
 
     SinglePlayer(com.warcraftII.Warcraft game) {
@@ -159,7 +161,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-   /*     // get current finger position for drag select rectangle
+        // TODO: add if statement for if multi-select button is activated
+        // get current finger position for drag select rectangle
         // convert x and y from screen coordinates to viewport coordinates
         Vector3 clickCoordinates = new Vector3(x, y, 0);
         Vector3 position = mapViewport.unproject(clickCoordinates);
@@ -178,7 +181,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             calculateCameraBounds();
             mapCamera.update();
         }
-*/ //temp disable to debug
+
         return true;
     }
 
@@ -557,6 +560,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             touchStartX = 0;
         }
 
+        if (isAssetSelected == true) {
+
+            int size = selectedAsset.Size();
+            int xPos = selectedAsset.positionX();
+            int yPos = gameData.map.Height() - selectedAsset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
+
+            shapeRenderer.setProjectionMatrix(mapCamera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, size * gameData.TILE_HEIGHT, size * gameData.TILE_HEIGHT);
+            shapeRenderer.end();
+        }
+
         batch.end();
 
     //This draws any fire/building explosion animations
@@ -681,6 +697,40 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = multiSelectUpdate(position);
         } else {
             newSelection = singleSelectUpdate();
+        //Asset Selection code here...I assume will override all others...?
+        UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+        TilePosition tpos = new TilePosition(upos);
+
+        //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
+        //or:
+        //Vector<Boolean> capabilities;
+
+        isAssetSelected = false;
+
+        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
+
+        if (chosenStatAsset != null) {
+            isAssetSelected = true;
+            selectedAsset = chosenStatAsset;
+        }
+        else {
+            isAssetSelected = false;
+        }
+
+        //Returns capabilities:
+        if (isAssetSelected){
+            //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
+            //capabilities = selectedAsset.assetType().Capabilities();//booleans
+        }
+
+
+
+        // TODO: maybe move this to a element in GameData, potentially as an array for grouping?
+        Unit.IndividualUnit sUnit = null;
+        for (Unit.IndividualUnit cur : allUnits.unitVector) {
+            if (cur.selected) {
+                sUnit = cur;
+            }
         }
 
         if (updateSelected(position) && !newSelection) {
@@ -800,26 +850,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
-        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        PlayerData player1 = gameData.playerData.get(0);
-
-
-        // REMOVING RESOURCES
-        int resourceRemove = 100;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-
+/*        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
+        CameraPosition camPosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+        TilePosition tilePosition = camPosition.getTilePosition();
+        Vector<GameDataTypes.EAssetCapabilityType> capabilities;
+        isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
         if (chosenStatAsset == null){
@@ -833,11 +868,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
         else {
-            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-            chosenStatAsset.decrementHitPoints(75);
+            isAssetSelected = false;
         }
-        */
+*/
         return false;
+
     }
 
     @Override
@@ -967,54 +1002,5 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
-    }
-
-    private void KimisTestFunction(){
-      //TESTING REMOVELUMBER
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-
-        gameData.RemoveLumber(tree1,tposunit,400);
-        gameData.RemoveLumber(tree2,tposunit,400);
-        gameData.RemoveLumber(tree3,tposunit,400);
-
-        // TESTING STATICASSETAT
-        TilePosition sassetAt = new TilePosition(0,0);
-        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
-        if (sasset != null){
-            System.out.println(sasset.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset here");
-        }
-
-        TilePosition sassetAt1 = new TilePosition(0,1);
-        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
-        if (sasset1 != null){
-            System.out.println(sasset1.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 1 here");
-        }
-
-        TilePosition sassetAt2 = new TilePosition(15,1);
-        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
-        if (sasset2 != null){
-            System.out.println(sasset2.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 2 here");
-        }
-
-        TilePosition sassetAt3 = new TilePosition(1,30);
-        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
-        if (sasset3 != null){
-            System.out.println(sasset3.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 3 here");
-        }
     }
 }

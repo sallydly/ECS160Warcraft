@@ -107,6 +107,7 @@ public class PlayerCapability {
         return typeStringList;
     }
 
+ //ACTUAL DATA MEMBERS
     protected String name;
     protected GameDataTypes.EAssetCapabilityType assetCapabilityType;
     protected ETargetType targetType;
