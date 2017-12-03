@@ -356,7 +356,6 @@ public class Unit {
                         break;
                     default:
                         System.out.println("Invalid state");
-                        break;
                 }
             }
         }
