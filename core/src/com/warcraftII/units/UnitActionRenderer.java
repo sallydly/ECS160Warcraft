@@ -1,5 +1,6 @@
 package com.warcraftII.units;
 
+import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes.EAssetCapabilityType;
 import com.warcraftII.GameDataTypes.EPlayerColor;
 import com.warcraftII.GameDataTypes.EUnitType;
@@ -17,11 +18,14 @@ public class UnitActionRenderer {
     protected Vector<Integer> DCommandIndices;
     protected Vector<EAssetCapabilityType> DDisplayedCommands;
     protected EPlayerColor DPlayerColor;
+    protected Logger log;
 
     public UnitActionRenderer(/*GraphicTileset icons, GraphicTileset rangertrackingicon,*/ EPlayerColor color, PlayerData player){
 //        DIconTileset = icons;
 //        DRangerTrackingIcon = rangertrackingicon;
 //        DBevel = bevel;
+        log = new Logger("UnitActionRenderer", 2);
+
         DPlayerData = player;
         DPlayerColor = color;
 
@@ -120,6 +124,8 @@ public class UnitActionRenderer {
             unit = selectionlist.get(0);
         }
 
+        log.info(unit.abilities.toString());
+
         if (EAssetCapabilityType.None.equals(currentaction)) {
             if (Moveable) {
 
@@ -130,11 +136,11 @@ public class UnitActionRenderer {
                     if (unit.hasCapability(EAssetCapabilityType.Repair)) {
                         DDisplayedCommands.set(3, EAssetCapabilityType.Repair);
                     }
-                    else if (unit.hasCapability(EAssetCapabilityType.Patrol)) {
-                        DDisplayedCommands.set(3, EAssetCapabilityType.Patrol);
+                    if (unit.hasCapability(EAssetCapabilityType.Patrol)) {
+                        DDisplayedCommands.set(4, EAssetCapabilityType.Patrol);
                     }
                     if (unit.hasCapability(EAssetCapabilityType.Mine)) {
-                        DDisplayedCommands.set(4, EAssetCapabilityType.Mine);
+                        DDisplayedCommands.set(5, EAssetCapabilityType.Mine);
                     }
 
                     //NOTE: figure out second boolean expression!

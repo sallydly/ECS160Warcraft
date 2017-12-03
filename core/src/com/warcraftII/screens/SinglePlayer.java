@@ -64,11 +64,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     Skin skin;
 
-    private TextButton standGroundButton;
-    private TextButton patrolButton;
-    private TextButton attackButton;
-    private TextButton newAbility;
     private TextButton moveButton;
+    private TextButton standGroundButton;
+    private TextButton attackButton;
+    private TextButton patrolButton;
+    private TextButton repairButton;
+    private TextButton mineButton;
+    private TextButton buildSimpleButton;
+    private TextButton newAbility;
+
     private TextButton selectButton;
     private Label selectCount;
     private TextureAtlas sidebarIconAtlas;
@@ -142,6 +146,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
+        repairButton = new TextButton("Repair", skin);
+        mineButton = new TextButton("Mine", skin);
+        buildSimpleButton = new TextButton("Build Simple", skin);
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
@@ -476,6 +483,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
         log.info(capabilities.toString());
 
+
         for(GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
             switch(capabilityType) {
                 case None:
@@ -485,10 +493,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sidebarTable.row();
                     break;
                 case Repair:
+                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case Mine:
+                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildSimple:
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildAdvanced:
                     break;
