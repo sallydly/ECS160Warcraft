@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 import com.warcraftII.screens.options.SoundOptions;
 
@@ -42,18 +43,20 @@ public class MainMenu implements Screen {
         Gdx.graphics.setContinuousRendering(false);
 
         this.game = game;
-        this.texture = new Texture("img/warcraft_icon.png");
+        this.texture = new Texture("img/sjacraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         ScreenViewport port = new ScreenViewport();
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         this.stage = new Stage(port, game.batch);
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
+        this.music.setVolume( (Volume.getMusicVolume() / 100));
         this.music.setLooping(true);
     }
 
     @Override
     public void show() {
+
         Gdx.input.setInputProcessor(stage);
 
         // set background texture image
