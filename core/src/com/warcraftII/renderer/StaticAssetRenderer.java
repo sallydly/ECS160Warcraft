@@ -530,7 +530,7 @@ public class StaticAssetRenderer {
     public void CreateShadowAsset(EStaticAssetType type, EPlayerColor color, TilePosition pos, TiledMap tmap, AssetDecoratedMap map){
         TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
 
-        shadowStaticAsset = PlayerAssetType.ConstructStaticAsset(PlayerAssetType.TypeToName(GameDataTypes.to_assetType(type)));
+        shadowStaticAsset = PlayerAssetType.ConstructStaticAsset(type);
         shadowStaticAsset.owner(color);
         shadowStaticAsset.tilePosition(pos);
 

@@ -24,14 +24,14 @@ public class TilePosition extends Position{
     //SUPER IMPORTANT: Constructor from UnitPosition
     public TilePosition(UnitPosition upos){
         DX = (int) (upos.X() / DTileWidth);
-        DY = (int)(DMapHeight - upos.Y() / DTileHeight);
+        DY = (int)(DMapHeight - upos.Y() / DTileHeight) - 1;
     }
 
 
 
     public void SetFromUnit(UnitPosition upos) {
         DX = (int) (upos.X() / DTileWidth);
-        DY = DMapHeight - (int) (upos.Y() / DTileHeight);
+        DY = DMapHeight - (int) (upos.Y() / DTileHeight) - 1;
     }
 
     public void setXFromUnit(int x) {
@@ -39,7 +39,7 @@ public class TilePosition extends Position{
     }
 
     public void setYFromUnit(int y) {
-        DY = DMapHeight - (int) (y / DTileHeight);
+        DY = DMapHeight - (int) (y / DTileHeight) - 1;
     }
 
 

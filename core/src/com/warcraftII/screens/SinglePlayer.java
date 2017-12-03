@@ -109,9 +109,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
-    private int lastbuiltasset = 0; //DEBUG
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
+
+    //For wall building:
+     private boolean wallStarted = false;
+
+
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -425,6 +429,24 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
+                //if(buildButton.isPressed())
+                if(false)
+                {
+                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
+                    TilePosition tpos = new TilePosition(upos);
+                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map)) {
+                        gameData.playerData.get(1).ConstructStaticAsset(tpos,GameDataTypes.to_assetType(GameDataTypes.EStaticAssetType.TownHall),gameData.map);
+                    }
+                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+
+                }
+
+                //if wallbuilding
+                {
+                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                    wallStarted = false;
+                }
+
                 if (selectButton.isPressed()) {
                     boolean newSelection = multiSelectUpdate(position);
                     updateSelected(position);
@@ -434,7 +456,38 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
 
             @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
+            public boolean touchDragged(int screenX, int screenY, int pointer) {Vector3 clickCoordinates = new Vector3(screenX, screenY, 0);
+                Vector3 position = mapViewport.unproject(clickCoordinates);
+                touchEndX = position.x;
+                touchEndY = position.y;
+                //if(buildButton.isPressed())
+                {
+                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
+                    TilePosition tpos = new TilePosition(upos);
+                    gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map);
+                }
+
+                //if wallbuilding
+                {
+                    UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+                    TilePosition tpos = new TilePosition(upos);
+                    if(!wallStarted) {
+                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
+                            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                            wallStarted =  true;
+                        } else {
+                            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.Wall, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
+                            wallStarted = false;
+                        }
+                    } else //wall already started
+                    {
+                        if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
+                        }
+                    }
+                }
+
                 return true;
             }
 
@@ -628,6 +681,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndY = position.y;
         touchStartX = position.x;
         touchStartY = position.y;
+
+
+        //if(buildButton.isPressed())
+        {
+            UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
+            TilePosition tpos = new TilePosition(upos);
+            //TODO: determine the type to be built...and the player color
+            gameData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.TownHall, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
+        }
 
         //Asset Selection code here...I assume will override all others...?
         UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
