@@ -420,11 +420,19 @@ public class PlayerAssetType {
     }
 
 
+    public static StaticAsset ConstructStaticAsset(EStaticAssetType satype){
+        String type = PlayerAssetType.TypeToName(GameDataTypes.to_assetType(satype));
+        log.info("Constructing: " + type);
+        PlayerAssetType playerAssetType = DRegistry.get(type);
+        return new StaticAsset(playerAssetType);
+    }
+
     public static StaticAsset ConstructStaticAsset(String type){
         log.info("Constructing: " + type);
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }
+
 
     public static int StaticAssetSize(EStaticAssetType type){
         String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
