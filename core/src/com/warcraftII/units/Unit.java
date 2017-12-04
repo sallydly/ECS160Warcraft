@@ -676,17 +676,11 @@ public class Unit {
         if (selectedAsset != null) {
             return false;
         }
-        else if (gData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Forest) {
-            return false;
-        }
-        else if (gData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Rock) {
-            return false;
-        }
-        else if (gData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.DeepWater) {
-            return false;
+        else if (gData.map.IsTraversable(gData.map.TileType(tilePos))) {
+            return true;
         }
         else {
-            return true;
+            return false;
         }
     }
 
@@ -735,6 +729,8 @@ public class Unit {
                 cur.direction = GameDataTypes.EDirection.East;
             } else if (west) {
                 cur.direction = GameDataTypes.EDirection.West;
+            } else {
+                cur.stopMovement();
             }
 
             cur.curAnim = GenerateAnimation(cur, type);
