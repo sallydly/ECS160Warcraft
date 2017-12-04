@@ -574,19 +574,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case None:
                     break;
                 case Move:
-                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Repair:
-                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Mine:
-                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case BuildAdvanced:
@@ -598,15 +598,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case BuildWall:
                     break;
                 case Attack:
-                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case StandGround:
-                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Patrol:
-                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case WeaponUpgrade1:
@@ -668,7 +668,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
         sidebarStage.draw();
     }
 
