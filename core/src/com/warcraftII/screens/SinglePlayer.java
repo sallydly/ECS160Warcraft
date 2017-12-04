@@ -372,7 +372,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // table for layout of sidebar
         sidebarTable = new Table();
-        sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
         sidebarTable.setFillParent(true);
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
@@ -398,7 +397,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         //Table for the topbar
         topbarTable = new Table();
-        topbarTable.setDebug(true, true); // TODO: remove when done laying out table
         topbarTable.setFillParent(true);
         topbarStage.addActor(topbarTable);
 
