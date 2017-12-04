@@ -306,6 +306,10 @@ public class StaticAsset extends PlayerAsset{
         return DType.LumberCost();
     }
 
+    public int StoneCost(){
+        return DType.StoneCost();
+    }
+
     int BuildTime() {
         return DType.BuildTime();
     }
