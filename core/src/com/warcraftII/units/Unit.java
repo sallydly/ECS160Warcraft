@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
@@ -88,6 +90,8 @@ public class Unit {
         public float currentymove;
         public float patrolxmove;
         public float patrolymove;
+        public StaticAsset selectedAsset;
+        public TilePosition selectedTilePosition;
         public boolean attackEnd = true;
         public float frameTime = 0.1f;
         public float animStart = 0;
@@ -326,6 +330,15 @@ public class Unit {
                     case Mine:
                         UnitMineState(cur, elapsedTime, gData);
                         break;
+                    case Lumber:
+                        UnitMineState(cur, elapsedTime, gData);
+                        break;
+                    case ReturnLumber:
+                        UnitReturnMineState(cur, elapsedTime, gData);
+                        break;
+                    case ReturnMine:
+                        UnitReturnMineState(cur, elapsedTime, gData);
+                        break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
                             toDelete.add(cur);
@@ -343,9 +356,66 @@ public class Unit {
         toDelete.removeAllElements();
     }
 
+    private void UnitReturnMineState(IndividualUnit cur, float deltaTime, GameData gData) {
+        if (cur.curState == GameDataTypes.EUnitState.ReturnMine) {
+            if (cur.getMidX() == cur.currentxmove && cur.getMidY() == cur.currentymove) {
+                gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementGold(10);
+                cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingGold);
+                cur.curState = GameDataTypes.EUnitState.Mine;
+                cur.currentxmove = cur.selectedAsset.positionX();
+                cur.currentymove = cur.selectedAsset.positionY();
+            }
+            else {
+                UnitMoveState(cur, deltaTime, gData);
+            }
+        }
+        else if (cur.curState == GameDataTypes.EUnitState.ReturnLumber) {
+            if (cur.getMidX() == cur.currentxmove && cur.getMidY() == cur.currentymove) {
+                gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementLumber(10);
+                cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingLumber);
+                cur.curState = GameDataTypes.EUnitState.Lumber;
+                cur.currentxmove = cur.selectedTilePosition.X();
+                cur.currentymove = cur.selectedTilePosition.Y();
+            }
+            else {
+                UnitMoveState(cur, deltaTime, gData);
+            }
+        }
+        else
+            UnitMoveState(cur, deltaTime, gData);
+    }
+
     private void UnitMineState(IndividualUnit cur, float deltaTime, GameData gData) {
-        if ((cur.getMidX() != cur.currentxmove - 1) || (cur.getMidY() != cur.currentymove - 1)) {
-            // mine
+        if (cur.curState == GameDataTypes.EUnitState.Mine) {
+            if (cur.getMidX() == cur.currentxmove && cur.getMidY() == cur.currentymove) {
+                cur.selectedAsset.StartMining();
+                //TODO mining animation for a bit
+                cur.selectedAsset.EndMining();
+                cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingGold);
+                UnitPosition upos = new UnitPosition(cur.selectedTilePosition);
+                StaticAsset nearestKeep = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Keep);
+                cur.curState = GameDataTypes.EUnitState.ReturnMine;
+                cur.currentxmove = nearestKeep.positionX();
+                cur.currentymove = nearestKeep.positionY();
+            }
+            else {
+                UnitMoveState(cur, deltaTime, gData);
+            }
+        }
+        else if (cur.curState == GameDataTypes.EUnitState.Lumber) {
+            if ((cur.getMidX() == cur.currentxmove - 1 || cur.getMidX() == cur.currentxmove + 1) && (cur.getMidY() == cur.currentymove - 1 || cur.getMidY() == cur.currentymove + 1)) {
+                // TODO Lumber Animation for a bit then
+                gData.map.RemoveLumber(cur.selectedTilePosition,cur.selectedTilePosition,10);
+                cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
+                UnitPosition upos = new UnitPosition(cur.selectedTilePosition);
+                StaticAsset nearestKeep = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Keep);
+                cur.curState = GameDataTypes.EUnitState.ReturnLumber;
+                cur.currentxmove = nearestKeep.positionX();
+                cur.currentymove = nearestKeep.positionY();
+            }
+            else {
+                UnitMoveState(cur, deltaTime, gData);
+            }
         }
         else
             UnitMoveState(cur, deltaTime, gData);
