@@ -115,6 +115,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
+    private boolean buildSimpleButtonIsPressed;
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -153,7 +154,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
-
+        buildSimpleButtonIsPressed = false;
         /*standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -232,6 +233,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //attack = 0;
                 //mine = 0;
                 //ability = 0;
+            }
+        });
+        buildSimpleButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = true;
+                fillSideBarTable();
             }
         });
         /*
@@ -474,7 +482,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.clearChildren();
 
         // determine context buttons based on selected units
-        capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        if (buildSimpleButtonIsPressed) {
+            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
+        } else {
+            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        }
         log.info(capabilities.toString());
 
 
@@ -769,11 +781,17 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = singleSelectUpdate();
         }
 
+        if (newSelection) {
+            buildSimpleButtonIsPressed = false;
+        }
+
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
         } else if (!selectButton.isPressed()){
             fillSideBarTable();
         }
+
+
 
         return true;
     }
