@@ -21,6 +21,8 @@ import java.util.Vector;
  */
 
 public class RouterMap {
+    private static RouterMap single_instance = null;
+
     class SSearchTarget {
         int DX;
         int DY;
@@ -47,9 +49,15 @@ public class RouterMap {
     static final int SEARCH_STATUS_VISITED = -2;
     static final int SEARCH_STATUS_OCCUPIED = -3;
 
-    public RouterMap(){
+    private RouterMap(){
         DIdealSearchDirection = GameDataTypes.EDirection.North;
         DMapWidth = 1;
+    }
+
+    public static RouterMap RouterMap(){
+        if (single_instance == null)
+            single_instance = new RouterMap();
+        return single_instance;
     }
 
     static boolean MovingAway(GameDataTypes.EDirection dir1, GameDataTypes.EDirection dir2){
@@ -64,23 +72,24 @@ public class RouterMap {
         return false;
     }
 
-    //TODO: could change so assetdecorated map has all units?
     public GameDataTypes.EDirection FindRoute(GameData gameData, Vector<Unit.IndividualUnit> allUnits, Unit.IndividualUnit asset){
         AssetDecoratedMap resmap = gameData.map;
         int MapWidth = resmap.Width();
         int MapHeight = resmap.Height();
         DMap = new ArrayList<ArrayList<Integer>>();
-        /*for (int i = 0; i < MapHeight+1; i++){
+        for (int i = 0; i < MapHeight+3; i++){
             ArrayList<Integer> tempList = new ArrayList<Integer>();
-            for (int j = 0; j < MapWidth+1; j++){
+            for (int j = 0; j < MapWidth+3; j++){
                 tempList.add(SEARCH_STATUS_UNVISITED);
             }
             DMap.add(tempList);
-        }*/
+        }
         //TODO: Verify if this is correct coordinate!
         UnitPosition unitPosition = new UnitPosition(Math.round(asset.getX()), Math.round(asset.getY()));
-        int StartX = unitPosition.X();
-        int StartY = unitPosition.Y();
+        TilePosition tilePosition = new TilePosition(unitPosition);
+        int StartX = tilePosition.X();
+        int StartY = tilePosition.Y();
+        Gdx.app.log("RM", StartX + " " + StartY);
         /*int StartX = asset.TilePositionX(); //TODO: for unit class
         int StartY = asset.TilePositionY(); //TODO: for unit class
         */
@@ -98,15 +107,18 @@ public class RouterMap {
 
         UnitPosition targetPosition = new UnitPosition(Math.round(asset.currentxmove), Math.round(asset.currentymove));
         TargetTile = new TilePosition(targetPosition);
+        //Gdx.app.log("RM", TargetTile.X() + " " + TargetTile.Y());
+       // Gdx.app.log("RM", "Size: " + DMap.size() + " " + DMap.get(0).size());
         if((DMap.size() != MapHeight + 2)||(DMap.get(0).size() != MapWidth + 2)){
             int LastYIndex = MapHeight + 1;
             int LastXIndex = MapWidth + 1;
             //TODO: Check if ensureCapacity is even necessary
-            DMap.ensureCapacity(MapHeight + 2);
+            DMap.ensureCapacity(MapHeight + 3);
             for(ArrayList<Integer> Row : DMap){
-                Row.ensureCapacity(MapWidth + 2);
+                Row.ensureCapacity(MapWidth + 3);
             }
             for(int Index = 0; Index < DMap.size(); Index++){
+                //Gdx.app.log("RM", "Index " + Index);
                 DMap.get(Index).set(0, SEARCH_STATUS_VISITED);
                 DMap.get(Index).set(LastXIndex, SEARCH_STATUS_VISITED);
             }
@@ -120,6 +132,7 @@ public class RouterMap {
         if(unitPosition.equals(TargetTile)){
             int DeltaX = targetPosition.X() - unitPosition.X();
             int DeltaY = targetPosition.Y() - unitPosition.Y();
+            Gdx.app.log("RM 1", DeltaX + " " + DeltaY);
 
             if(0 < DeltaX){
                 if(0 < DeltaY){
@@ -194,7 +207,8 @@ public class RouterMap {
         for (Unit.IndividualUnit eachUnit : allUnits){
             if (asset != eachUnit){   //does this check work?
                 UnitPosition eachUnitPosition = new UnitPosition(Math.round(eachUnit.getX()), Math.round(eachUnit.getY()));
-                DMap.get(eachUnitPosition.Y() + 1).set(eachUnitPosition.X() + 1, SEARCH_STATUS_OCCUPIED);
+                TilePosition eachTilePosition = new TilePosition(eachUnitPosition);
+                DMap.get(eachTilePosition.Y() + 1).set(eachTilePosition.X() + 1, SEARCH_STATUS_OCCUPIED);
             }
         }
 

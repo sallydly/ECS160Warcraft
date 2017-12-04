@@ -431,10 +431,14 @@ public class Unit {
     public boolean UnitMove(IndividualUnit cur, float deltaTime, GameData gameData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
             // TODO: do actual pathfinding
-            RouterMap routerMap = new RouterMap();
+            RouterMap routerMap = RouterMap.RouterMap();
             GameDataTypes.EDirection direction = routerMap.FindRoute(gameData, GetAllUnits(), cur);
             Gdx.app.log("Unit >> RouterMap", "Move " + direction.name());
 
+            cur.direction = direction;
+            //TODO: switch statement depending on direction
+
+            //TODO: delete start
             boolean north, south, east, west;
             north = south = west = east = false;
 
@@ -476,6 +480,7 @@ public class Unit {
             } else if (west) {
                 cur.direction = GameDataTypes.EDirection.West;
             }
+            //TODO: delete end
 
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
             cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, true);
