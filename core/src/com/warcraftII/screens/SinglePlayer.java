@@ -642,6 +642,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
                             unitToBuild = GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType));
+                            gameData.playerData.get(1).ConstructUnit(selectedAsset,unitToBuild,gameData.map);
                         }
                     });
                     sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);

@@ -500,6 +500,31 @@ public class PlayerAssetType {
 
     }
 
+    public static int LumberCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.LumberCost();
+    }
+
+    public static int GoldCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.GoldCost();
+    }
+
+    public static int StoneCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.StoneCost();
+    }
+
+    public static int BuildTime(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.BuildTime();
+    }
+
+
     /*
     public static int MaxSight(){
 
