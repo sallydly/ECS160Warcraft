@@ -41,6 +41,7 @@ public class AssetDecoratedMap extends TerrainMap {
     protected Vector< Vector< Integer > > DStoneAvailable;
     protected List <EPlayerColor> DPlayers;
 
+
     protected static Map< String, Integer > DMapNameTranslation;
     protected static Vector < AssetDecoratedMap > DAllMaps;
 
@@ -75,16 +76,16 @@ public class AssetDecoratedMap extends TerrainMap {
     }
 */
 
-/**
- * Constructor, add new players starting assets to the
- * asset and resource initialization lists
- *
- * @param[in] map AssetDecoratedMap object to add to its initialization lists
- * @param[in] newcolors Array of players to add
- *
- * @return Nothing
- *
- */
+    /**
+     * Constructor, add new players starting assets to the
+     * asset and resource initialization lists
+     *
+     * @param[in] map AssetDecoratedMap object to add to its initialization lists
+     * @param[in] newcolors Array of players to add
+     *
+     * @return Nothing
+     *
+     */
 
 // TODO: fix this constructor:
 /*
@@ -122,7 +123,7 @@ public class AssetDecoratedMap extends TerrainMap {
      *
      */
 // TODO: Implement this function:?
-  /*
+    /*
     public Set(AssetDecoratedMap map){
         if(this != &map){
             CTerrainMap.operator=(map);
@@ -133,7 +134,7 @@ public class AssetDecoratedMap extends TerrainMap {
         }
         return *this;
     }
-*/
+    */
 
     /**
      * Load in the data for all the maps from .map files
@@ -503,12 +504,12 @@ public class AssetDecoratedMap extends TerrainMap {
 
             Integer newLumberAmount;
             Vector<Integer> revisedRow;
-            switch(Index){
+            switch(Index) {
                 case 0:
                     newLumberAmount = DLumberAvailable.get(pos.Y()).get(pos.X()) - amount;
-                    if(0 >= newLumberAmount){
+                    if (0 >= newLumberAmount) {
                         newLumberAmount = 0;
-                        ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte)0);
+                        ChangeTerrainTilePartial(pos.X(), pos.Y(), (byte) 0);
                         tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
@@ -516,40 +517,54 @@ public class AssetDecoratedMap extends TerrainMap {
                     DLumberAvailable.set(pos.Y(), revisedRow);
                     break;
                 case 1:
-                    newLumberAmount = DLumberAvailable.get(pos.Y()).get(pos.X()+1) - amount;
-                    if(0 >= newLumberAmount){
+                    newLumberAmount = DLumberAvailable.get(pos.Y()).get(pos.X() + 1) - amount;
+                    if (0 >= newLumberAmount) {
                         newLumberAmount = 0;
-                        ChangeTerrainTilePartial(pos.X()+1, pos.Y(), (byte)0);
+                        ChangeTerrainTilePartial(pos.X() + 1, pos.Y(), (byte) 0);
                         tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
-                    revisedRow.set(pos.X()+1, newLumberAmount);
+                    revisedRow.set(pos.X() + 1, newLumberAmount);
                     DLumberAvailable.set(pos.Y(), revisedRow);
                     break;
                 case 2:
-                    newLumberAmount = DLumberAvailable.get(pos.Y()+1).get(pos.X()) - amount;
-                    if(0 >= newLumberAmount){
+                    newLumberAmount = DLumberAvailable.get(pos.Y() + 1).get(pos.X()) - amount;
+                    if (0 >= newLumberAmount) {
                         newLumberAmount = 0;
-                        ChangeTerrainTilePartial(pos.X(), pos.Y()+1, (byte)0);
+                        ChangeTerrainTilePartial(pos.X(), pos.Y() + 1, (byte) 0);
                         tileChange = true;
                     }
                     revisedRow = DLumberAvailable.get(pos.Y());
                     revisedRow.set(pos.X(), newLumberAmount);
-                    DLumberAvailable.set(pos.Y()+1, revisedRow);
+                    DLumberAvailable.set(pos.Y() + 1, revisedRow);
                     break;
                 case 3:
-                    newLumberAmount = DLumberAvailable.get(pos.Y()+1).get(pos.X()+1) - amount;
-                    if(0 >= newLumberAmount){
+                    newLumberAmount = DLumberAvailable.get(pos.Y() + 1).get(pos.X() + 1) - amount;
+                    if (0 >= newLumberAmount) {
                         newLumberAmount = 0;
-                        ChangeTerrainTilePartial(pos.X()+1, pos.Y()+1, (byte)0);
+                        ChangeTerrainTilePartial(pos.X() + 1, pos.Y() + 1, (byte) 0);
                         tileChange = true;
                     }
-                    revisedRow = DLumberAvailable.get(pos.Y()+1);
-                    revisedRow.set(pos.X()+1, newLumberAmount);
-                    DLumberAvailable.set(pos.Y()+1, revisedRow);
+                    revisedRow = DLumberAvailable.get(pos.Y() + 1);
+                    revisedRow.set(pos.X() + 1, newLumberAmount);
+                    DLumberAvailable.set(pos.Y() + 1, revisedRow);
                     break;
             }
         }
+//        int willBeStump = 0;
+//        boolean isForest = false;
+//        for(int YOff = 0; YOff < 2; YOff++){
+//            for(int XOff = 0; XOff < 2; XOff++){
+//                int XPos = pos.X() + XOff;
+//                int YPos = pos.Y() + YOff;
+//                if(DPartials.get(YPos).get(XPos).equals(new Byte((byte)0)) || DPartials.get(YPos).get(XPos).equals(new Byte((byte)0x0F))) {
+//                    willBeStump++;
+//                }
+//            }
+//        }
+//        if(willBeStump == 4) {
+//            SetGrowthState(pos.X(), pos.Y(), 3);
+//        }
         return tileChange;
     }
 
@@ -568,7 +583,7 @@ public class AssetDecoratedMap extends TerrainMap {
 
     //TODO: for now Rock-0-0 is used for Rubble; should be changed to use textures in stone file on canvas later
     public boolean RemoveStone(TilePosition pos, TilePosition from, int amount){
-        log.info("RemoveStone");
+//        log.info("RemoveStone");
         boolean tileChange = false;
 
         int Index = 0;
@@ -820,6 +835,49 @@ public class AssetDecoratedMap extends TerrainMap {
         ReturnStatus = true;
         //}//TODO: catch exception here
         return ReturnStatus;
+    }
+
+    /**
+     *
+     * @return boolean, indicating that at least one ETileType was changed
+     */
+//    public boolean StepsOneTimeStep() {
+    public Vector<TilePosition> GrowTrees() {
+//        boolean TileChanged = false;
+        Vector<TilePosition> ChangedPositions = new Vector<TilePosition>();
+        for(int y = 0; y < DTimeStep.size(); y++) {
+            for(int x = 0; x <DTimeStep.get(y).size(); x++) {
+                if(DTreeGrowthState.get(y).get(x) > 0) {
+                    switch (DMap.get(y).get(x)) {
+                        case Stump:
+                        case Seedling:
+                        case Adolescent:
+                            int NewTimeStep = DTimeStep.get(y).get(x) - 1;
+                            DTimeStep.get(y).set(x, NewTimeStep);
+                            if(NewTimeStep <= 0) {
+//                                TileChanged = true;
+                                ChangedPositions.add(new TilePosition(x, y));
+                                SetTimeStep(x, y);
+                                int NextGrowthState = DTreeGrowthState.get(y).get(x) + 1;
+                                if(NextGrowthState > 3) {
+                                    NextGrowthState = 0;
+                                    DPartials.get(y).set(x, new Byte((byte)0x0F));
+                                    DPartials.get(y).set(x+1, new Byte((byte)0x0F));
+                                    DPartials.get(y+1).set(x, new Byte((byte)0x0F));
+                                    DPartials.get(y+1).set(x+1, new Byte((byte)0x0F));
+                                    DLumberAvailable.get(y).set(x, 400);
+                                    DLumberAvailable.get(y).set(x+1, 400);
+                                    DLumberAvailable.get(y+1).set(x, 400);
+                                    DLumberAvailable.get(y+1).set(x+1, 400);
+                                }
+                                SetGrowthState(x, y, NextGrowthState);
+                            }
+                    }
+                }
+            }
+        }
+//        return TileChanged;
+        return ChangedPositions;
     }
 
     /**

@@ -115,6 +115,7 @@ public class GameData {
 
         if (map.RemoveLumber(lumberlocation, unitlocation, amount)){
             TiledMapTileLayer terrainLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Terrain");
+
             mapRenderer.UpdateTile(lumberlocation,terrainLayer);
 
             terrainLayer.getCell(lumberlocation.X(), lumberlocation.Y()).getTile().getTextureRegion();
@@ -175,6 +176,15 @@ public class GameData {
         }
 
         staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
+
+        Vector<TilePosition> ChangedTiles = map.GrowTrees();
+        if(ChangedTiles.size() > 0) {
+            System.out.println("NEED UPDATE");
+            for(int i = 0; i < ChangedTiles.size(); i++) {
+                mapRenderer.UpdateTile(ChangedTiles.get(i), (TiledMapTileLayer)tiledMap.getLayers().get("Terrain"));
+            }
+        }
+
     }
 
 

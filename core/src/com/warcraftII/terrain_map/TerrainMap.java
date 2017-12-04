@@ -10,6 +10,8 @@ import com.warcraftII.terrain_map.TileTypes.*;
 
 import java.util.Vector;
 
+import javax.print.attribute.standard.MediaSize;
+
 public class TerrainMap {
     protected static boolean[][] DAllowedAdjacent = {
             {true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true },
@@ -30,6 +32,8 @@ public class TerrainMap {
     protected Vector<Vector<Integer>> DMapIndices;
     // the current state of tree growth, 0 = forest, 1 = adolescent, 2 = seedling 3 = stump
     protected Vector<Vector<Integer>> DTreeGrowthState;
+    protected Vector<Vector<Integer>> DTimeStep;
+
     protected boolean DRendered;
     protected String DMapName;
     protected String DMapDescription;
@@ -388,6 +392,30 @@ public class TerrainMap {
             }
             DPartials.set(i,TempPartialsRow);
         }
+
+        DTreeGrowthState = new Vector<Vector<Integer>>();
+        //DTreeGrowthState does not include rock border
+        DTreeGrowthState.setSize(DTerrainMap.size()-1);
+        for(int i = 0; i < DTreeGrowthState.size(); i++) {
+            Vector<Integer> internalVector = new Vector<Integer>();
+            internalVector.setSize(DTerrainMap.get(i).size()-1);
+            for(int j = 0; j < internalVector.size(); j++) {
+                internalVector.set(j, 0);
+            }
+            DTreeGrowthState.set(i, internalVector);
+        }
+
+        DTimeStep = new Vector<Vector<Integer>>();
+        DTimeStep.setSize(DTerrainMap.size()-1);
+        for(int i = 0; i < DTimeStep.size(); i++) {
+            Vector<Integer> internalVector = new Vector<Integer>();
+            internalVector.setSize(DTerrainMap.get(i).size()-1);
+            for(int j = 0; j < internalVector.size(); j++) {
+                internalVector.set(j, 100/(5));
+            }
+            DTimeStep.set(i, internalVector);
+        }
+
         returnStatus = true;
         return returnStatus;
     }
@@ -407,17 +435,7 @@ public class TerrainMap {
         DMapIndices = new Vector<Vector<Integer>>();
         DMapIndices.setSize(DTerrainMap.size()+1);
 
-        DTreeGrowthState = new Vector<Vector<Integer>>();
-        //DTreeGrowthState does not include rock border
-        DTreeGrowthState.setSize(DTerrainMap.size()-1);
-        for(int i = 0; i < DTreeGrowthState.size(); i++) {
-            Vector<Integer> internalVector = new Vector<Integer>();
-            internalVector.setSize(DTerrainMap.get(i).size()-1);
-            for(int j = 0; j < internalVector.size(); j++) {
-                internalVector.set(j, 1);
-            }
-            DTreeGrowthState.set(i, internalVector);
-        }
+
 
         for (int i = 0; i < DMap.size(); i++){
             Vector<ETileType> newVec1 = new Vector<ETileType>();
@@ -446,6 +464,24 @@ public class TerrainMap {
             }
         }
         DRendered = true;
+
+
+
+//        DTimeStep = new Vector<Vector<Integer>>(DTerrainMap.size()-1);
+//        for(int y = 0; y < DTimeStep.size(); y++) {
+//            DTimeStep.get(y).setSize(DTerrainMap.get(0).size()-1);
+//            Vector<Integer> InnerVec = new Vector<Integer>();
+//            for(int x = 0; x < DTimeStep.get(y).size(); x++) {
+//                int UP = (DMap.get(y+1).get(x) == ETileType.Forest ? 1 : 0);
+//                int DOWN = (DMap.get(y-1).get(x) == ETileType.Forest ? 1 : 0);
+//                int RIGHT = (DMap.get(y).get(x+1) == ETileType.Forest ? 1 : 0);
+//                int LEFT = (DMap.get(y).get(x-1) == ETileType.Forest ? 1 : 0);
+//                int NAdjacentForest = UP + DOWN + RIGHT + LEFT;
+//                InnerVec.set(x, 2700/(1+NAdjacentForest));
+//            }
+//            DTimeStep.set(y, InnerVec);
+//        }
+
     }
 
     /**
@@ -525,17 +561,17 @@ public class TerrainMap {
                 Index = TypeIndex;
             } else {
                 switch(DTreeGrowthState.get(y).get(x)) {
-                    case 3:
+                    case 0:
+                        Type = ETileType.Stump;
+                        break;
+                    case 1:
                         Type = ETileType.Stump;
                         break;
                     case 2:
                         Type = ETileType.Seedling;
                         break;
-                    case 1:
+                    case 3:
                         Type = ETileType.Adolescent;
-                        break;
-                    case 0:
-                        Type = ETileType.Forest;
                         break;
                     default:
                         //if when forest is cut down and rubble is shown -> indicates error
@@ -643,4 +679,77 @@ public class TerrainMap {
             }
         }
     }
+
+    public void SetGrowthState(int x, int y, int state) {
+        DTreeGrowthState.get(y).set(x, state);
+        log.info("GrowthState: "+DTreeGrowthState.get(y).get(x));
+        SetTileTypeAndIndex(x, y);
+    }
+
+    public int GetGrowthState(int x, int y) {
+        return DTreeGrowthState.get(y).get(x);
+    }
+
+    public void SetTimeStep(int x, int y) {
+        int NAdjacentForest = 0;
+        for(int i = 0; i < 3; i+=2) {
+            for(int j = 0; j < 3; j+=2) {
+//                if(DMap.get(y+i).get(x+j) == ETileType.Forest) {
+                if(DTreeGrowthState.get(y).get(x) == 0) {
+                    NAdjacentForest++;
+                }
+            }
+        }
+        DTimeStep.get(y).set(x, 100/(1+NAdjacentForest));
+        log.info("STEP: " + x + " " + y + " " + DTimeStep.get(y).get(x));
+    }
+
+//    /**
+//     *
+//     * @return boolean, indicating that at least one ETileType was changed
+//     */
+////    public boolean StepsOneTimeStep() {
+//    public Vector<TilePosition> GrowTrees() {
+////        boolean TileChanged = false;
+//        Vector<TilePosition> ChangedPositions = new Vector<TilePosition>();
+//        for(int y = 0; y < DTimeStep.size(); y++) {
+//            for(int x = 0; x <DTimeStep.get(y).size(); x++) {
+//                if(DTreeGrowthState.get(y).get(x) > 0) {
+//                    switch (DMap.get(y).get(x)) {
+//                        case Stump:
+//                        case Seedling:
+//                        case Adolescent:
+//                            int NewTimeStep = DTimeStep.get(y).get(x) - 1;
+//                            DTimeStep.get(y).set(x, NewTimeStep);
+//                            if(NewTimeStep <= 0) {
+////                                TileChanged = true;
+//                                ChangedPositions.add(new TilePosition(x, y));
+//                                SetTimeStep(x, y);
+//                                int NextGrowthState = DTreeGrowthState.get(y).get(x) + 1;
+//                                if(NextGrowthState > 3) {
+//                                    NextGrowthState = 0;
+//
+//                                }
+//                                SetGrowthState(x, y, NextGrowthState);
+//                            }
+//                    }
+//                }
+//            }
+//        }
+////        return TileChanged;
+//        return ChangedPositions;
+//    }
+
+    public void StepsOn(int x, int y) {
+        ETileType ThisTileType = TileType(x, y);
+        switch(ThisTileType) {
+            case Stump:
+            case Seedling:
+                SetGrowthState(x, y, 0);
+                SetTimeStep(x, y);
+        }
+
+    }
+
+
 }

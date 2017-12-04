@@ -360,8 +360,12 @@ public class MapRenderer {
             int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
 
 
-            if (ThisTileType == TileTypes.ETileType.Stump)
+            if (ThisTileType == TileTypes.ETileType.Stump && DMap.GetGrowthState(XIndex, YIndex) == 0) {
                 System.out.println("I will be stump");
+                DMap.SetGrowthState(XIndex, YIndex, 1);
+//                ThisTileType = DMap.TileType(XIndex, YIndex);
+                DMap.SetTimeStep(XIndex, YIndex);
+            }
             if (ThisTileType == ETileType.Rubble)
                 System.out.println("I will be Rubble");
 
@@ -390,5 +394,34 @@ public class MapRenderer {
         return;
 
     }
+
+    public void UpdateTreeGrowth(TilePosition tpos, TiledMapTileLayer terrainLayer) {
+        int XIndex = tpos.X();
+        int YIndex = tpos.Y();
+        ETileType ThisTileType = DMap.TileType(XIndex, YIndex);
+        int TileIndex = DMap.TileTypeIndex(XIndex, YIndex);
+        if ((0 <= TileIndex) && (16 > TileIndex)) {
+            TextureRegion textureRegion = null;
+            int AltTileCount = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).size();
+            if (AltTileCount > 0) {
+                int AltIndex = (XIndex + YIndex) % AltTileCount;
+
+                textureRegion = DTileTextures.get(TileTypes.to_underlying(ThisTileType)).get(TileIndex).get(AltIndex);
+            }
+
+            if (null != textureRegion) {
+                // need to invert both y axis:
+                int Xpos = XIndex;
+                int Ypos = DMapHeight - 1 - YIndex;
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(new StaticTiledMapTile(textureRegion));
+                terrainLayer.setCell(Xpos, Ypos, cell);
+            }
+        } else {
+
+            return;
+        }
+    }
+
 
 } // end MapRenderer Class
