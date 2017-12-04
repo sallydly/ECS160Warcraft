@@ -339,6 +339,9 @@ public class Unit {
                     case ReturnMine:
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
+                    case Repair:
+                        UnitRepairState(cur, elapsedTime, gData);
+                        break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
                             toDelete.add(cur);
@@ -419,6 +422,21 @@ public class Unit {
         }
         else
             UnitMoveState(cur, deltaTime, gData);
+    }
+
+    private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
+        if ((cur.getMidX() == cur.currentxmove - 1 || cur.getMidX() == cur.currentxmove + 1) && (cur.getMidY() == cur.currentymove - 1 || cur.getMidY() == cur.currentymove + 1)) {
+            if (cur.selectedAsset.hitPoints() != cur.selectedAsset.maxHitPoints()) {
+                // TODO Repair Animation here and delay
+                cur.selectedAsset.incrementHitPoints(10);
+            }
+            else {
+                cur.curState = GameDataTypes.EUnitState.Idle;
+            }
+        }
+        else {
+            UnitMoveState(cur, deltaTime, gData);
+        }
     }
 
     private void UnitPatrolState(IndividualUnit cur, float deltaTime, GameData gData) {
