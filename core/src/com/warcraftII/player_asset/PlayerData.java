@@ -201,6 +201,11 @@ public class PlayerData {
 
         DStaticAssets.add(ConsAsset);
         map.AddStaticAsset(ConsAsset);
+
+        DecrementGold(ConsAsset.GoldCost());
+        DecrementLumber(ConsAsset.LumberCost());
+        DecrementStone(ConsAsset.StoneCost());
+
         return ConsAsset;
     }
     /*
