@@ -158,7 +158,7 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            if (inProgressBuilding == null && !hidden) {
+            if (!hidden) {
                 batch.draw(curTexture, getX(), getY());
             }
         }
@@ -435,13 +435,13 @@ public class Unit {
                 cur.attackEnd = false;
                 cur.animStart = totalTime;
             }
-            if (totalTime-cur.animStart >= 50) {
+            if (totalTime-cur.animStart >= 10) {
                 cur.selectedAsset.EndMining();
-                cur.resourceAmount += 10;
+                cur.resourceAmount += 50;
                 cur.abilities.add(CarryingGold);
             }
 
-            if (cur.resourceAmount >= 100) {
+            if (cur.resourceAmount >= 500) {
                 if (SetReturnDest(cur, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnMine;
                     cur.curAnim = GenerateAnimation(cur, "gold");
@@ -459,8 +459,9 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
-            cur.resourceAmount += 10;
+            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 50);
+            // check if the tile is still forest, if not update to new one
+            cur.resourceAmount += 50;
             cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
             cur.curAnim = GenerateAnimation(cur, "lumber");
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
@@ -521,7 +522,7 @@ public class Unit {
         if (UnitMove(cur, deltaTime, gData)) {
             if (cur.selectedAsset.hitPoints() <= cur.selectedAsset.maxHitPoints()) {
                 // TODO Repair Animation here and delay
-                cur.selectedAsset.incrementHitPoints(10);
+                cur.selectedAsset.incrementHitPoints(50);
             }
             else {
                 cur.curState = GameDataTypes.EUnitState.Idle;
@@ -701,6 +702,7 @@ public class Unit {
                 if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && gData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
                     // If you even can build, set inProgressBuilding to the building
                     gData.selectedUnits.remove(cur);
+                    cur.hidden = true;
                     cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
                 } else {
                     // If you can't, go Idle (should probably error/otherwise handle this)
@@ -711,6 +713,7 @@ public class Unit {
                 // If construction is completed, go idle
                 cur.inProgressBuilding = null;
                 //gData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.ScoutTower, cur.color, cur.buildPos, gData.tiledMap, gData.map);
+                cur.hidden = false;
                 cur.stopMovement();
                 cur.curState = GameDataTypes.EUnitState.Idle;
             } else {
