@@ -1115,7 +1115,38 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedTilePosition = tilePos;
                         usedCount += 1;
-                    } else {
+                    }
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Rock) {
+                        sUnit.curState = GameDataTypes.EUnitState.Stone;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
+                    }/*
+                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep) {
+                        if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingGold)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnMine;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                        else if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingLumber)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnLumber;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                        else if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingStone)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnStone;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                    } Sven deleted this not sure if needed */
+                    else {
                         System.out.println("Can't mine that");
                     }
                 } else if (attackButton.isPressed()) {

@@ -356,6 +356,12 @@ public class Unit {
                     case ReturnMine:
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
+                    case Stone:
+                        UnitStoneState(cur, elapsedTime, gData);
+                        break;
+                    case ReturnStone:
+                        UnitReturnStoneState(cur, elapsedTime, gData);
+                        break;
                     case Repair:
                         UnitRepairState(cur, elapsedTime, gData);
                         break;
@@ -394,6 +400,21 @@ public class Unit {
             RemoveFromMap(cur);
         }
         toDelete.removeAllElements();
+    }
+    private void UnitReturnStoneState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
+            cur.stopMovement();
+            gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementStone(cur.resourceAmount);
+            cur.resourceAmount = 0;
+            cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingStone);
+            cur.curState = GameDataTypes.EUnitState.Stone;
+            UnitPosition temp = new UnitPosition(cur.selectedTilePosition);
+            cur.currentxmove = temp.X();//+(Position.tileWidth()/2);
+            cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
+        } else {
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
+            UnitMove(cur, "stone", totalTime, gData);
+        }
     }
 
     private void UnitReturnMineState(IndividualUnit cur, float totalTime, GameData gData) {
@@ -459,13 +480,33 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
+            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
             cur.resourceAmount += 10;
             cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
             cur.curAnim = GenerateAnimation(cur, "lumber");
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
             if (SetReturnDest(cur, totalTime, gData)) {
                 cur.curState = GameDataTypes.EUnitState.ReturnLumber;
+            } else {
+                System.out.println("No where to drop off resources, going Idle");
+                cur.curState = GameDataTypes.EUnitState.Idle;
+                cur.stopMovement();
+            }
+
+        } else {
+            UnitMove(cur, totalTime, gData);
+        }
+    }
+
+    private void UnitStoneState(IndividualUnit cur, float totalTime, GameData gData) {
+        if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
+            gData.RemoveStone(cur.selectedTilePosition, cur.selectedTilePosition, 10);
+            cur.resourceAmount += 10;
+            cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingStone);
+            cur.curAnim = GenerateAnimation(cur, "stone");
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
+            if (SetReturnDest(cur, totalTime, gData)) {
+                cur.curState = GameDataTypes.EUnitState.ReturnStone;
             } else {
                 System.out.println("No where to drop off resources, going Idle");
                 cur.curState = GameDataTypes.EUnitState.Idle;
@@ -629,28 +670,40 @@ public class Unit {
         return UnitMove(cur, "walk", totalTime, gData);
     }
 
+    public boolean pathable(float x, float y, GameData gData) {
+        TilePosition tilePos = new TilePosition(new UnitPosition(round(x), round(y)));
+        StaticAsset selectedAsset = gData.map.StaticAssetAt(tilePos);
+        if (selectedAsset != null) {
+            return false;
+        }
+        else if (gData.map.IsTraversable(gData.map.TileType(tilePos))) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     // Returns true if it's reached the destination, false if it hasn't
     public boolean UnitMove(IndividualUnit cur, String type, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
-            // TODO: do actual pathfinding
-
             boolean north, south, east, west;
             north = south = west = east = false;
 
-            if (cur.getMidX() > cur.currentxmove) {
+            if (cur.getMidX() > cur.currentxmove && pathable((cur.getX() - cur.speed/10),cur.getY(), gData)) {
                 cur.setX(cur.getX() - cur.speed/10);
                 west = true;
-            } else if (cur.getMidX() < cur.currentxmove) {
+            } else if (cur.getMidX() < cur.currentxmove && pathable((cur.getX() + cur.speed/10),cur.getY(), gData)) {
                 cur.setX(cur.getX()+ cur.speed/10);
                 east = true;
             } else {
                 // stay in X
             }
 
-            if (cur.getMidY() > cur.currentymove) {
+            if (cur.getMidY() > cur.currentymove && pathable(cur.getX(),(cur.getY() - cur.speed/10), gData)) {
                 cur.setY(cur.getY() - cur.speed/10);
                 south = true;
-            } else if (cur.getMidY() < cur.currentymove) {
+            } else if (cur.getMidY() < cur.currentymove && pathable(cur.getX(),(cur.getY() + cur.speed/10), gData)) {
                 cur.setY(cur.getY() + cur.speed/10);
                 north = true;
             } else {
@@ -674,6 +727,8 @@ public class Unit {
                 cur.direction = GameDataTypes.EDirection.East;
             } else if (west) {
                 cur.direction = GameDataTypes.EDirection.West;
+            } else {
+                cur.stopMovement();
             }
 
             cur.curAnim = GenerateAnimation(cur, type);
