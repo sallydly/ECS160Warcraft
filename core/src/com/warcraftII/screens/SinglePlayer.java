@@ -19,7 +19,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -32,12 +31,9 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
-import com.warcraftII.player_asset.PlayerCapability;
-
 import com.warcraftII.player_asset.PlayerAssetType;
+import com.warcraftII.player_asset.PlayerCapability;
 import com.warcraftII.player_asset.StaticAsset;
-import com.warcraftII.position.CameraPosition;
-import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes;
@@ -46,8 +42,6 @@ import com.warcraftII.units.UnitActionRenderer;
 
 import java.util.Vector;
 
-
-import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 
@@ -807,6 +801,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public void render(float delta) {
+        checkWinLose();
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
@@ -1278,6 +1273,27 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    public void checkWinLose() {
+        Vector<Unit.IndividualUnit> units = allUnits.GetAllUnits();
+        boolean redLost = true;
+        boolean otherLost = true;
+        for(Unit.IndividualUnit unit : units) {
+            if(unit.color == GameDataTypes.EPlayerColor.Red) {
+                redLost = false;
+            } else {
+                otherLost = false;
+            }
+            if(!redLost && !otherLost) {
+                break;
+            }
+        }
+        if(redLost) {
+            game.setScreen(new LoseScreen(game));
+        } else if(otherLost) {
+            game.setScreen(new WinScreen(game));
+        }
     }
 
     public boolean anyButtonHeld() {
