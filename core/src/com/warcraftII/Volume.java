@@ -4,8 +4,8 @@ package com.warcraftII;
 public class Volume {
     private static final Volume volume = new Volume();
 
-    private static int fxVolume;
-    private static int musicVolume;
+    private static float fxVolume;
+    private static float musicVolume;
 
     static Volume getInstance() {
         return volume;
@@ -13,22 +13,22 @@ public class Volume {
 
     private Volume() {
         this.fxVolume = 100;
-        this.musicVolume = 50;
+        this.musicVolume = 100;
     }
 
-    public static int getFxVolume() {
+    public static float getFxVolume() {
         return fxVolume;
     }
 
-    public static void setFxVolume(int fxVolume) {
+    public static void setFxVolume(float fxVolume) {
         Volume.fxVolume = fxVolume;
     }
 
-    public static int getMusicVolume() {
+    public static float getMusicVolume() {
         return musicVolume;
     }
 
-    public static void setMusicVolume(int musicVolume) {
+    public static void setMusicVolume(float musicVolume) {
         Volume.musicVolume = musicVolume;
     }
 }
