@@ -172,6 +172,21 @@ public class GameData {
             if(GameDataTypes.EAssetAction.Death == sasset.Action()){
                 //do nothing for now.
             }
+            if(GameDataTypes.EAssetAction.Capability == sasset.Action()){
+                //Thing is building a unit.  deal with it.
+                if(sasset.Step() < sasset.DUnitConstructionTime * staticAssetRenderer.UpdateFrequency()) {
+                    sasset.IncrementStep();
+                }
+                else
+                {
+                    TilePosition tpos = map.FindAssetPlacement(sasset); //fix asap
+                    allUnits.AddUnit(tpos,sasset.DPendingUnitType,playerData.get(1).Color());
+                    sasset.PopCommand();
+                    sasset.DUnitConstructionTime = 0;
+                    sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
+                }
+
+            }
         }
 
         staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
