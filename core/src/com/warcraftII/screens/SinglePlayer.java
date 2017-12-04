@@ -445,9 +445,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-                //if(buildButton.isPressed())
-                //Co-opting the move button for now...
-                if(moveButton.isPressed())
+
+                if(buildSimpleButton.isPressed())
                 {
                     UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
                     TilePosition tpos = new TilePosition(upos);
@@ -487,9 +486,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
 
-                //if(buildButton.isPressed())
-                //Co-opting the move button for now...
-                if(moveButton.isPressed()) {
+                if(buildSimpleButton.isPressed()) {
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
@@ -822,9 +819,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-        //if(buildButton.isPressed())
-        //Co-opting the move button for now...
-        if(moveButton.isPressed()) {
+        if(buildSimpleButton.isPressed()) {
             UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
             TilePosition tpos = new TilePosition(upos);
 
