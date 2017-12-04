@@ -36,6 +36,7 @@ import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes;
@@ -44,6 +45,8 @@ import com.warcraftII.units.UnitActionRenderer;
 
 import java.util.Vector;
 
+
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 
@@ -74,10 +77,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton repairButton;
     private TextButton mineButton;
     private TextButton buildSimpleButton;
-    private TextButton buildKeepButton;
-    private TextButton buildLumberMillButton;
-    private TextButton buildFarmButton;
-
     private TextButton newAbility;
 
     private TextButton selectButton;
@@ -123,7 +122,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
-    private boolean buildSimpleButtonIsPressed;
 
     //For wall building:
      private boolean wallStarted = false;
@@ -168,14 +166,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
         buildSimpleButton = new TextButton("Build Simple", skin);
-        buildKeepButton = new TextButton("Build Keep", skin);
-        buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
-        buildFarmButton = new TextButton("Build Farm", skin);
-
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
-        buildSimpleButtonIsPressed = false;
+
         /*standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -254,13 +248,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //attack = 0;
                 //mine = 0;
                 //ability = 0;
-            }
-        });
-        buildSimpleButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                buildSimpleButtonIsPressed = true;
-                fillSideBarTable();
             }
         });
         /*
@@ -462,11 +449,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-                //co-opting select button for now
-                if(selectButton.isPressed())
-                {
-                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
-                    TilePosition tpos = new TilePosition(upos);
+                if(buildSimpleButton.isPressed()) {
+                    TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
 
                     //centering the staticasset about the touch:
                     tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
@@ -474,18 +458,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                     if(typetobebuilt == GameDataTypes.EStaticAssetType.Wall)
                     {
-                        gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                        gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                         wallStarted = false;
                         return false;
                     }
 
 
-                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map)) {
-                        gameData.playerData.get(1).ConstructStaticAsset(tpos,typetobebuilt,gameData.map);
+                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map)) {
+                        gameData.playerData.get(1).ConstructStaticAsset(tpos, typetobebuilt, gameData.map);
                     }
-                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
 
+//                    // TODO: adapt this to match types
+//                    for (Unit.IndividualUnit sUnit : selectedUnits) {
+//
                 }
+
 
 
                 if (selectButton.isPressed()) {
@@ -503,7 +491,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
 
-                if(selectButton.isPressed()) {
+                if(buildSimpleButton.isPressed()) {
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
@@ -560,7 +548,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
 
-        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Black);
+        gameData.allUnits.AddUnit(690,690, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Red);
         gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman, GameDataTypes.EPlayerColor.Green);
         gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant, GameDataTypes.EPlayerColor.Orange);
         gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
@@ -577,11 +565,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.clearChildren();
 
         // determine context buttons based on selected units
-        if (buildSimpleButtonIsPressed) {
-            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
-        } else {
-            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
-        }
+        capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
         log.info(capabilities.toString());
 
 
@@ -590,19 +574,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case None:
                     break;
                 case Move:
-                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Repair:
-                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Mine:
-                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case BuildAdvanced:
@@ -614,15 +598,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case BuildWall:
                     break;
                 case Attack:
-                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case StandGround:
-                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case Patrol:
-                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
                     sidebarTable.row();
                     break;
                 case WeaponUpgrade1:
@@ -684,13 +668,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
-        sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
         sidebarStage.draw();
     }
 
@@ -747,6 +725,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.act();
         mapStage.draw();
 
+        // Below are the selection boxes (they shouldn't fire at the same time)
         // Asset selection box drawing
         if (isAssetSelected == true) {
 
@@ -761,7 +740,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.end();
         }
 
-
         for (Unit.IndividualUnit sel : selectedUnits) {
             shapeRenderer.setProjectionMatrix(mapCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -769,43 +747,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.rect(sel.getX(), sel.getY(), sel.getWidth(), sel.getHeight());
             shapeRenderer.end();
         }
-    }
-
-    public void specialButtons() {
-        int counter = 0;
-//        for (Actor actor : stage.getActors()) {
-//            if (counter > 3)
-//                actor.remove();
-//            counter = counter + 1;
-//        }
-        /*
-        for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
-            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
-                newAbility = new TextButton("Mine", gameData.unitActions.skin);
-                newAbility.setPosition(5, 70+(20*(i+1))+((3+i+1)*Gdx.graphics.getHeight() / 10));
-                newAbility.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        mine = 1;
-                        return true;
-                    }
-                });
-//                stage.addActor(newAbility);
-            }
-            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.RangerScouting) {
-                newAbility = new TextButton("Ranger Scouting", gameData.unitActions.skin);
-                newAbility.setPosition(5, 70 + (20 * (i + 1)) + ((3 + i + 1) * Gdx.graphics.getHeight() / 10));
-                newAbility.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        ability = 1;
-                        return true;
-                    }
-                });
-//                stage.addActor(newAbility);
-            }
-        }
-        */
     }
 
     @Override
@@ -847,32 +788,35 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-        //co-opting selectbutton for now
-        if(selectButton.isPressed()) {
-            UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
-            TilePosition tpos = new TilePosition(upos);
+
+        if(buildSimpleButton.isPressed()) {
+            TilePosition tpos = new TilePosition(new UnitPosition((int) position.x,(int) position.y));
+
+            typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
 
             //centering the staticasset about the touch:
             tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
             tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
 
             //TODO: determine the type to be built...and the player color
-            gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
+            gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
         }
 
+
         //Asset Selection code here...I assume will override all others...?
-        UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
-        TilePosition tpos = new TilePosition(upos);
+        TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
         //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         //or:
         //Vector<Boolean> capabilities;
 
+
+        // move most of this to singleSelect?
         isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
-        if (chosenStatAsset != null) {
+        if (chosenStatAsset != null && !anyButtonHeld()) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
         } else {
@@ -880,11 +824,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
 
         //Returns capabilities:
-        if (isAssetSelected) {
+        if (isAssetSelected && (!attackButton.isPressed() && !selectedUnits.isEmpty())) {
+            // Won't fire if selectedUnits are trying to attack it
+
             //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
-            return false; //Ignores all other asset selection?
+            return true; //Ignores all other asset selection?
         }
 
         // TODO: maybe move this to a element in GameData?
@@ -895,17 +841,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = singleSelectUpdate();
         }
 
-        if (newSelection) {
-            buildSimpleButtonIsPressed = false;
-        }
-
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
         } else if (!selectButton.isPressed()){
             fillSideBarTable();
         }
-
-
 
         return true;
     }
@@ -917,9 +857,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean singleSelectUpdate() {
+
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
-            if (cur.touched) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed()) {
+            // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
+             if (cur.touched) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
@@ -928,7 +870,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sel.currentymove = cur.getMidY();
                         sel.curState = GameDataTypes.EUnitState.Attack;
                     }
-                } else {
+                    cur.touched = false;
+                } else if (cur.color == gameData.playerData.get(1).Color()){
                     cur.touched = false;
                     selectedUnits.removeAllElements();
                     selectedUnits.add(cur);
@@ -940,6 +883,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean multiSelectUpdate(Vector3 position) {
+
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -950,7 +894,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         selectedUnits.removeAllElements();
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()){
             // if (clicked within peasant || part of peasant within multi-select rectangle)
-            if ((cur.getX() <= position.x
+            if (((cur.getX() <= position.x
                     && cur.getX() + cur.getWidth() >= position.x
                     && cur.getY() <= position.y
                     && cur.getY() + cur.getHeight() >= position.y)
@@ -958,7 +902,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     (cur.getX() <= rightX
                             && cur.getX() + cur.getWidth() >= leftX
                             && cur.getY() <= bottomY
-                            && cur.getY() + cur.getHeight() >= topY)) {
+                            && cur.getY() + cur.getHeight() >= topY))
+                    && cur.color == gameData.playerData.get(1).Color()) {
 
                 //if (!selectedUnits.isEmpty() && cur.color == selectedUnits.firstElement().color) {
                 selectedUnits.add(cur);
@@ -1003,39 +948,44 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sUnit.curState = GameDataTypes.EUnitState.Patrol;
                     usedCount += 1;
                 } else if (standGroundButton.isPressed()) {
-                    usedCount += 1;
-                } else if (attackButton.isPressed()) {
+                    sUnit.stopMovement();
                     usedCount += 1;
                 } else if (mineButton.isPressed()) {
-                    CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)position.y, mapCamera);
-                    TilePosition tilePosition = cameraPosition.getTilePosition();
-                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePosition);
-                    if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine) {
+                    TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
+                    if (selectedAsset != null && selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine) {
                         sUnit.curState = GameDataTypes.EUnitState.Mine;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedAsset = selectedAsset;
-                        sUnit.selectedTilePosition = tilePosition;
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
                     }
-                    else if (gameData.map.TerrainTileType(tilePosition) == TileTypes.ETerrainTileType.Forest) {
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Forest) {
                         sUnit.curState = GameDataTypes.EUnitState.Lumber;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
-                        sUnit.selectedTilePosition = tilePosition;
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
+                    } else {
+                        System.out.println("Can't mine that");
                     }
-                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingGold)) {
-                        sUnit.curState = GameDataTypes.EUnitState.ReturnMine;
-                        sUnit.currentxmove = round(position.x);
-                        sUnit.currentymove = round(position.y);
-                        sUnit.selectedAsset = selectedAsset;
-                    }
-                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingLumber)) {
-                        sUnit.curState = GameDataTypes.EUnitState.ReturnLumber;
-                        sUnit.currentxmove = round(position.x);
-                        sUnit.currentymove = round(position.y);
-                        sUnit.selectedAsset = selectedAsset;
-                    }
+                } else if (attackButton.isPressed()) {
+                    // This is handled in singleSelected because it needs to target whatever individual unit was touched
                     usedCount += 1;
+                } else if (buildSimpleButton.isPressed()) {
+                    // TODO: why
+                    //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
+                    //sUnit.buildPos = cameraPosition.getTilePosition();
+                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    //sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+
+                    // Determine based on typetobebuilt
+                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
                 } else if (repairButton.isPressed()) {
                     TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
@@ -1193,5 +1143,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    public boolean anyButtonHeld() {
+        return moveButton.isPressed() || standGroundButton.isPressed() || attackButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed();
     }
 }
