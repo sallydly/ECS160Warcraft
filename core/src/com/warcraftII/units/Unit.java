@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
@@ -518,7 +519,7 @@ public class Unit {
     // Yes this is also silly. But it's the way the Linux code had the states.
     private void UnitBuild(IndividualUnit cur, GameDataTypes.EStaticAssetType toBuild, float totalTime, GameData gData) {
 
-        if (sqrt(pow((cur.currentxmove-cur.getMidX()), 2)  + pow((cur.currentymove-cur.getMidY()), 2)) <= cur.range*25) {
+        if (sqrt(pow((cur.currentxmove-cur.getMidX()), 2)  + pow((cur.currentymove-cur.getMidY()), 2)) <= (PlayerAssetType.StaticAssetSize(toBuild)/2) + cur.range * gData.TILE_WIDTH ) {
             // If unit is in range of the building
 
             if (cur.inProgressBuilding == null) {
@@ -526,7 +527,7 @@ public class Unit {
 
                 if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild)) {
                     // If you even can build, set inProgressBuilding to the building
-                    //gData.selectedUnits.remove(cur);
+                    gData.selectedUnits.remove(cur);
                     cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
                 } else {
                     // If you can't, go Idle (should probably error/otherwise handle this)
@@ -536,6 +537,7 @@ public class Unit {
             } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
                 // If construction is completed, go idle
                 cur.inProgressBuilding = null;
+                //gData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.ScoutTower, cur.color, cur.buildPos, gData.tiledMap, gData.map);
                 cur.stopMovement();
                 cur.curState = GameDataTypes.EUnitState.Idle;
             } else {

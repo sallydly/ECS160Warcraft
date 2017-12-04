@@ -821,9 +821,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartY = position.y;
 
 
-
-
-
+        /* // Moved to updateSelected
         if(buildSimpleButton.isPressed()) {
             UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
             TilePosition tpos = new TilePosition(upos);
@@ -835,6 +833,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //TODO: determine the type to be built...and the player color
             gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
         }
+        */
 
         //Asset Selection code here...I assume will override all others...?
         UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
@@ -844,6 +843,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //or:
         //Vector<Boolean> capabilities;
 
+
+        // move most of this to singleSelect?
         isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
@@ -857,10 +858,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         //Returns capabilities:
         if (isAssetSelected) {
+            // Should potentially allow for attacking
+
             //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
-            return false; //Ignores all other asset selection?
+            return true; //Ignores all other asset selection?
         }
 
 
@@ -927,7 +930,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         selectedUnits.removeAllElements();
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()){
             // if (clicked within peasant || part of peasant within multi-select rectangle)
-            if ((cur.getX() <= position.x
+            if (((cur.getX() <= position.x
                     && cur.getX() + cur.getWidth() >= position.x
                     && cur.getY() <= position.y
                     && cur.getY() + cur.getHeight() >= position.y)
@@ -935,7 +938,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     (cur.getX() <= rightX
                             && cur.getX() + cur.getWidth() >= leftX
                             && cur.getY() <= bottomY
-                            && cur.getY() + cur.getHeight() >= topY)) {
+                            && cur.getY() + cur.getHeight() >= topY))
+                    && cur.color == gameData.playerData.get(1).Color()) {
 
                 //if (!selectedUnits.isEmpty() && cur.color == selectedUnits.firstElement().color) {
                 selectedUnits.add(cur);
@@ -990,8 +994,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
                     //sUnit.buildPos = cameraPosition.getTilePosition();
 
-                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
-                    System.out.println("buildPos: X: "+sUnit.buildPos.X()+"; Y: "+sUnit.buildPos.Y());
+                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.ScoutTower)/2));
+                    sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.ScoutTower)/2));
+                    //sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
                     sUnit.currentxmove = round(position.x);
                     sUnit.currentymove = round(position.y);
                     sUnit.curState = GameDataTypes.EUnitState.BuildScoutTower;
