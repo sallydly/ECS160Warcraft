@@ -32,6 +32,7 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
+import com.warcraftII.player_asset.PlayerCapability;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
@@ -71,6 +72,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton repairButton;
     private TextButton mineButton;
     private TextButton buildSimpleButton;
+    private TextButton buildAdvancedButton;
     private TextButton buildKeepButton;
     private TextButton buildLumberMillButton;
     private TextButton buildFarmButton;
@@ -112,14 +114,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
-    private int lastbuiltasset = 0; //DEBUG
 
     UnitActionRenderer unitActionRenderer;
     private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
 
+    private GameDataTypes.EStaticAssetType assetToBuild;
+    private GameDataTypes.EUnitType unitToBuild;
+
+
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
     private boolean buildSimpleButtonIsPressed;
+    private boolean buildAdvancedButtonIsPressed;
+
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -155,7 +162,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         cancelButton = new TextButton("Cancel", skin);
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
-        buildSimpleButton = new TextButton("Build Simple", skin);
+        buildSimpleButton = new TextButton("Build", skin);
+        buildAdvancedButton = new TextButton("Upgrade",skin);
         buildKeepButton = new TextButton("Build Keep", skin);
         buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
         buildFarmButton = new TextButton("Build Farm", skin);
@@ -247,6 +255,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buildSimpleButtonIsPressed = true;
+                buildAdvancedButtonIsPressed = false;
+                fillSideBarTable();
+            }
+        });
+        buildAdvancedButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = false;
+                buildAdvancedButtonIsPressed = true;
                 fillSideBarTable();
             }
         });
@@ -254,6 +271,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buildSimpleButtonIsPressed = false;
+                buildAdvancedButtonIsPressed = false;
                 fillSideBarTable();
             }
         });
@@ -497,123 +515,192 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.clearChildren();
 
         // determine context buttons based on selected units
-        if (buildSimpleButtonIsPressed) {
-            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
+        if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
+            if(isAssetSelected){
+                //capabilities = selectedAsset.assetType().CapabilitiesVector();
+            }
+            else {
+                capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
+            }
         } else {
-            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+            if (isAssetSelected) {
+                capabilities = selectedAsset.assetType().CapabilitiesVector();
+            } else {
+                capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+
+            }
         }
         log.info(capabilities.toString());
 
+        if(isAssetSelected){
+            if(buildSimpleButton.isPressed()) {
+                for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    TextButton newButton = null;
+                    if (PlayerCapability.IsBuildingUnit(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
+                        newButton = new TextButton(capabilityType.toString(), skin);
+                    newButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            unitToBuild = GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType));
+                        }
+                    });
+                    sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                    }
+                }
+            }
+            else if (buildAdvancedButtonIsPressed){
+            for(final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                TextButton newButton = null;
+                if (PlayerCapability.IsBuildingBuilding(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None) {
+                    newButton = new TextButton(capabilityType.toString(), skin);
+                    newButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            assetToBuild = GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType));
+                        }
+                    });
+                    sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+            }
+            }
+            else{
+                sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                sidebarTable.row();
+                sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                sidebarTable.row();
+            }
 
-        for(GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
-            switch(capabilityType) {
-                case None:
-                    break;
-                case Move:
-                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Repair:
-                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Mine:
-                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildAdvanced:
-                    break;
-                case Convey:
-                    break;
-                case Cancel:
-                    sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildWall:
-                    break;
-                case Attack:
-                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case StandGround:
-                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Patrol:
-                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case WeaponUpgrade1:
-                    break;
-                case WeaponUpgrade2:
-                    break;
-                case WeaponUpgrade3:
-                    break;
-                case ArrowUpgrade1:
-                    break;
-                case ArrowUpgrade2:
-                    break;
-                case ArrowUpgrade3:
-                    break;
-                case ArmorUpgrade1:
-                    break;
-                case ArmorUpgrade2:
-                    break;
-                case ArmorUpgrade3:
-                    break;
-                case Longbow:
-                    break;
-                case RangerScouting:
-                    break;
-                case Marksmanship:
-                    break;
-                case Max:
-                    break;
+            // end case of static asset selected
+        }else { // now dealing with unit being selected...
+            if (buildSimpleButtonIsPressed){
+                for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    TextButton newButton = null;
+                    if (PlayerCapability.IsBuildingBuilding(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
+                        newButton = new TextButton(capabilityType.toString(), skin);
+                        newButton.addListener(new ClickListener() {
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                unitToBuild = GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType));
+                            }
+                        });
+                        sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                        sidebarTable.row();
+                    }
+                }
+            }
+            else{
+                for (GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    switch (capabilityType) {
+                        case None:
+                            break;
+                        case Move:
+                            sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Repair:
+                            sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Mine:
+                            sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildSimple:
+                            sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildAdvanced:
+                            break;
+                        case Convey:
+                            break;
+                        case Cancel:
+                            sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildWall:
+                            break;
+                        case Attack:
+                            sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case StandGround:
+                            sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Patrol:
+                            sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case WeaponUpgrade1:
+                            break;
+                        case WeaponUpgrade2:
+                            break;
+                        case WeaponUpgrade3:
+                            break;
+                        case ArrowUpgrade1:
+                            break;
+                        case ArrowUpgrade2:
+                            break;
+                        case ArrowUpgrade3:
+                            break;
+                        case ArmorUpgrade1:
+                            break;
+                        case ArmorUpgrade2:
+                            break;
+                        case ArmorUpgrade3:
+                            break;
+                        case Longbow:
+                            break;
+                        case RangerScouting:
+                            break;
+                        case Marksmanship:
+                            break;
+                        case Max:
+                            break;
 
-                case BuildPeasant:
-                    break;
-                case BuildFootman:
-                    break;
-                case BuildArcher:
-                    break;
-                case BuildRanger:
-                    break;
-                case BuildFarm:
-                    sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildTownHall:
-                    break;
-                case BuildBarracks:
-                    break;
-                case BuildLumberMill:
-                    sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildBlacksmith:
-                    break;
-                case BuildKeep:
-                    sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildCastle:
-                    break;
-                case BuildScoutTower:
-                    break;
-                case BuildGuardTower:
-                    break;
-                case BuildCannonTower:
-                    break;
-                default:
-                    break;
+                        case BuildPeasant:
+                            break;
+                        case BuildFootman:
+                            break;
+                        case BuildArcher:
+                            break;
+                        case BuildRanger:
+                            break;
+                        case BuildFarm:
+                            sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildTownHall:
+                            break;
+                        case BuildBarracks:
+                            break;
+                        case BuildLumberMill:
+                            sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildBlacksmith:
+                            break;
+                        case BuildKeep:
+                            sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildCastle:
+                            break;
+                        case BuildScoutTower:
+                            break;
+                        case BuildGuardTower:
+                            break;
+                        case BuildCannonTower:
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
-
-        if (buildSimpleButtonIsPressed) {
+        if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
             sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
             sidebarTable.row();
         } else {
@@ -780,11 +867,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
         TilePosition tpos = new TilePosition(upos);
 
-        //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
-        //or:
-        //Vector<Boolean> capabilities;
-
-        isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
@@ -802,6 +884,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
+            fillSideBarTable();
             return false; //Ignores all other asset selection?
         }
 
