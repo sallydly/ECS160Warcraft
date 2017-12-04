@@ -793,6 +793,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             selectedAsset = chosenStatAsset;
         } else {
             isAssetSelected = false;
+            buildSimpleButtonIsPressed = false;
+            fillSideBarTable();
         }
 
         //Returns capabilities:
