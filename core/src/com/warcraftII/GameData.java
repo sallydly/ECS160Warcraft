@@ -15,6 +15,7 @@ import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.Position;
+import com.warcraftII.position.RouterMap;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.renderer.MapRenderer;
@@ -91,7 +92,7 @@ public class GameData {
 
     //ONLY USE AT THE BEGINNING.
     public void RenderMap(){
-                /* Rendering the map: */
+        /* Rendering the map: */
         MapLayers layers = tiledMap.getLayers();
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();

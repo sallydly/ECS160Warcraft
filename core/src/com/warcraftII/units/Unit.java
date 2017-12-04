@@ -435,8 +435,28 @@ public class Unit {
             GameDataTypes.EDirection direction = routerMap.FindRoute(gameData, GetAllUnits(), cur);
             Gdx.app.log("Unit >> RouterMap", "Move " + direction.name());
 
+            /*
             cur.direction = direction;
             //TODO: switch statement depending on direction
+            if (cur.direction == GameDataTypes.EDirection.NorthWest) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.NorthEast) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.North) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.SouthWest) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.SouthEast) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.South) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.East) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.West) {
+                //TODO: do smth!
+            } else if (cur.direction == GameDataTypes.EDirection.Max){
+
+            }*/
 
             //TODO: delete start
             boolean north, south, east, west;
