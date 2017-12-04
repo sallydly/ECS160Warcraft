@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -89,7 +90,10 @@ public class Unit {
         public float currentymove;
         public float patrolxmove;
         public float patrolymove;
+
         public TilePosition buildPos = null;
+        public StaticAsset inProgressBuilding = null;
+
         public boolean attackEnd = true;
         public float frameTime = 0.1f;
         public float animStart = 0;
@@ -144,7 +148,9 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            batch.draw(curTexture, getX(), getY());
+            if (inProgressBuilding == null) {
+                batch.draw(curTexture, getX(), getY());
+            }
             /*if (selected) {
                 Texture sel = new Texture(Gdx.files.internal("img/select.png"));
                 batch.draw(sel, getX(), getY());
@@ -175,6 +181,9 @@ public class Unit {
         newUnit.color = inColor;
         texture = unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n");
         anim = new Animation<TextureRegion>(0.1f, unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n", 0));
+        newUnit.abilities.add(Move);
+        newUnit.abilities.add(Attack);
+        newUnit.abilities.add(StandGround);
         switch(inUnit) {
             case Peasant:
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
@@ -202,6 +211,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Footman:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Footman;
                 newUnit.curHP = 60;
                 newUnit.maxHP = 60;
@@ -216,6 +226,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Archer:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Archer;
                 newUnit.curHP = 40;
                 newUnit.maxHP = 40;
@@ -230,8 +241,9 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Ranger:
-                newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
+                newUnit.abilities.add(Patrol);
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
+                newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
                 newUnit.curHP = 50;
                 newUnit.maxHP = 50;
                 newUnit.armor = 2;
@@ -245,6 +257,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Knight:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Knight;
                 newUnit.curHP = 70;
                 newUnit.maxHP = 70;
@@ -334,25 +347,25 @@ public class Unit {
                         }
                         break;
                     case BuildBarracks:
-                        UnitBuildBarracks(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Barracks, elapsedTime, gData);
                         break;
                     case BuildBlacksmith:
-                        UnitBuildBlacksmith(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Blacksmith, elapsedTime, gData);
                         break;
                     case BuildFarm:
-                        UnitBuildFarm(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Farm, elapsedTime, gData);
                         break;
                     case BuildLumberMill:
-                        UnitBuildLumberMill(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.LumberMill, elapsedTime, gData);
                         break;
                     case BuildScoutTower:
-                        UnitBuildScoutTower(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.ScoutTower, elapsedTime, gData);
                         break;
                     case BuildTownHall:
-                        UnitBuildTownHall(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.TownHall, elapsedTime, gData);
                         break;
                     case BuildWall:
-                        UnitBuildWall(cur, elapsedTime, gData);
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Wall, elapsedTime, gData);
                         break;
                     default:
                         System.out.println("Invalid state");
@@ -502,41 +515,35 @@ public class Unit {
         }
     }
 
-
     // Yes this is also silly. But it's the way the Linux code had the states.
-    private void UnitBuildTownHall(IndividualUnit cur, float totalTime, GameData gData) {
+    private void UnitBuild(IndividualUnit cur, GameDataTypes.EStaticAssetType toBuild, float totalTime, GameData gData) {
 
-        // Check build time
+        if (sqrt(pow((cur.currentxmove-cur.getMidX()), 2)  + pow((cur.currentymove-cur.getMidY()), 2)) <= cur.range*25) {
+            // If unit is in range of the building
 
-        if (gData.map.CanPlaceStaticAsset(cur.buildPos, GameDataTypes.EStaticAssetType.TownHall)) {
-            gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, GameDataTypes.EAssetType.TownHall, gData.map);
+            if (cur.inProgressBuilding == null) {
+                // if Construction hasn't started
+
+                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild)) {
+                    // If you even can build, set inProgressBuilding to the building
+                    //gData.selectedUnits.remove(cur);
+                    cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
+                } else {
+                    // If you can't, go Idle (should probably error/otherwise handle this)
+                    cur.stopMovement();
+                    cur.curState = GameDataTypes.EUnitState.Idle;
+                }
+            } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
+                // If construction is completed, go idle
+                cur.inProgressBuilding = null;
+                cur.stopMovement();
+                cur.curState = GameDataTypes.EUnitState.Idle;
+            } else {
+                // Construction is still in progress, keep building
+            }
+        } else {
+            UnitMove(cur, totalTime, gData);
         }
-
-        cur.curState = GameDataTypes.EUnitState.Idle;
-    }
-
-    private void UnitBuildFarm(IndividualUnit cur, float totalTime, GameData gData) {
-
-    }
-
-    private void UnitBuildBarracks(IndividualUnit cur, float totalTime, GameData gData) {
-
-    }
-
-    private void UnitBuildLumberMill(IndividualUnit cur, float totalTime, GameData gData) {
-
-    }
-
-    private void UnitBuildScoutTower(IndividualUnit cur, float totalTime, GameData gData) {
-
-    }
-
-    private void UnitBuildBlacksmith(IndividualUnit cur, float totalTime, GameData gData) {
-
-    }
-
-    private void UnitBuildWall(IndividualUnit cur, float totalTime, GameData gData) {
-
     }
 
     public void updateVector() {

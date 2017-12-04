@@ -162,6 +162,10 @@ public class PlayerData {
         return DStaticAssets.contains(asset);
     }
 
+    public StaticAsset ConstructStaticAsset(TilePosition tpos, EStaticAssetType type, AssetDecoratedMap map){
+        return ConstructStaticAsset(tpos,GameDataTypes.to_assetType(type),map);
+    }
+
     public StaticAsset ConstructStaticAsset(TilePosition tpos, EAssetType type, AssetDecoratedMap map){
         if (!GameDataTypes.is_static(type))
             return null;

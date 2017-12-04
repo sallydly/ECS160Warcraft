@@ -34,6 +34,7 @@ import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.units.Unit;
@@ -760,7 +761,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     public boolean touchDown(float x, float y, int pointer, int button) {
         Vector3 clickCoordinates = new Vector3(x,y,0);
         // might supposed to be mapViewport? if buggy
-        Vector3 position = mapCamera.unproject(clickCoordinates);
+        Vector3 position = mapViewport.unproject(clickCoordinates);
 
         touchEndX = position.x;
         touchEndY = position.y;
@@ -779,19 +780,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
-        } else {
-            fillSideBarTable();
         }
+        fillSideBarTable();
 
         return true;
     }
 
     private boolean singleSelectUpdate() {
 
-
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
-            if (cur.touched) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed()) {
+            // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
+             if (cur.touched && cur.color == gameData.playerData.get(1).Color()) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || attackButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
@@ -880,19 +880,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     usedCount += 1;
                 } else if (attackButton.isPressed()) {
                     usedCount += 1;
-                }/* else if (buildButton.isPressed()) {
+                } else if (buildSimpleButton.isPressed()) {
                     // TODO: why
                     //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
                     //sUnit.buildPos = cameraPosition.getTilePosition();
-                    CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)((position.y - Gdx.graphics.getHeight()*.05)/.95), mapCamera);
 
-                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
                     System.out.println("buildPos: X: "+sUnit.buildPos.X()+"; Y: "+sUnit.buildPos.Y());
                     sUnit.currentxmove = round(position.x);
                     sUnit.currentymove = round(position.y);
-                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
+                    sUnit.curState = GameDataTypes.EUnitState.BuildScoutTower;
                     usedCount += 1;
-                }*/ else {
+                } else {
                     // still need to check for mine, forest, attack(ish), etc
                     // THIS SHOULD PROBABLY CHECK FOR IF ANY OF THE SELECTED HAVE THE CAPABILITY TO DO WHATEVER ACTION IT SHOULD BE
                 }
