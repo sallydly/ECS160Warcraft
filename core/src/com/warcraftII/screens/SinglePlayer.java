@@ -960,6 +960,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (!selectedUnits.isEmpty()) {
             for (Unit.IndividualUnit sUnit : selectedUnits) {
                 if (moveButton.isPressed()) {
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+                    sUnit.curState = GameDataTypes.EUnitState.Move;
+                    usedCount += 1;
+                } else if (patrolButton.isPressed()) {
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+                    sUnit.patrolxmove = sUnit.getMidX();
+                    sUnit.patrolymove = sUnit.getMidY();
+                    sUnit.curState = GameDataTypes.EUnitState.Patrol;
+                    usedCount += 1;
+                } else if (standGroundButton.isPressed()) {
+                    usedCount += 1;
+                } else if (attackButton.isPressed()) {
+                    usedCount += 1;
+                } else if (mineButton.isPressed()) {
                     CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)position.y, mapCamera);
                     TilePosition tilePosition = cameraPosition.getTilePosition();
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePosition);
@@ -976,22 +992,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedTilePosition = tilePosition;
                     }
-                    else {
-                        sUnit.currentxmove = round(position.x);
-                        sUnit.currentymove = round(position.y);
-                        sUnit.curState = GameDataTypes.EUnitState.Move;
-                    }
-                    usedCount += 1;
-                } else if (patrolButton.isPressed()) {
-                    sUnit.currentxmove = round(position.x);
-                    sUnit.currentymove = round(position.y);
-                    sUnit.patrolxmove = sUnit.getMidX();
-                    sUnit.patrolymove = sUnit.getMidY();
-                    sUnit.curState = GameDataTypes.EUnitState.Patrol;
-                    usedCount += 1;
-                } else if (standGroundButton.isPressed()) {
-                    usedCount += 1;
-                } else if (attackButton.isPressed()) {
                     usedCount += 1;
                 } else {
                     // still need to check for mine, forest, attack(ish), etc
