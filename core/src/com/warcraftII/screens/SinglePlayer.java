@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -31,9 +32,14 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
+import com.warcraftII.player_asset.PlayerCapability;
+
 import com.warcraftII.player_asset.PlayerAssetType;
+import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.PlayerCapability;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes;
@@ -42,6 +48,8 @@ import com.warcraftII.units.UnitActionRenderer;
 
 import java.util.Vector;
 
+
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 
@@ -627,7 +635,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     newButton.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            unitToBuild = GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType));
+                            PlayerData player = gameData.playerData.get(1);
+                            if (player.PlayerCanAffordAsset(PlayerCapability.AssetFromCapability(capabilityType)) == 0) {
+                                player.ConstructUnit(selectedAsset,
+                                        GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType)),
+                                        gameData.map);
+                            }
                         }
                     });
                     sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
@@ -652,10 +665,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             }
             else{
-                sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
-                sidebarTable.row();
-                sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
-                sidebarTable.row();
+                if (selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+                if(selectedAsset.assetType().BuildingCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
             }
 
             // end case of static asset selected
@@ -948,6 +965,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             selectedAsset = chosenStatAsset;
         } else {
             isAssetSelected = false;
+            selectedAsset = null;
         }
 
         //Returns capabilities:

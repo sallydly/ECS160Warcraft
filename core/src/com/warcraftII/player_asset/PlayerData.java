@@ -230,8 +230,9 @@ public class PlayerData {
         if (builderSAsset.Action() == EAssetAction.None) // make sure its not constructing or dying or building something else
         {
             builderSAsset.DPendingUnitType = type;
-            builderSAsset.DUnitConstructionTime = PlayerAssetType.BuildTime(GameDataTypes.to_assetType(type));
-
+        //        builderSAsset.DUnitConstructionTime = PlayerAssetType.BuildTime(GameDataTypes.to_assetType(type));
+    //debug:
+            builderSAsset.DUnitConstructionTime = 5;
             SAssetCommand buildingCommand = new SAssetCommand();
             buildingCommand.DAction = EAssetAction.Capability;
             builderSAsset.EnqueueCommand(buildingCommand);
