@@ -430,6 +430,7 @@ public class Unit {
     private void UnitMineState(IndividualUnit cur, float totalTime, GameData gData) {
         if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData)) {
             if (cur.attackEnd) {
+                gData.RemoveStone(cur.selectedTilePosition,cur.selectedTilePosition,10);
                 cur.selectedAsset.StartMining();
                 cur.hidden = true;
                 cur.attackEnd = false;
@@ -459,7 +460,7 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
+            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
             cur.resourceAmount += 10;
             cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
             cur.curAnim = GenerateAnimation(cur, "lumber");
