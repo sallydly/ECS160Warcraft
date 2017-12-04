@@ -92,6 +92,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private FitViewport topbarViewport;
     private Stage topbarStage;
 
+    //For topbar:
+    private TextField lumberCount,goldCount,stoneCount;
+
     private Table sidebarTable;
     private Table topbarTable;
 
@@ -349,29 +352,40 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Texture miniIcons = new Texture(Gdx.files.internal("img/MiniIcons.png"));
         TextureRegion gold = new TextureRegion(miniIcons, 0, 0,16,16);
         TextureRegion lumber = new TextureRegion(miniIcons, 0, 16,16,16);
-        TextureRegion food = new TextureRegion(miniIcons, 0, 32,16,16);
-        TextureRegion oil = new TextureRegion(miniIcons, 0, 48,16,16);
+        //TextureRegion food = new TextureRegion(miniIcons, 0, 32,16,16); // We ain't doing food either
+        //TextureRegion oil = new TextureRegion(miniIcons, 0, 48,16,16); // We ain't using oil.
+        TextureRegion stone = new TextureRegion(miniIcons, 0, 64,16,16); // But we are using stone
 
         //Images of gold, lumber, food and oil
         Image goldImage = new Image(gold);
         Image lumberImage = new Image(lumber);
-        Image foodImage = new Image(food);
-        Image oilImage = new Image(oil);
+        //Image foodImage = new Image(food); // No food
+        //Image oilImage = new Image(oil); // We ain't using oil.
+        Image stoneImage = new Image(stone); // But we are using stone
+
 
         //Textfields to keep track for gold, lumber, food and oil
-        TextField goldCount = new TextField("", skin);
-        TextField lumberCount = new TextField("", skin);
-        TextField foodCount = new TextField("", skin);
-        TextField oilCount = new TextField("", skin);
+        goldCount = new TextField("", skin);
+        lumberCount = new TextField("", skin);
+        //foodCount = new TextField("", skin); no food
+        //oilCount = new TextField("", skin); // We ain't using oil.
+        stoneCount = new TextField("", skin); // But we are using stone.
+
+
 
         topbarTable.add(goldImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
         topbarTable.add(goldCount).height(topbarStage.getHeight());
         topbarTable.add(lumberImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
         topbarTable.add(lumberCount).height(topbarStage.getHeight());
-        topbarTable.add(foodImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        //Not using food or oil
+        /*topbarTable.add(foodImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
         topbarTable.add(foodCount).height(topbarStage.getHeight());
         topbarTable.add(oilImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
-        topbarTable.add(oilCount).height(topbarStage.getHeight());
+        topbarTable.add(oilCount).height(topbarStage.getHeight());*/
+        // But we are using stone.
+        topbarTable.add(stoneImage).width(topbarStage.getHeight()).height(topbarStage.getHeight());
+        topbarTable.add(stoneCount).height(topbarStage.getHeight());
+
         topbarStage.draw();
 
         gameData.RenderMap(); // renders the map.
@@ -518,6 +532,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.act();
         sidebarStage.draw();
 
+        UpdateResourceCountDisplays();
         topbarStage.getViewport().apply();
         topbarStage.act();
         topbarStage.draw();
@@ -671,6 +686,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         return true;
     }
 
+    private void UpdateResourceCountDisplays(){
+        goldCount.setMessageText(String.valueOf(gameData.playerData.get(1).Gold()));
+        lumberCount.setMessageText(String.valueOf(gameData.playerData.get(1).Lumber()));
+        stoneCount.setMessageText(String.valueOf(gameData.playerData.get(1).Stone()));
+    }
+
     private boolean singleSelectUpdate() {
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             if (cur.touched) {
@@ -779,58 +800,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        /*
-        //Gdx.graphics.getWidth()*.25f is the space of the sidebar menu
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        PlayerData player1 = gameData.playerData.get(0);
-        // REMOVING RESOURCES
-        int resourceRemove = 100;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
-        if (chosenStatAsset == null){
-            System.out.println("No asset here...building");
-            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
-            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
-            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
-                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
-                lastbuiltasset++;
-            }
-        }
-        else {
-            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-            chosenStatAsset.decrementHitPoints(75);
-        }
-        */
         return false;
     }
 
     @Override
     public boolean longPress(float x, float y) {
-        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        log.info("Tile position: " + xi +" " + yi);
-        int resourceRemove = 200;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
@@ -956,54 +930,5 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
-    }
-
-    private void KimisTestFunction(){
-        //TESTING REMOVELUMBER
-        TilePosition tposunit = new TilePosition(12,1);
-        TilePosition tree1 = new TilePosition(11,0);
-        TilePosition tree2 = new TilePosition(12,1);
-        TilePosition tree3 = new TilePosition(13,2);
-
-        gameData.RemoveLumber(tree1,tposunit,400);
-        gameData.RemoveLumber(tree2,tposunit,400);
-        gameData.RemoveLumber(tree3,tposunit,400);
-
-        // TESTING STATICASSETAT
-        TilePosition sassetAt = new TilePosition(0,0);
-        StaticAsset sasset = gameData.map.StaticAssetAt(sassetAt);
-        if (sasset != null){
-            System.out.println(sasset.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset here");
-        }
-
-        TilePosition sassetAt1 = new TilePosition(0,1);
-        StaticAsset sasset1 = gameData.map.StaticAssetAt(sassetAt1);
-        if (sasset1 != null){
-            System.out.println(sasset1.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 1 here");
-        }
-
-        TilePosition sassetAt2 = new TilePosition(15,1);
-        StaticAsset sasset2 = gameData.map.StaticAssetAt(sassetAt2);
-        if (sasset2 != null){
-            System.out.println(sasset2.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 2 here");
-        }
-
-        TilePosition sassetAt3 = new TilePosition(1,30);
-        StaticAsset sasset3 = gameData.map.StaticAssetAt(sassetAt3);
-        if (sasset3 != null){
-            System.out.println(sasset3.assetType().Name());
-        }
-        else{
-            System.out.println("no mr. asset 3 here");
-        }
     }
 }

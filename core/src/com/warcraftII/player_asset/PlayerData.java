@@ -28,6 +28,7 @@ public class PlayerData {
     //Vector< SGameEvent > DGameEvents;
     protected int DGold;
     protected int DLumber;
+    protected int DStone;
     protected int DGameCycle;
 
     public PlayerData(AssetDecoratedMap map, EPlayerColor color, Unit allUnits){
@@ -40,6 +41,7 @@ public class PlayerData {
         //DVisibilityMap = DActualMap->CreateVisibilityMap();
         DGold = 0;
         DLumber = 0;
+        DStone = 0;
 
         /*DUpgrades.resize(to_underlying(EAssetCapabilityType::Max));
         for(int Index = 0; Index < DUpgrades.size(); Index++){
@@ -50,6 +52,7 @@ public class PlayerData {
             if(ResourceInit.DColor == color){
                 DGold = ResourceInit.DGold;
                 DLumber = ResourceInit.DLumber;
+                DStone = ResourceInit.DStone;
             }
         }
 
@@ -113,15 +116,18 @@ public class PlayerData {
     public int Lumber() {
         return DLumber;
     }
+
+    public int Stone() {return DStone;}
+
     public int IncrementGold(int gold){
         DGold += gold;
         return DGold;
     }
-
     public int DecrementGold(int gold){
         DGold -= gold;
         return DGold;
     }
+
     public int IncrementLumber(int lumber){
         DLumber += lumber;
         return DLumber;
@@ -129,6 +135,15 @@ public class PlayerData {
     public int DecrementLumber(int lumber){
         DLumber -= lumber;
         return DLumber;
+    }
+
+    public int IncrementStone(int stone){
+        DStone += stone;
+        return DStone;
+    }
+    public int DecrementStone(int stone){
+        DStone -= stone;
+        return DStone;
     }
 
     /*
