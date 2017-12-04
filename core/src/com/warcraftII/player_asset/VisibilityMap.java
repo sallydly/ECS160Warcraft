@@ -115,11 +115,7 @@ public class VisibilityMap {
         return gameMap.get(yIndex+maxVisibility).get(xIndex+maxVisibility);
     }
 
-    private void updateGameMap(TilePosition Anchor, int x, int y) {
-
-    }
-
-    public void update(List<StaticAsset> assets) {
+    public void updateAssets(List<StaticAsset> assets) {
         for(int i = 0; i < gameMap.size(); ++i) {
             for(int j = 0; j < gameMap.get(i).size(); ++j) {
                 ETileVisibility currentTile = gameMap.get(i).get(j);
@@ -229,20 +225,13 @@ public class VisibilityMap {
 
         for(Unit.IndividualUnit unit : individualUnitList) {
             if(unit != null) {
-                System.out.println("Altering VisibilityMap with StaticAsset");
-                TilePosition Anchor = new TilePosition((int)unit.getX(), (int)unit.getY());
+                System.out.println("Altering VisibilityMap with IndividualUnit");
+                TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
                 int Sight = unit.sight;
                 int SightSquared = Sight * Sight;
                 System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
                 System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
                 System.out.println("MaxVisibility: " + maxVisibility);
-
-                for(int x = 0; x <= maxVisibility; ++x) {
-                    for(int y = 0; y <= maxVisibility; ++y) {
-                        updateGameMap(Anchor, x, y);
-                    }
-                }
-                System.out.println("New Anchor: " + Anchor.X() + " " + Anchor.Y());
 
                 for(int X = 0; X <= Sight; X++) {
                     int XSquared = X * X;

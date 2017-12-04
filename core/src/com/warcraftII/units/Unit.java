@@ -74,6 +74,7 @@ public class Unit {
         public int sight = 0;
         public int attackTime = 10;
         public int reloadTime = 10;
+        public boolean isMoving = false;
         // Gold Cost
         // Lumber Cost
         // Stone Cost
@@ -317,33 +318,43 @@ public class Unit {
             for (IndividualUnit cur : unitMap.get(color)) {
                 switch (cur.curState) {
                     case Idle:
+                        cur.isMoving = false;
                         break;
                     case Move:
+                        cur.isMoving = true;
                         UnitMoveState(cur, elapsedTime, gData);
                         break;
                     case Attack:
+                        cur.isMoving = false;
                         UnitAttackState(cur, cur.target, elapsedTime, gData);
                         break;
                     case Patrol:
+                        cur.isMoving = true;
                         UnitPatrolState(cur, elapsedTime, gData);
                         break;
                     case Mine:
+                        cur.isMoving = false;
                         UnitMineState(cur, elapsedTime, gData);
                         break;
                     case Lumber:
+                        cur.isMoving = false;
                         UnitMineState(cur, elapsedTime, gData);
                         break;
                     case ReturnLumber:
+                        cur.isMoving = false;
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
                     case ReturnMine:
+                        cur.isMoving = true;
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
                     case Repair:
+                        cur.isMoving = false;
                         UnitRepairState(cur, elapsedTime, gData);
                         break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
+                            cur.isMoving = true;
                             toDelete.add(cur);
                         }
                         break;

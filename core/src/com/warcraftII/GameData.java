@@ -98,7 +98,7 @@ public class GameData {
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
-        TiledMapTileLayer fogLayer = fogRenderer.renderAssetsFog(map, playerData);
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, playerData, allUnits.GetAllUnits());
 
         TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
@@ -108,7 +108,7 @@ public class GameData {
     }
 
     public void renderFog() {
-        TiledMapTileLayer fogLayer = fogRenderer.renderAssetsFog(map, playerData);
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, playerData, allUnits.GetAllUnits());
         int oldFogLayerIndex = tiledMap.getLayers().getIndex("Fog");
 
         tiledMap.getLayers().remove(oldFogLayerIndex);
@@ -179,6 +179,12 @@ public class GameData {
 
         if (staticAssetRenderer.UpdateStaticAssets(tiledMap, map, playerData)) {
             renderFog();
+        }
+
+        for(Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
+            if(individualUnit.isMoving) {
+                renderFog();
+            }
         }
     }
 
