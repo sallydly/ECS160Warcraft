@@ -71,6 +71,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton repairButton;
     private TextButton mineButton;
     private TextButton buildSimpleButton;
+    private TextButton buildKeepButton;
+    private TextButton buildLumberMillButton;
+    private TextButton buildFarmButton;
+
     private TextButton newAbility;
 
     private TextButton selectButton;
@@ -151,6 +155,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
         buildSimpleButton = new TextButton("Build Simple", skin);
+        buildKeepButton = new TextButton("Build Keep", skin);
+        buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
+        buildFarmButton = new TextButton("Build Farm", skin);
+
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
@@ -590,6 +598,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
+        sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
     }
