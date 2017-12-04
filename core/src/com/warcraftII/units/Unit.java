@@ -698,7 +698,7 @@ public class Unit {
             if (cur.inProgressBuilding == null) {
                 // if Construction hasn't started
 
-                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild)) {
+                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && gData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
                     // If you even can build, set inProgressBuilding to the building
                     gData.selectedUnits.remove(cur);
                     cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
