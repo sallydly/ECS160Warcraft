@@ -566,10 +566,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             }
             else{
-                sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
-                sidebarTable.row();
-                sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
-                sidebarTable.row();
+                if (selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+                if(selectedAsset.assetType().BuildingCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
             }
 
             // end case of static asset selected
