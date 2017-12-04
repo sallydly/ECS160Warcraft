@@ -317,24 +317,26 @@ public class AssetDecoratedMap extends TerrainMap {
      * @return a valid position for the new asset
      *
      */
-//TODO: Fix when PlayerAsset is available
-/*    TilePosition FindAssetPlacement(PlayerAsset placeasset, PlayerAsset fromasset, TilePosition nexttiletarget){
+    public TilePosition FindAssetPlacement(StaticAsset fromasset){
         int TopY, BottomY, LeftX, RightX;
         int BestDistance = -1, CurDistance;
-        TilePosition BestPosition(-1, -1);
-        TopY = fromasset.TilePositionY() - placeasset.Size();
-        BottomY = fromasset.TilePositionY() + fromasset.Size();
-        LeftX = fromasset.TilePositionX() - placeasset.Size();
-        RightX = fromasset.TilePositionX() + fromasset.Size();
+        int unitsize = 2;
+
+        TilePosition BestPosition =  new TilePosition(-1, -1);
+        TopY = fromasset.tilePositionY() -  unitsize;
+        BottomY = fromasset.tilePositionY() + fromasset.Size();
+        LeftX = fromasset.tilePositionX() - unitsize;
+        RightX = fromasset.tilePositionX() + fromasset.Size();
+
 
         while(true){
             int Skipped = 0;
             if(0 <= TopY){
                 int ToX = Math.min(RightX, Width() - 1);
                 for(int CurX = Math.max(LeftX, 0); CurX <= ToX; CurX++){
-                    if(CanPlaceAsset(TilePosition(CurX, TopY), placeasset.Size(), placeasset)){
-                        TilePosition TempPosition(CurX, TopY);
-                        CurDistance = TempPosition.DistanceSquared(nexttiletarget);
+                    if(CanPlaceStaticAsset(new TilePosition(CurX, TopY), unitsize)){
+                        TilePosition TempPosition = new TilePosition(CurX, TopY);
+                        CurDistance = TempPosition.distanceSquared(fromasset.tilePosition());
                         if((-1 == BestDistance)||(CurDistance < BestDistance)){
                             BestDistance = CurDistance;
                             BestPosition = TempPosition;
@@ -348,9 +350,9 @@ public class AssetDecoratedMap extends TerrainMap {
             if(Width() > RightX){
                 int ToY = Math.min(BottomY, Height() - 1);
                 for(int CurY = Math.max(TopY, 0); CurY <= ToY; CurY++){
-                    if(CanPlaceAsset(TilePosition(RightX, CurY), placeasset.Size(), placeasset)){
-                        TilePosition TempPosition(RightX, CurY);
-                        CurDistance = TempPosition.DistanceSquared(nexttiletarget);
+                    if(CanPlaceStaticAsset(new TilePosition(RightX, CurY), unitsize)){
+                        TilePosition TempPosition = new TilePosition(RightX, CurY);
+                        CurDistance = TempPosition.distanceSquared(fromasset.tilePosition());
                         if((-1 == BestDistance)||(CurDistance < BestDistance)){
                             BestDistance = CurDistance;
                             BestPosition = TempPosition;
@@ -364,9 +366,9 @@ public class AssetDecoratedMap extends TerrainMap {
             if(Height() > BottomY){
                 int ToX = Math.max(LeftX, 0);
                 for(int CurX = Math.min(RightX, Width() - 1); CurX >= ToX; CurX--){
-                    if(CanPlaceAsset(TilePosition(CurX, BottomY), placeasset.Size(), placeasset)){
-                        TilePosition TempPosition(CurX, BottomY);
-                        CurDistance = TempPosition.DistanceSquared(nexttiletarget);
+                    if(CanPlaceStaticAsset(new TilePosition(CurX, BottomY),unitsize)){
+                        TilePosition TempPosition = new TilePosition(CurX, BottomY);
+                        CurDistance = TempPosition.distanceSquared(fromasset.tilePosition());
                         if((-1 == BestDistance)||(CurDistance < BestDistance)){
                             BestDistance = CurDistance;
                             BestPosition = TempPosition;
@@ -380,9 +382,9 @@ public class AssetDecoratedMap extends TerrainMap {
             if(0 <= LeftX){
                 int ToY = Math.max(TopY, 0);
                 for(int CurY = Math.min(BottomY, Height() - 1); CurY >= ToY; CurY--){
-                    if(CanPlaceAsset(TilePosition(LeftX, CurY), placeasset.Size(), placeasset)){
-                        TilePosition TempPosition(LeftX, CurY);
-                        CurDistance = TempPosition.DistanceSquared(nexttiletarget);
+                    if(CanPlaceStaticAsset(new TilePosition(LeftX, CurY), unitsize)){
+                        TilePosition TempPosition = new TilePosition(LeftX, CurY);
+                        CurDistance = TempPosition.distanceSquared(fromasset.tilePosition());
                         if((-1 == BestDistance)||(CurDistance < BestDistance)){
                             BestDistance = CurDistance;
                             BestPosition = TempPosition;
@@ -406,7 +408,6 @@ public class AssetDecoratedMap extends TerrainMap {
         }
         return BestPosition;
     }
-*/
 
 /**
  * Given a postion, find the nearest asset of a certain type and
