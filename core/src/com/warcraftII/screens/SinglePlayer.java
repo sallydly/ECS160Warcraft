@@ -870,6 +870,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sel.currentymove = cur.getMidY();
                         sel.curState = GameDataTypes.EUnitState.Attack;
                     }
+                    cur.touched = false;
                 } else if (cur.color == gameData.playerData.get(1).Color()){
                     cur.touched = false;
                     selectedUnits.removeAllElements();
