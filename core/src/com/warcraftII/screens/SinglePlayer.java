@@ -704,6 +704,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         batch.end();
 
+        if (!buildSimpleButton.isPressed()) {
+            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
+        }
         //This draws any fire/building explosion animations
         sb.setProjectionMatrix(mapCamera.combined);
         sb.begin();

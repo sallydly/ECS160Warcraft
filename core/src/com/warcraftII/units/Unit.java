@@ -115,6 +115,10 @@ public class Unit {
         public GameDataTypes.EPlayerColor color;
         public GameDataTypes.EDirection direction;
 
+        public void hideUnit() {
+
+        }
+
         public String getDirection() {
             if (currentxmove == getMidX()) { // straight up or down
                 if (currentymove <= getMidY()) { // if south
@@ -439,6 +443,7 @@ public class Unit {
                 cur.selectedAsset.EndMining();
                 cur.resourceAmount += 50;
                 cur.abilities.add(CarryingGold);
+                cur.attackEnd = true;
             }
 
             if (cur.resourceAmount >= 500) {
@@ -459,7 +464,8 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 50);
+            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 50);
+            // TODO: don't give it more resources if no forest, update to next nearest
             // check if the tile is still forest, if not update to new one
             cur.resourceAmount += 50;
             cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
