@@ -75,6 +75,7 @@ public class Unit {
         public int attackTime = 10;
         public int reloadTime = 10;
         public boolean isMoving = false;
+        public boolean isVisible = true;
         // Gold Cost
         // Lumber Cost
         // Stone Cost
@@ -147,7 +148,9 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            batch.draw(curTexture, getX(), getY());
+            if(isVisible) {
+                batch.draw(curTexture, getX(), getY());
+            }
             /*if (selected) {
                 Texture sel = new Texture(Gdx.files.internal("img/select.png"));
                 batch.draw(sel, getX(), getY());
@@ -325,7 +328,7 @@ public class Unit {
                         UnitMoveState(cur, elapsedTime, gData);
                         break;
                     case Attack:
-                        cur.isMoving = false;
+                        cur.isMoving = true;
                         UnitAttackState(cur, cur.target, elapsedTime, gData);
                         break;
                     case Patrol:
@@ -355,6 +358,7 @@ public class Unit {
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
                             cur.isMoving = true;
+                            cur.isVisible = false;
                             toDelete.add(cur);
                         }
                         break;

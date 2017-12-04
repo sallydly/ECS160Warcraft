@@ -225,6 +225,7 @@ public class VisibilityMap {
 
         for(Unit.IndividualUnit unit : individualUnitList) {
             if(unit != null) {
+                unit.isVisible = true;
                 System.out.println("Altering VisibilityMap with IndividualUnit");
                 TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
                 int Sight = unit.sight;
