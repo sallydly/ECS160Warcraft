@@ -10,6 +10,7 @@ import com.warcraftII.data_source.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Map;
 
@@ -109,6 +110,7 @@ public class PlayerAssetType {
     }
 
     public PlayerAssetType(PlayerAssetType res) {
+        DCapabilities = new Vector<Boolean>();
     }
 
 
@@ -245,10 +247,19 @@ public class PlayerAssetType {
         return DCapabilities;
     }
 
-    /*public Vector<EAssetCapabilityType> CapabilityVector(){
-        for
-        return DCapabilities;
-    }*/
+
+    public Vector< EAssetCapabilityType > CapabilitiesVector(){
+        Vector< EAssetCapabilityType > ReturnVector = new Vector<EAssetCapabilityType>();
+        List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
+
+        for(int Index = GameDataTypes.to_underlying(EAssetCapabilityType.None); Index < GameDataTypes.to_underlying(EAssetCapabilityType.Max); Index++){
+            if(DCapabilities.get(Index)){
+                ReturnVector.add(values.get(Index));
+            }
+        }
+
+        return ReturnVector;
+    }
 
     public void AddCapability(EAssetCapabilityType capability){
         if((0 > GameDataTypes.to_underlying(capability))||(DCapabilities.size() <= GameDataTypes.to_underlying(capability))){
@@ -289,7 +300,7 @@ public class PlayerAssetType {
     public static boolean LoadTypes(){
         boolean ReturnStatus = false;
         DRegistry = new HashMap<String, PlayerAssetType>();
-        
+
         FileHandle ResDirectory = Gdx.files.internal("res");
         FileHandle[] DatFileArray = ResDirectory.list(".dat");
         for (FileHandle fh : DatFileArray) {
@@ -388,10 +399,10 @@ public class PlayerAssetType {
         CapabilityCount = Integer.parseInt(TempString);
 
         PAssetType.DCapabilities.setSize(GameDataTypes.to_underlying(EAssetCapabilityType.Max));
+
         for(int Index = 0; Index < PAssetType.DCapabilities.size(); Index++) {
             PAssetType.DCapabilities.set(Index, false);
         }
-
 
         for(int Index = 0; Index < CapabilityCount; Index++){
             TempString = LineSource.read().trim();
@@ -411,11 +422,19 @@ public class PlayerAssetType {
     }
 
 
+    public static StaticAsset ConstructStaticAsset(EStaticAssetType satype){
+        String type = PlayerAssetType.TypeToName(GameDataTypes.to_assetType(satype));
+        log.info("Constructing: " + type);
+        PlayerAssetType playerAssetType = DRegistry.get(type);
+        return new StaticAsset(playerAssetType);
+    }
+
     public static StaticAsset ConstructStaticAsset(String type){
         log.info("Constructing: " + type);
         PlayerAssetType playerAssetType = DRegistry.get(type);
         return new StaticAsset(playerAssetType);
     }
+
 
     public static int StaticAssetSize(EStaticAssetType type){
         String typeString = DTypeStrings.get(GameDataTypes.to_underlying(GameDataTypes.to_assetType(type)));
@@ -428,6 +447,13 @@ public class PlayerAssetType {
         PlayerAssetType pat = DRegistry.get(name);
         return pat.Capabilities();
     }
+
+    public static Vector<EAssetCapabilityType> AssetTypeCapabilitiesVector(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.CapabilitiesVector();
+    }
+
 
     /*
     public static int MaxSight(){
