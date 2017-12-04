@@ -100,11 +100,8 @@ public class Unit {
         public int resourceAmount = 0;
 
 
-
         public StaticAsset selectedAsset;
         public TilePosition selectedTilePosition;
-
-
 
 
         public boolean attackEnd = true;
@@ -359,6 +356,9 @@ public class Unit {
                     case ReturnMine:
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
+                    case Repair:
+                        UnitRepairState(cur, elapsedTime, gData);
+                        break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
                             toDelete.add(cur);
@@ -515,6 +515,18 @@ public class Unit {
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
         return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth());
+    }
+
+    private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
+        if (UnitMove(cur, deltaTime, gData)) {
+            if (cur.selectedAsset.hitPoints() <= cur.selectedAsset.maxHitPoints()) {
+                // TODO Repair Animation here and delay
+                cur.selectedAsset.incrementHitPoints(10);
+            }
+            else {
+                cur.curState = GameDataTypes.EUnitState.Idle;
+            }
+        }
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, float buildWidth, GameData gData) {

@@ -177,6 +177,23 @@ public class PlayerData {
         return DStaticAssets.contains(asset);
     }
 
+
+
+    public int PlayerCanAffordAsset(EAssetType type){
+        int returnstatus = 0;
+        /* Code for return status:
+            0: nothing lacking
+            1: not enough wood
+            2: not enough gold
+            3: not enough wood and gold
+            4: not enough stone
+            5: not enough wood and stone
+            6: not enough gold and stone
+            7: not enough of everything
+         */
+        return PlayerAssetType.CanAfford(type, Lumber(), Gold(),Stone());
+    }
+
     public StaticAsset ConstructStaticAsset(TilePosition tpos, EStaticAssetType type, AssetDecoratedMap map){
         return ConstructStaticAsset(tpos,GameDataTypes.to_assetType(type),map);
     }

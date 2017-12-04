@@ -45,7 +45,6 @@ import com.warcraftII.units.UnitActionRenderer;
 
 import java.util.Vector;
 
-import javax.naming.TimeLimitExceededException;
 
 import static java.lang.Math.min;
 import static java.lang.Math.round;
@@ -129,7 +128,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
      //DEBUG:
      //TODO: Determine this from the button
-     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.Wall;
+     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
 
 
 
@@ -470,12 +469,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     }
                     gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
 
-                    // TODO: adapt this to match types
-                    for (Unit.IndividualUnit sUnit : selectedUnits) {
-
-                    }
-
+//                    // TODO: adapt this to match types
+//                    for (Unit.IndividualUnit sUnit : selectedUnits) {
+//
                 }
+
+
 
                 if (selectButton.isPressed()) {
                     boolean newSelection = multiSelectUpdate(position);
@@ -503,6 +502,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                         if (!wallStarted) {
                             if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                                //shouldnt have a wall started if you can't afford it.  No check here
                                 gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
                                 gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                                 wallStarted = true;
@@ -512,7 +512,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                             }
                         } else //wall already started
                         {
-                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall) &&
+                                    gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.EAssetType.Wall) == 0) {
                                 gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
                             }
                         }
@@ -585,7 +586,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sidebarTable.row();
                     break;
                 case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).height(150).colspan(2);
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2);
                     sidebarTable.row();
                     break;
                 case BuildAdvanced:
@@ -634,7 +635,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     break;
                 case Max:
                     break;
-
                 case BuildPeasant:
                     break;
                 case BuildFootman:
@@ -985,6 +985,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                     // Determine based on typetobebuilt
                     sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
+                } else if (repairButton.isPressed()) {
+                    TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
+                    if (selectedAsset != null) {
+                        sUnit.curState = GameDataTypes.EUnitState.Repair;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedAsset = selectedAsset;
+                    }
                     usedCount += 1;
                 } else {
                     // still need to check for mine, forest, attack(ish), etc

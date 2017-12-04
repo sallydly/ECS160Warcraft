@@ -451,6 +451,30 @@ public class PlayerAssetType {
         return pat.CapabilitiesVector();
     }
 
+    public static int CanAfford(EAssetType type, int lumber, int gold, int stone){
+        int returnstatus = 0;
+        /* Code for return status:
+            0: nothing lacking
+            1: not enough wood
+            2: not enough gold
+            3: not enough wood and gold
+            4: not enough stone
+            5: not enough wood and stone
+            6: not enough gold and stone
+            7: not enough of everything
+         */
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        if (pat.LumberCost() > lumber)
+        returnstatus += 1; //sets first bit
+        if (pat.GoldCost() > gold)
+            returnstatus += 2; //sets second bit
+        if (pat.StoneCost() > stone)
+            returnstatus += 4; //sets third bit
+
+        return returnstatus;
+
+    }
 
     /*
     public static int MaxSight(){
