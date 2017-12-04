@@ -26,7 +26,7 @@ public class FogRenderer {
         fogLayer.setName("Fog");
 
         VisibilityMap visibilityMap = assetDecoratedMap.CreateVisibilityMap();
-        TextureRegion allBlackFog = fogAtlas.findRegion("pb-00");
+        TextureRegion allBlackFog = fogAtlas.findRegion("pf-00");
         TextureRegion partialFog = fogAtlas.findRegion("partial");
         System.out.println("Num Players: " + playerDataVector.size());
 

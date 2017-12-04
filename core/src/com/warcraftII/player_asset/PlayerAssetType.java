@@ -10,6 +10,7 @@ import com.warcraftII.data_source.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.Map;
 
@@ -471,7 +472,6 @@ public class PlayerAssetType {
 
     }
 
-    /*
     public static int MaxSight(){
         int MaxSightFound = 0;
 
