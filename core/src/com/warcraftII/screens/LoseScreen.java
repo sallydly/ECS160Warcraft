@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 
-public class WinScreen implements Screen {
+public class LoseScreen implements Screen {
     private Warcraft game;
     private Stage stage;
     private TextureAtlas atlas;
@@ -31,9 +31,9 @@ public class WinScreen implements Screen {
     //  get time time when splash starts
     private float currentDuration = 0;
 
-    public WinScreen(Warcraft game) {
+    public LoseScreen(Warcraft game) {
         // disable continuous rendering to improve performance
-        Gdx.graphics.setContinuousRendering(false);
+        //Gdx.graphics.setContinuousRendering(false);
 
         this.game = game;
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
@@ -41,7 +41,7 @@ public class WinScreen implements Screen {
         ScreenViewport port = new ScreenViewport();
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         this.stage = new Stage(port, game.batch);
-        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/win.mp3"));
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/lose.mp3"));
         this.music.setVolume( (Volume.getMusicVolume() / 100));
         this.music.setLooping(true);
     }
@@ -52,7 +52,7 @@ public class WinScreen implements Screen {
 
         // set background texture image
         // code adapted from https://libgdx.info/basic_image/
-        Texture backgroundImageTexture = new Texture("img/win.png");
+        Texture backgroundImageTexture = new Texture("img/lose.png");
 //        backgroundImageTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 //        TextureRegion backgroundImageTextureRegion = new TextureRegion(backgroundImageTexture);
 //        backgroundImageTextureRegion.setRegion(0, 0, stage.getWidth(), stage.getHeight());
@@ -90,7 +90,7 @@ public class WinScreen implements Screen {
         titleLabelStyle.font = kingthings24;
         titleLabelStyle.fontColor = Color.WHITE;
 
-        Label titleLabel = new Label("Congratulations! Victory is yours!", titleLabelStyle);
+        Label titleLabel = new Label("You've lost the battle", titleLabelStyle);
         titleLabel.setFontScale(4);
         menuTable.add(titleLabel).expandY().align(Align.top);
         menuTable.row();
