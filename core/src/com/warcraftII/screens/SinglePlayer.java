@@ -39,6 +39,7 @@ import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
+import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActionRenderer;
 
@@ -972,9 +973,27 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (!selectedUnits.isEmpty()) {
             for (Unit.IndividualUnit sUnit : selectedUnits) {
                 if (moveButton.isPressed()) {
-                    sUnit.currentxmove = round(position.x);
-                    sUnit.currentymove = round(position.y);
-                    sUnit.curState = GameDataTypes.EUnitState.Move;
+                    CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)position.y, mapCamera);
+                    TilePosition tilePosition = cameraPosition.getTilePosition();
+                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePosition);
+                    if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine) {
+                        sUnit.curState = GameDataTypes.EUnitState.Mine;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedAsset = selectedAsset;
+                        sUnit.selectedTilePosition = tilePosition;
+                    }
+                    else if (gameData.map.TerrainTileType(tilePosition) == TileTypes.ETerrainTileType.Forest) {
+                        sUnit.curState = GameDataTypes.EUnitState.Lumber;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedTilePosition = tilePosition;
+                    }
+                    else {
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.curState = GameDataTypes.EUnitState.Move;
+                    }
                     usedCount += 1;
                 } else if (patrolButton.isPressed()) {
                     sUnit.currentxmove = round(position.x);
