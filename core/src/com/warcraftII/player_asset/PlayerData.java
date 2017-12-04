@@ -224,6 +224,25 @@ public class PlayerData {
 
         return ConsAsset;
     }
+
+
+    public void ConstructUnit(StaticAsset builderSAsset,EUnitType type, AssetDecoratedMap map){
+        if (builderSAsset.Action() == EAssetAction.None) // make sure its not constructing or dying or building something else
+        {
+            builderSAsset.DPendingUnitType = type;
+            builderSAsset.DUnitConstructionTime = PlayerAssetType.BuildTime(GameDataTypes.to_assetType(type));
+
+            SAssetCommand buildingCommand = new SAssetCommand();
+            buildingCommand.DAction = EAssetAction.Capability;
+            builderSAsset.EnqueueCommand(buildingCommand);
+            builderSAsset.Step(0);
+
+            DecrementGold(PlayerAssetType.GoldCost(GameDataTypes.to_assetType(type)));
+            DecrementLumber(PlayerAssetType.LumberCost(GameDataTypes.to_assetType(type)));
+            DecrementStone(PlayerAssetType.StoneCost(GameDataTypes.to_assetType(type)));
+        }
+    }
+
     /*
 
     std::shared_ptr< CPlayerAsset > CreateMarker( CPixelPosition &pos, boolean addtomap);
