@@ -687,8 +687,6 @@ public class Unit {
     // Returns true if it's reached the destination, false if it hasn't
     public boolean UnitMove(IndividualUnit cur, String type, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
-            // TODO: do actual pathfinding
-
             boolean north, south, east, west;
             north = south = west = east = false;
 
