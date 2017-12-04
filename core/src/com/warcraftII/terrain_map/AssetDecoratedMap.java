@@ -420,7 +420,7 @@ public class AssetDecoratedMap extends TerrainMap {
  *
  */
 
-    StaticAsset FindNearestStaticAsset(UnitPosition pos, EPlayerColor color, EStaticAssetType type){
+    public StaticAsset FindNearestStaticAsset(UnitPosition pos, EPlayerColor color, EStaticAssetType type){
         StaticAsset BestAsset =  new StaticAsset();
         int BestDistanceSquared = -1;
 

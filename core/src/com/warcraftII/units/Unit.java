@@ -4,6 +4,7 @@ package com.warcraftII.units;
  * Created by Ian on 10/29/2017.
  * Is the basis for all units.
  */
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,7 +19,11 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 
@@ -30,6 +35,7 @@ import com.warcraftII.terrain_map.TileTypes;
 //import org.omg.CORBA.UNKNOWN;
 
 import static com.warcraftII.GameDataTypes.EAssetCapabilityType.*;
+import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
@@ -81,6 +87,7 @@ public class Unit {
         // I think the above should be included in the buildings?
         // Or we can include it as requirements for addUnit, but that makes init harder
         public int foodConsumed = 1;
+        public boolean hidden = false;
 
         //public boolean selected = false;
         public boolean touched = false;
@@ -88,6 +95,15 @@ public class Unit {
         public float currentymove;
         public float patrolxmove;
         public float patrolymove;
+        public TilePosition buildPos = null;
+        public StaticAsset inProgressBuilding = null;
+        public int resourceAmount = 0;
+
+
+        public StaticAsset selectedAsset;
+        public TilePosition selectedTilePosition;
+
+
         public boolean attackEnd = true;
         public float frameTime = 0.1f;
         public float animStart = 0;
@@ -142,11 +158,9 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            batch.draw(curTexture, getX(), getY());
-            /*if (selected) {
-                Texture sel = new Texture(Gdx.files.internal("img/select.png"));
-                batch.draw(sel, getX(), getY());
-            }*/
+            if (inProgressBuilding == null && !hidden) {
+                batch.draw(curTexture, getX(), getY());
+            }
         }
 
         @Override
@@ -173,6 +187,9 @@ public class Unit {
         newUnit.color = inColor;
         texture = unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n");
         anim = new Animation<TextureRegion>(0.1f, unitAtlas.findRegion(GameDataTypes.toString(newUnit.color) + "-walk-n", 0));
+        newUnit.abilities.add(Move);
+        newUnit.abilities.add(Attack);
+        newUnit.abilities.add(StandGround);
         switch(inUnit) {
             case Peasant:
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.Mine);
@@ -200,6 +217,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Footman:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Footman;
                 newUnit.curHP = 60;
                 newUnit.maxHP = 60;
@@ -214,6 +232,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Archer:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Archer;
                 newUnit.curHP = 40;
                 newUnit.maxHP = 40;
@@ -228,8 +247,9 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Ranger:
-                newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
+                newUnit.abilities.add(Patrol);
                 newUnit.abilities.add(GameDataTypes.EAssetCapabilityType.RangerScouting);
+                newUnit.unitClass = GameDataTypes.EUnitType.Ranger;
                 newUnit.curHP = 50;
                 newUnit.maxHP = 50;
                 newUnit.armor = 2;
@@ -243,6 +263,7 @@ public class Unit {
                 newUnit.foodConsumed = 1;
                 break;
             case Knight:
+                newUnit.abilities.add(Patrol);
                 newUnit.unitClass = GameDataTypes.EUnitType.Knight;
                 newUnit.curHP = 70;
                 newUnit.maxHP = 70;
@@ -326,14 +347,46 @@ public class Unit {
                     case Mine:
                         UnitMineState(cur, elapsedTime, gData);
                         break;
+                    case Lumber:
+                        UnitLumberState(cur, elapsedTime, gData);
+                        break;
+                    case ReturnLumber:
+                        UnitReturnLumberState(cur, elapsedTime, gData);
+                        break;
+                    case ReturnMine:
+                        UnitReturnMineState(cur, elapsedTime, gData);
+                        break;
+                    case Repair:
+                        UnitRepairState(cur, elapsedTime, gData);
+                        break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
                             toDelete.add(cur);
                         }
                         break;
+                    case BuildBarracks:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Barracks, elapsedTime, gData);
+                        break;
+                    case BuildBlacksmith:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Blacksmith, elapsedTime, gData);
+                        break;
+                    case BuildFarm:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Farm, elapsedTime, gData);
+                        break;
+                    case BuildLumberMill:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.LumberMill, elapsedTime, gData);
+                        break;
+                    case BuildScoutTower:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.ScoutTower, elapsedTime, gData);
+                        break;
+                    case BuildTownHall:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.TownHall, elapsedTime, gData);
+                        break;
+                    case BuildWall:
+                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Wall, elapsedTime, gData);
+                        break;
                     default:
                         System.out.println("Invalid state");
-                        break;
                 }
             }
         }
@@ -343,16 +396,155 @@ public class Unit {
         toDelete.removeAllElements();
     }
 
-    private void UnitMineState(IndividualUnit cur, float deltaTime, GameData gData) {
-        if ((cur.getMidX() != cur.currentxmove - 1) || (cur.getMidY() != cur.currentymove - 1)) {
-            // mine
+    private void UnitReturnMineState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
+            gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementGold(cur.resourceAmount);
+            cur.resourceAmount = 0;
+            cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingGold);
+            cur.curState = GameDataTypes.EUnitState.Mine;
+            UnitPosition temp = new UnitPosition(cur.selectedTilePosition);
+            cur.currentxmove = temp.X();//+(Position.tileWidth()/2);
+            cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
+        } else {
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
+            UnitMove(cur, "gold", totalTime, gData);
         }
-        else
-            UnitMoveState(cur, deltaTime, gData);
     }
 
-    private void UnitPatrolState(IndividualUnit cur, float deltaTime, GameData gData) {
+    private void UnitReturnLumberState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
+            cur.stopMovement();
+            gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementLumber(cur.resourceAmount);
+            cur.resourceAmount = 0;
+            cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingLumber);
+            cur.curState = GameDataTypes.EUnitState.Lumber;
+            UnitPosition temp = new UnitPosition(cur.selectedTilePosition);
+            cur.currentxmove = temp.X();//+(Position.tileWidth()/2);
+            cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
+        } else {
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
+            UnitMove(cur, "lumber", totalTime, gData);
+        }
+    }
+
+    private void UnitMineState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData)) {
+            if (cur.attackEnd) {
+                cur.selectedAsset.StartMining();
+                cur.hidden = true;
+                cur.attackEnd = false;
+                cur.animStart = totalTime;
+            }
+            if (totalTime-cur.animStart >= 50) {
+                cur.selectedAsset.EndMining();
+                cur.resourceAmount += 10;
+                cur.abilities.add(CarryingGold);
+            }
+
+            if (cur.resourceAmount >= 100) {
+                if (SetReturnDest(cur, totalTime, gData)) {
+                    cur.curState = GameDataTypes.EUnitState.ReturnMine;
+                    cur.curAnim = GenerateAnimation(cur, "gold");
+                    cur.hidden = false;
+                } else {
+                    System.out.println("No where to drop off resources, going Idle");
+                    cur.curState = GameDataTypes.EUnitState.Idle;
+                    cur.stopMovement();
+                }
+            }
+        } else {
+            UnitMove(cur, totalTime, gData);
+        }
+    }
+
+    private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
+        if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
+            gData.map.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
+            cur.resourceAmount += 10;
+            cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
+            cur.curAnim = GenerateAnimation(cur, "lumber");
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
+            if (SetReturnDest(cur, totalTime, gData)) {
+                cur.curState = GameDataTypes.EUnitState.ReturnLumber;
+            } else {
+                System.out.println("No where to drop off resources, going Idle");
+                cur.curState = GameDataTypes.EUnitState.Idle;
+                cur.stopMovement();
+            }
+
+        } else {
+            UnitMove(cur, totalTime, gData);
+        }
+    }
+
+    private boolean SetReturnDest(IndividualUnit cur, float totalTime, GameData gData) {
+        UnitPosition upos = new UnitPosition(cur.selectedTilePosition);
+        StaticAsset nearestKeep = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Keep);
+        StaticAsset nearestTownHall = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.TownHall);
+        if (nearestKeep != null && nearestTownHall != null) {
+            if (distanceBetweenCoords((nearestKeep.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
+                    (nearestKeep.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
+                    round(cur.getMidX()),
+                    round(cur.getMidY()))
+                    >=
+                    distanceBetweenCoords((nearestTownHall.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
+                            (nearestTownHall.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
+                            round(cur.getMidX()),
+                            round(cur.getMidY()))) {
+                UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
+                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+            } else {
+                UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
+                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+            }
+        } else if (nearestKeep != null) {
+            UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
+            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+        } else if (nearestTownHall != null) {
+            UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
+            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth());
+    }
+
+    private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
         if (UnitMove(cur, deltaTime, gData)) {
+            if (cur.selectedAsset.hitPoints() <= cur.selectedAsset.maxHitPoints()) {
+                // TODO Repair Animation here and delay
+                cur.selectedAsset.incrementHitPoints(10);
+            }
+            else {
+                cur.curState = GameDataTypes.EUnitState.Idle;
+            }
+        }
+    }
+
+    private boolean InRange(IndividualUnit cur, UnitPosition target, float buildWidth, GameData gData) {
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= (buildWidth/2));
+    }
+
+    private boolean InRange(IndividualUnit cur, IndividualUnit tar, GameData gData) {
+        return InRange(cur, new UnitPosition(round(tar.getMidX()), round(tar.getMidY())), gData);
+    }
+
+    private boolean InRange(IndividualUnit cur, StaticAsset target, GameData gData) {
+        UnitPosition temp = new UnitPosition(target.tilePosition());
+        int halfAssetSize = PlayerAssetType.StaticAssetSize(target.staticAssetType())/2;
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), temp.X()+halfAssetSize, temp.Y()+halfAssetSize)  <= (cur.range * Position.tileWidth()) + halfAssetSize);
+    }
+
+    private void UnitPatrolState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (UnitMove(cur, totalTime, gData)) {
             float tempxmove = cur.currentxmove;
             float tempymove = cur.currentymove;
             cur.currentxmove = cur.patrolxmove;
@@ -362,30 +554,41 @@ public class Unit {
         }
     }
 
-    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float deltaTime, GameData gData) {
+    public double distanceBetweenCoords(int x1, int y1, int x2, int y2) {
+        return abs(sqrt(pow((x1-x2), 2)  + pow((y1-y2), 2)));
+    }
+
+    private Animation<TextureRegion> GenerateAnimation(IndividualUnit cur, String middle) {
+        return new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-"+middle+"-"+GameDataTypes.toAbbr(cur.direction)));
+    }
+
+    private Animation<TextureRegion> GenerateDeathAnimation(IndividualUnit cur) {
+        return new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
+    }
+
+    private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float totalTime, GameData gData) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
         if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
-            // TODO: do animation, check current keyframe, and only then attack
             // check if tar within cur.range of cur
-            if (sqrt(pow((tar.getMidX()-cur.getMidX()), 2)  + pow((tar.getMidY()-cur.getMidY()), 2)) <= cur.range*50) {
+            if (InRange(cur, tar, gData)) {
                 if (cur.attackEnd) {
-                    cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-attack-"+GameDataTypes.toAbbr(cur.direction)));
+                    cur.curAnim = GenerateAnimation(cur, "attack");
                     cur.attackEnd = false;
-                    cur.animStart = deltaTime;
+                    cur.animStart = totalTime;
                 }
-                if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
+                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
                     // TODO: make this use the projectiles
 
                 } else {
-                    cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
+                    cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
                 }
             } else {
                 cur.currentxmove = tar.getMidX();
                 cur.currentymove = tar.getMidY();
-                UnitMove(cur, deltaTime, gData);
+                UnitMove(cur, totalTime, gData);
             }
             // if not, move closer, setting currentxmove and currentymove as needed
         } else {
@@ -396,33 +599,38 @@ public class Unit {
         }
     }
 
-    private boolean UnitDeadState(IndividualUnit cur, float deltaTime, GameData gData) {
+    private boolean UnitDeadState(IndividualUnit cur, float totalTime, GameData gData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {
             // TODO: make a fucking function to return these animations
-            cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-death-"+GameDataTypes.toAbbrDeath(cur.direction)));
+            cur.curAnim = GenerateDeathAnimation(cur);
             cur.curAnim.setPlayMode(Animation.PlayMode.NORMAL);
-            cur.animStart = deltaTime;
+            cur.animStart = totalTime;
             cur.curHP = -101;
             cur.setTouchable(Touchable.disabled);
             //deleteUnits.add(this);
         }
 
-        cur.curTexture = cur.curAnim.getKeyFrame(deltaTime-cur.animStart, false);
-        if (cur.curAnim.isAnimationFinished(deltaTime-cur.animStart)) {
+        cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
+        if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
             return true;
         } else {
             return false;
         }
     }
 
-    private void UnitMoveState(IndividualUnit cur, float deltaTime, GameData gData) {
-        if (UnitMove(cur, deltaTime, gData)) {
+    private void UnitMoveState(IndividualUnit cur, float totalTime, GameData gData) {
+        if (UnitMove(cur, totalTime, gData)) {
             cur.curState = GameDataTypes.EUnitState.Idle;
+            cur.stopMovement();
         }
     }
 
+    public boolean UnitMove(IndividualUnit cur, float totalTime, GameData gData) {
+        return UnitMove(cur, "walk", totalTime, gData);
+    }
+
     // Returns true if it's reached the destination, false if it hasn't
-    public boolean UnitMove(IndividualUnit cur, float deltaTime, GameData gData) {
+    public boolean UnitMove(IndividualUnit cur, String type, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
             // TODO: do actual pathfinding
 
@@ -468,53 +676,49 @@ public class Unit {
                 cur.direction = GameDataTypes.EDirection.West;
             }
 
-            cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegions(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction)));
-            cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, true);
+            cur.curAnim = GenerateAnimation(cur, type);
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
 
             return false;
         } else {
             cur.curAnim = new Animation<TextureRegion>(cur.frameTime, unitTextures.get(cur.unitClass).findRegion(GameDataTypes.toString(cur.color)+"-walk-"+GameDataTypes.toAbbr(cur.direction), 0));
-            cur.curTexture = cur.curAnim.getKeyFrame(deltaTime, true);
+            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
             //cur.setPosition(cur.currentxmove, cur.currentymove);
             // Maybe 0 out currentxmove and currentymove at some point
             return true;
         }
     }
 
+    private void UnitBuild(IndividualUnit cur, GameDataTypes.EStaticAssetType toBuild, float totalTime, GameData gData) {
 
-    // Yes this is also silly. But it's the way the Linux code had the states.
-    private void UnitBuildTownHall(IndividualUnit cur, float deltaTime, GameData gData) {
-        TilePosition tilePos = new TilePosition(round(cur.currentxmove), round(cur.currentymove));
+        //if (sqrt(pow((cur.currentxmove-cur.getMidX()), 2)  + pow((cur.currentymove-cur.getMidY()), 2)) <= (PlayerAssetType.StaticAssetSize(toBuild)/2) + cur.range * gData.TILE_WIDTH ) {
+        if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), gData)) {
+            // If unit is in range of the building
 
-        // Check build time
+            if (cur.inProgressBuilding == null) {
+                // if Construction hasn't started
 
-        if (gData.map.CanPlaceStaticAsset(tilePos, GameDataTypes.EStaticAssetType.TownHall)) {
-            gData.playerData.get(0).ConstructStaticAsset(tilePos, GameDataTypes.EAssetType.TownHall, gData.map);
+                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && gData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
+                    // If you even can build, set inProgressBuilding to the building
+                    gData.selectedUnits.remove(cur);
+                    cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
+                } else {
+                    // If you can't, go Idle (should probably error/otherwise handle this)
+                    cur.stopMovement();
+                    cur.curState = GameDataTypes.EUnitState.Idle;
+                }
+            } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
+                // If construction is completed, go idle
+                cur.inProgressBuilding = null;
+                //gData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.ScoutTower, cur.color, cur.buildPos, gData.tiledMap, gData.map);
+                cur.stopMovement();
+                cur.curState = GameDataTypes.EUnitState.Idle;
+            } else {
+                // Construction is still in progress, keep building
+            }
+        } else {
+            UnitMove(cur, totalTime, gData);
         }
-    }
-
-    private void UnitBuildFarm(IndividualUnit cur, float deltaTime, GameData gData) {
-
-    }
-
-    private void UnitBuildBarracks(IndividualUnit cur, float deltaTime, GameData gData) {
-
-    }
-
-    private void UnitBuildLumberMill(IndividualUnit cur, float deltaTime, GameData gData) {
-
-    }
-
-    private void UnitBuildScoutTower(IndividualUnit cur, float deltaTime, GameData gData) {
-
-    }
-
-    private void UnitBuildBlacksmith(IndividualUnit cur, float deltaTime, GameData gData) {
-
-    }
-
-    private void UnitBuildWall(IndividualUnit cur, float deltaTime, GameData gData) {
-
     }
 
     public void updateVector() {

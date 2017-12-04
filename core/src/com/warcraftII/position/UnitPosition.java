@@ -3,6 +3,8 @@ package com.warcraftII.position;
 
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 
+import static java.lang.Math.round;
+
 /**
  * Created by Kimi on 11/10/2017.
  * 
@@ -18,6 +20,10 @@ public class UnitPosition extends Position {
         super(x,y);
     }
 
+    public UnitPosition(float x, float y) {
+        super(round(x), round(y));
+    }
+
     public UnitPosition(UnitPosition pos) {
         super(pos);
     }
@@ -25,7 +31,7 @@ public class UnitPosition extends Position {
     //SUPER IMPORTANT: Constructor from TilePosition
     public UnitPosition(TilePosition tpos) {
         DX = tpos.X() * DTileWidth + DHalfTileWidth;
-        DY = (DMapHeight - tpos.Y()) * DTileHeight + DHalfTileHeight;
+        DY = (DMapHeight - tpos.Y()) * DTileHeight;
     }
 
     public boolean tileAligned() {
@@ -35,7 +41,7 @@ public class UnitPosition extends Position {
 
     public void setFromTile(TilePosition pos) {
         DX = pos.X() * DTileWidth + DHalfTileWidth;
-        DY = (DMapHeight - pos.Y()) * DTileHeight + DHalfTileHeight;
+        DY = (DMapHeight - pos.Y()) * DTileHeight ;
     }
 
     public void setXFromTile(int x) {
@@ -43,7 +49,7 @@ public class UnitPosition extends Position {
     }
 
     public void setYFromTile(int y) {
-        DY = (DMapHeight - y) * DTileHeight + DHalfTileHeight;
+        DY = (DMapHeight - y) * DTileHeight;
     }
 
     public UnitPosition closestPosition(UnitPosition objPos, int objSize) {
