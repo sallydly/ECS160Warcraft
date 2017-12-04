@@ -124,7 +124,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
      //DEBUG:
      //TODO: Determine this from the button
-     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.Wall;
+     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
 
 
 
@@ -445,8 +445,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-
-                if(buildSimpleButton.isPressed())
+                //co-opting select button for now
+                if(selectButton.isPressed())
                 {
                     UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
                     TilePosition tpos = new TilePosition(upos);
@@ -486,7 +486,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
 
-                if(buildSimpleButton.isPressed()) {
+                if(selectButton.isPressed()) {
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
@@ -497,6 +497,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                         if (!wallStarted) {
                             if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                                //shouldnt have a wall started if you can't afford it.  No check here
                                 gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
                                 gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                                 wallStarted = true;
@@ -506,7 +507,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                             }
                         } else //wall already started
                         {
-                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
+                            if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall) &&
+                                    gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.EAssetType.Wall) == 0) {
                                 gameData.playerData.get(1).ConstructStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall, gameData.map);
                             }
                         }
@@ -819,7 +821,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-        if(buildSimpleButton.isPressed()) {
+        //co-opting selectbutton for now
+        if(selectButton.isPressed()) {
             UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
             TilePosition tpos = new TilePosition(upos);
 
