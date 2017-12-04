@@ -20,8 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
-import com.warcraftII.screens.options.Options;
+import com.warcraftII.screens.options.SoundOptions;
 
 public class MainMenu implements Screen {
     private Warcraft game;
@@ -42,18 +43,20 @@ public class MainMenu implements Screen {
         Gdx.graphics.setContinuousRendering(false);
 
         this.game = game;
-        this.texture = new Texture("img/warcraft_icon.png");
+        this.texture = new Texture("img/sjacraft_icon.png");
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
         ScreenViewport port = new ScreenViewport();
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         this.stage = new Stage(port, game.batch);
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/menu.mp3"));
+        this.music.setVolume( (Volume.getMusicVolume() / 100));
         this.music.setLooping(true);
     }
 
     @Override
     public void show() {
+
         Gdx.input.setInputProcessor(stage);
 
         // set background texture image
@@ -76,6 +79,8 @@ public class MainMenu implements Screen {
     }
 
     private Table createMenuTable() {
+        Gdx.input.setCatchBackKey(true);
+
         // generate Kingthings font
         // TODO: may need to move this to static class/singleton
         // code adapted from https://github.com/libgdx/libgdx/wiki/Gdx-freetype
@@ -107,8 +112,7 @@ public class MainMenu implements Screen {
         menuTable.row();
 
         TextButton singlePlayerButton = new TextButton("Single Player Game", skin);
-        TextButton multiPlayerButton = new TextButton("Multi Player Game", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
+        TextButton optionsButton = new TextButton("Sound Options", skin);
 
         Label.LabelStyle buttonLabelStyle = new Label.LabelStyle();
         buttonLabelStyle.font = kingthings16;
@@ -116,8 +120,6 @@ public class MainMenu implements Screen {
 
         singlePlayerButton.getLabel().setFontScale(2, 2);
         singlePlayerButton.getLabel().setStyle(buttonLabelStyle);
-        multiPlayerButton.getLabel().setFontScale(2, 2);
-        multiPlayerButton.getLabel().setStyle(buttonLabelStyle);
         optionsButton.getLabel().setFontScale(2, 2);
         optionsButton.getLabel().setStyle(buttonLabelStyle);
 
@@ -128,25 +130,16 @@ public class MainMenu implements Screen {
             }
         });
 
-        multiPlayerButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MultiPlayer(game));
-            }
-        });
-
         optionsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new Options(game));
+                game.setScreen(new SoundOptions(game));
             }
         });
 
-        menuTable.add(singlePlayerButton).uniformX();
+        menuTable.add(singlePlayerButton).uniformX().height(150);
         menuTable.row().pad(100, 0 , 100, 0);
-        menuTable.add(multiPlayerButton).uniformX();
-        menuTable.row();
-        menuTable.add(optionsButton).uniformX();
+        menuTable.add(optionsButton).uniformX().height(150);
         menuTable.row();
         // empty row for more space
         menuTable.add().expandY();

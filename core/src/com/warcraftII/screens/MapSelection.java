@@ -2,6 +2,7 @@ package com.warcraftII.screens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
@@ -154,7 +155,7 @@ public class MapSelection implements Screen {
 
         //Top row has the name of the map, and you can click on it
         for (TextButton textButton : textButtons) {
-            menuTable.add(textButton).pad(0,50,100,50).uniformX();
+            menuTable.add(textButton).pad(0,50,100,50).uniformX().height(150);
         }
 
         menuTable.row().pad(20);
@@ -178,6 +179,9 @@ public class MapSelection implements Screen {
         stage.draw();
         game.batch.begin();
         //game.batch.draw(texture, 0, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            game.setScreen(new MainMenu(game));
+        }
         game.batch.end();
 
         

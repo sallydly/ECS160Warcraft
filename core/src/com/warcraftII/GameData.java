@@ -52,21 +52,17 @@ public class GameData {
     public Skin skin;
 
     public AssetDecoratedMap map;
-    public VisibilityMap visibilityMap;
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
     public FogRenderer fogRenderer;
-
     public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
-    public Vector<PlayerData> oldPlayerData;
 
     public UnitActions unitActions;
     public Unit allUnits;
-
-    public boolean isInitial = true;
+    public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>(9);
     public float elapsedTime;
     public float cumulativeTime = 0; // for slowing down timestep a bit.
 

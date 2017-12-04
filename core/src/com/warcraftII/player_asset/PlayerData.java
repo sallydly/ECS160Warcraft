@@ -28,6 +28,7 @@ public class PlayerData {
     //Vector< SGameEvent > DGameEvents;
     protected int DGold;
     protected int DLumber;
+    protected int DStone;
     protected int DGameCycle;
 
     public PlayerData(AssetDecoratedMap map, EPlayerColor color, Unit allUnits){
@@ -40,6 +41,7 @@ public class PlayerData {
         //DVisibilityMap = DActualMap->CreateVisibilityMap();
         DGold = 0;
         DLumber = 0;
+        DStone = 0;
 
         /*DUpgrades.resize(to_underlying(EAssetCapabilityType::Max));
         for(int Index = 0; Index < DUpgrades.size(); Index++){
@@ -50,6 +52,7 @@ public class PlayerData {
             if(ResourceInit.DColor == color){
                 DGold = ResourceInit.DGold;
                 DLumber = ResourceInit.DLumber;
+                DStone = ResourceInit.DStone;
             }
         }
 
@@ -113,15 +116,18 @@ public class PlayerData {
     public int Lumber() {
         return DLumber;
     }
+
+    public int Stone() {return DStone;}
+
     public int IncrementGold(int gold){
         DGold += gold;
         return DGold;
     }
-
     public int DecrementGold(int gold){
         DGold -= gold;
         return DGold;
     }
+
     public int IncrementLumber(int lumber){
         DLumber += lumber;
         return DLumber;
@@ -129,6 +135,15 @@ public class PlayerData {
     public int DecrementLumber(int lumber){
         DLumber -= lumber;
         return DLumber;
+    }
+
+    public int IncrementStone(int stone){
+        DStone += stone;
+        return DStone;
+    }
+    public int DecrementStone(int stone){
+        DStone -= stone;
+        return DStone;
     }
 
     /*
@@ -147,6 +162,7 @@ public class PlayerData {
         return DStaticAssets;
     }
 
+
     public StaticAsset CreateStaticAsset(String name){
         return PlayerAssetType.ConstructStaticAsset(name);
     }
@@ -161,17 +177,38 @@ public class PlayerData {
         return DStaticAssets.contains(asset);
     }
 
-    public void ConstructStaticAsset(TilePosition tpos, EAssetType type, AssetDecoratedMap map){
+
+
+    public int PlayerCanAffordAsset(EAssetType type){
+        int returnstatus = 0;
+        /* Code for return status:
+            0: nothing lacking
+            1: not enough wood
+            2: not enough gold
+            3: not enough wood and gold
+            4: not enough stone
+            5: not enough wood and stone
+            6: not enough gold and stone
+            7: not enough of everything
+         */
+        return PlayerAssetType.CanAfford(type, Lumber(), Gold(),Stone());
+    }
+
+    public StaticAsset ConstructStaticAsset(TilePosition tpos, EStaticAssetType type, AssetDecoratedMap map){
+        return ConstructStaticAsset(tpos,GameDataTypes.to_assetType(type),map);
+    }
+
+    public StaticAsset ConstructStaticAsset(TilePosition tpos, EAssetType type, AssetDecoratedMap map){
         if (!GameDataTypes.is_static(type))
-            return;
+            return null;
 
         StaticAsset ConsAsset = CreateStaticAsset(
                 PlayerAssetType.TypeToName(type));
         ConsAsset.tilePosition(tpos);
         ConsAsset.owner(DColor);
-        /*if(EAssetType.GoldMine == PlayerAssetType.NameToType(AssetInit.DType)){
-            InitAsset.gold(DGold);
-        }*/
+        if(EStaticAssetType.GoldMine == ConsAsset.staticAssetType()){
+            ConsAsset.gold(DGold);
+        }
 
         SAssetCommand constructCommand = new SAssetCommand();
         constructCommand.DAction = GameDataTypes.EAssetAction.Construct;
@@ -181,6 +218,11 @@ public class PlayerData {
         DStaticAssets.add(ConsAsset);
         map.AddStaticAsset(ConsAsset);
 
+        DecrementGold(ConsAsset.GoldCost());
+        DecrementLumber(ConsAsset.LumberCost());
+        DecrementStone(ConsAsset.StoneCost());
+
+        return ConsAsset;
     }
     /*
 

@@ -1,6 +1,7 @@
 package com.warcraftII.screens.options;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
+import com.warcraftII.screens.MainMenu;
 
 public class SoundOptions implements Screen {
     private Logger log = new Logger("Sound Options", 2);
@@ -127,7 +129,7 @@ public class SoundOptions implements Screen {
                 log.info("OK button clicked.");
                 Volume.setFxVolume(Math.round(fxVolumeSlider.getValue()));
                 Volume.setMusicVolume(Math.round(musicVolumeSlider.getValue()));
-                game.setScreen(new Options(game));
+                game.setScreen(new MainMenu(game));
             }
         });
         buttonsTable.add(okButton).uniformX().pad(10);
@@ -140,7 +142,7 @@ public class SoundOptions implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 log.info("Cancel button clicked.");
-                game.setScreen(new Options(game));
+                game.setScreen(new MainMenu(game));
             }
         });
         buttonsTable.add(cancelButton).uniformX().pad(10);
@@ -158,6 +160,9 @@ public class SoundOptions implements Screen {
 
         stage.act();
         stage.draw();
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            game.setScreen(new MainMenu(game));
+        }
     }
 
     @Override
