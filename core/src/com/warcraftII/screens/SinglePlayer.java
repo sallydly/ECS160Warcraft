@@ -33,6 +33,7 @@ import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 
+import com.warcraftII.player_asset.PlayerAsset;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
@@ -822,6 +823,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (chosenStatAsset != null && !anyButtonHeld()) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
+        } else if (chosenStatAsset != null && attackButton.isPressed()) {
+            selectedAsset = chosenStatAsset;
+            isAssetSelected = true;
         } else {
             isAssetSelected = false;
         }
@@ -880,7 +884,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     selectedUnits.add(cur);
                 }
                 return true;
-            }
+            } else if (isAssetSelected && attackButton.isPressed() && selectedAsset.staticAssetType() != GameDataTypes.EStaticAssetType.GoldMine && !selectedUnits.isEmpty() && selectedUnits.firstElement().color != selectedAsset.color()) {
+                 // units attack building
+                 for (Unit.IndividualUnit sel : selectedUnits) {
+                     sel.target = null;
+                     sel.selectedAsset = selectedAsset;
+                     UnitPosition tar = new UnitPosition(new TilePosition(selectedAsset.positionX(), selectedAsset.positionY()));
+                     sel.currentxmove = selectedAsset.positionX();
+                     sel.currentymove = selectedAsset.positionY();
+                     sel.curState = GameDataTypes.EUnitState.Attack;
+                 }
+                 selectedAsset = null;
+             }
         }
         return false;
     }

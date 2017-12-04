@@ -575,7 +575,31 @@ public class Unit {
 
     private void UnitAttackState(IndividualUnit cur, IndividualUnit tar, float totalTime, GameData gData) {
         //TODO if tar is null then move in direction of x,y land and if unit gets in range attack till dead then continue to direction
-        if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
+        if (tar == null) {
+            if (cur.selectedAsset != null && cur.selectedAsset.hitPoints() > 0) {
+                if (InRange(cur, new UnitPosition(cur.selectedAsset.tilePosition()), gData)) {
+                    if (cur.attackEnd) {
+                        cur.curAnim = GenerateAnimation(cur, "attack");
+                        cur.attackEnd = false;
+                        cur.animStart = totalTime;
+                    }
+                    if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime) {
+                        cur.selectedAsset.decrementHitPoints(cur.attackDamage);
+                        cur.attackEnd = true;
+                    } else {
+                        cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
+                    }
+                }
+            } else {
+
+                if (cur.selectedAsset.hitPoints() <= 0) {
+                    cur.selectedAsset = null;
+                    cur.stopMovement();
+                }
+
+                // no target, move in direction of x,y land and if unit is in range set that as target
+            }
+        } else if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
             // check if tar within cur.range of cur
             if (InRange(cur, tar, gData)) {
                 if (cur.attackEnd) {
@@ -583,7 +607,7 @@ public class Unit {
                     cur.attackEnd = false;
                     cur.animStart = totalTime;
                 }
-                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
+                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime) {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
