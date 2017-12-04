@@ -631,7 +631,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     break;
                 case Max:
                     break;
-
                 case BuildPeasant:
                     break;
                 case BuildFootman:
@@ -991,6 +990,28 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedTilePosition = tilePosition;
+                    }
+                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingGold)) {
+                        sUnit.curState = GameDataTypes.EUnitState.ReturnMine;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedAsset = selectedAsset;
+                    }
+                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingLumber)) {
+                        sUnit.curState = GameDataTypes.EUnitState.ReturnLumber;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedAsset = selectedAsset;
+                    }
+                    usedCount += 1;
+                } else if (repairButton.isPressed()) {
+                    TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
+                    if (selectedAsset != null) {
+                        sUnit.curState = GameDataTypes.EUnitState.Repair;
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                        sUnit.selectedAsset = selectedAsset;
                     }
                     usedCount += 1;
                 } else {
