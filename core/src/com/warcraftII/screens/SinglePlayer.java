@@ -32,12 +32,9 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
-<<<<<<< HEAD
 import com.warcraftII.player_asset.PlayerCapability;
-=======
 
 import com.warcraftII.player_asset.PlayerAssetType;
->>>>>>> master
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.Position;
@@ -126,10 +123,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private float touchEndX = 0;
     private float touchEndY = 0;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     UnitActionRenderer unitActionRenderer;
     private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
 
@@ -631,7 +624,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
         log.info(capabilities.toString());
 
-<<<<<<< HEAD
         if(isAssetSelected){
             if(buildSimpleButton.isPressed()) {
                 for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
@@ -664,104 +656,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sidebarTable.row();
                 }
             }
-=======
-        for(GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
-            switch(capabilityType) {
-                case None:
-                    break;
-                case Move:
-                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Repair:
-                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Mine:
-                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case BuildAdvanced:
-                    break;
-                case Convey:
-                    break;
-                case Cancel:
-                    break;
-                case BuildWall:
-                    break;
-                case Attack:
-                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case StandGround:
-                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case Patrol:
-                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
-                    sidebarTable.row();
-                    break;
-                case WeaponUpgrade1:
-                    break;
-                case WeaponUpgrade2:
-                    break;
-                case WeaponUpgrade3:
-                    break;
-                case ArrowUpgrade1:
-                    break;
-                case ArrowUpgrade2:
-                    break;
-                case ArrowUpgrade3:
-                    break;
-                case ArmorUpgrade1:
-                    break;
-                case ArmorUpgrade2:
-                    break;
-                case ArmorUpgrade3:
-                    break;
-                case Longbow:
-                    break;
-                case RangerScouting:
-                    break;
-                case Marksmanship:
-                    break;
-                case Max:
-                    break;
-                case BuildPeasant:
-                    break;
-                case BuildFootman:
-                    break;
-                case BuildArcher:
-                    break;
-                case BuildRanger:
-                    break;
-                case BuildFarm:
-                    break;
-                case BuildTownHall:
-                    break;
-                case BuildBarracks:
-                    break;
-                case BuildLumberMill:
-                    break;
-                case BuildBlacksmith:
-                    break;
-                case BuildKeep:
-                    break;
-                case BuildCastle:
-                    break;
-                case BuildScoutTower:
-                    break;
-                case BuildGuardTower:
-                    break;
-                case BuildCannonTower:
-                    break;
-                default:
-                    break;
->>>>>>> master
             }
             else{
                 sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
@@ -906,10 +800,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             sidebarTable.row();
         }
 
-<<<<<<< HEAD
-=======
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
->>>>>>> master
         sidebarStage.draw();
     }
 
@@ -1047,8 +938,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         //Asset Selection code here...I assume will override all others...?
         TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
-<<<<<<< HEAD
-=======
         //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         //or:
         //Vector<Boolean> capabilities;
@@ -1056,7 +945,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // move most of this to singleSelect?
         isAssetSelected = false;
->>>>>>> master
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
@@ -1076,12 +964,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
-<<<<<<< HEAD
             fillSideBarTable();
-            return false; //Ignores all other asset selection?
-=======
             return true; //Ignores all other asset selection?
->>>>>>> master
         }
 
         // TODO: maybe move this to a element in GameData?
