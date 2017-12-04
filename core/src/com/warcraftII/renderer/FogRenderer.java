@@ -8,60 +8,70 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
+import com.warcraftII.units.Unit;
 
+import java.util.List;
 import java.util.Vector;
 
 public class FogRenderer {
     private TextureAtlas fogAtlas;
+    private TextureRegion allBlackFog;
+    private TextureRegion partialFog;
+    private TextureRegion partialPartialFog;
 
     public FogRenderer() {
-        //TODO: Change this
         this.fogAtlas = new TextureAtlas(Gdx.files.internal("atlas/fog.atlas"));
-
+        this.allBlackFog = fogAtlas.findRegion("pb-00");
+        this.partialFog = fogAtlas.findRegion("partial");
+        this.partialPartialFog = fogAtlas.findRegion("pf-00");
     }
 
-    public TiledMapTileLayer renderFog(AssetDecoratedMap assetDecoratedMap, Vector<PlayerData> playerDataVector) {
+    public TiledMapTileLayer renderAssetsFog(AssetDecoratedMap assetDecoratedMap,
+                                             Vector<PlayerData> playerDataVector) {
         System.out.println("Rendering Fog");
+        VisibilityMap visibilityMap = assetDecoratedMap.CreateVisibilityMap();
+
+        for(PlayerData playerData : playerDataVector) {
+            visibilityMap.update(playerData.StaticAssets());
+        }
+
+        return createFogLayer(assetDecoratedMap, visibilityMap);
+    }
+
+    private TiledMapTileLayer createFogLayer(AssetDecoratedMap assetDecoratedMap,
+                                VisibilityMap visibilityMap) {
         TiledMapTileLayer fogLayer = new TiledMapTileLayer(assetDecoratedMap.Width(), assetDecoratedMap.Height(), 32, 32);
         fogLayer.setName("Fog");
 
-        VisibilityMap visibilityMap = assetDecoratedMap.CreateVisibilityMap();
-        TextureRegion allBlackFog = fogAtlas.findRegion("pf-00");
-        TextureRegion partialFog = fogAtlas.findRegion("partial");
-        System.out.println("Num Players: " + playerDataVector.size());
+        for(int xIndex = 0 ; xIndex < assetDecoratedMap.Height(); ++xIndex) {
+            for(int yIndex = 0; yIndex < assetDecoratedMap.Width(); ++yIndex) {
+                int Xpos =  xIndex;
+                int Ypos = assetDecoratedMap.Height() - yIndex - 1;
+                final VisibilityMap.ETileVisibility CURRENT_TILE = visibilityMap.TileType(xIndex, yIndex);
 
-        for(PlayerData playerData : playerDataVector) {
-            System.out.println("Num StaticAssets: " + playerData.StaticAssets().size());
-            visibilityMap.update(playerData.StaticAssets());
-        }
-/*
-
-for(int YIndex = rect.DYPosition / TileHeight, YPos = -(rect.DYPosition % TileHeight); YPos < rect.DHeight; YIndex++, YPos += TileHeight){
-        for(int XIndex = rect.DXPosition / TileWidth, XPos = -(rect.DXPosition % TileWidth); XPos < rect.DWidth; XIndex++, XPos += TileWidth){
-
- */
-//        for(int YIndex = rect.DYPosition / TileHeight, YPos = -(rect.DYPosition % TileHeight); YPos < rect.DHeight; YIndex++, YPos += TileHeight){
-//            for(int XIndex = rect.DXPosition / TileWidth, XPos = -(rect.DXPosition % TileWidth); XPos < rect.DWidth; XIndex++, XPos += TileWidth){
-//
-        for(int yIndex = 0 ; yIndex < assetDecoratedMap.Height(); ++yIndex) {
-            for(int xIndex = 0; xIndex < assetDecoratedMap.Width(); ++xIndex) {
-                if(visibilityMap.TileType(xIndex, yIndex) == VisibilityMap.ETileVisibility.None) {
-                    int Xpos =  xIndex;
-                    int Ypos = assetDecoratedMap.Height() - yIndex - 1;
-                    TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
-                    blackCell.setTile(new StaticTiledMapTile(allBlackFog));
-                    fogLayer.setCell(Xpos, Ypos, blackCell);
-                } else if(visibilityMap.TileType(xIndex, yIndex) == VisibilityMap.ETileVisibility.PartialPartial
-                        || visibilityMap.TileType(xIndex, yIndex) == VisibilityMap.ETileVisibility.Partial) {
-                    int Xpos =  xIndex;
-                    int Ypos = assetDecoratedMap.Height() - yIndex - 1;
-                    TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
-                    partialCell.setTile(new StaticTiledMapTile(partialFog));
-                    fogLayer.setCell(Xpos, Ypos, partialCell);
+                switch (CURRENT_TILE) {
+                    case None:
+                        TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
+                        blackCell.setTile(new StaticTiledMapTile(allBlackFog));
+                        fogLayer.setCell(Xpos, Ypos, blackCell);
+                        break;
+                    case PartialPartial:
+                        TiledMapTileLayer.Cell partialPartialCell = new TiledMapTileLayer.Cell();
+                        partialPartialCell.setTile(new StaticTiledMapTile(partialPartialFog));
+                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
+                        break;
+                    case Partial:
+                        TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
+                        partialCell.setTile(new StaticTiledMapTile(partialFog));
+                        fogLayer.setCell(Xpos, Ypos, partialCell);
+                        break;
+                    case Visible:
+                    case SeenPartial:
+                    case Seen:
+                        break;
                 }
             }
         }
-
         return fogLayer;
     }
 }

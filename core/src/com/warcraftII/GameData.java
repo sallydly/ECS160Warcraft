@@ -1,7 +1,6 @@
 package com.warcraftII;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
-import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -25,7 +23,6 @@ import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -101,32 +98,21 @@ public class GameData {
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
+        TiledMapTileLayer fogLayer = fogRenderer.renderAssetsFog(map, playerData);
+
         TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
             layers.add(staticAssetsLayer);
         }
-
-        TiledMapTileLayer fogLayer = fogRenderer.renderFog(map, playerData);
         tiledMap.getLayers().add(fogLayer);
     }
 
     public void renderFog() {
-        TiledMapTileLayer fogLayer = fogRenderer.renderFog(map, playerData);
+        TiledMapTileLayer fogLayer = fogRenderer.renderAssetsFog(map, playerData);
         int oldFogLayerIndex = tiledMap.getLayers().getIndex("Fog");
+
         tiledMap.getLayers().remove(oldFogLayerIndex);
         tiledMap.getLayers().add(fogLayer);
-//        boolean isDifferent = false;
-//        for(int i = 0; i < oldPlayerData.size(); ++i) {
-//            if(oldPlayerData.get(i).StaticAssets().size() != playerData.get(i).StaticAssets().size()) {
-//                isDifferent = true;
-//            }
-//        }
-//        if (isDifferent || isInitial) {
-//            System.out.println("IsDifferent or Initial");
-//            oldPlayerData = new Vector<PlayerData>(playerData);
-//
-//            isInitial = false;
-//        }
     }
 
     //not sure where to put this function...putting it here because it's a function that uses multiple classes
@@ -164,7 +150,6 @@ public class GameData {
         }
     }
 
-
     //Naive timestep.
     public void TimeStep(){
 
@@ -175,30 +160,24 @@ public class GameData {
             cumulativeTime = 0;
         }
 
-        Iterator<StaticAsset> iter = map.StaticAssets().iterator();
-
-        while(iter.hasNext())
-        {
-            StaticAsset sasset = iter.next();
-            if(GameDataTypes.EAssetAction.None == sasset.Action()){
+        for (StaticAsset sasset : map.StaticAssets()) {
+            if (GameDataTypes.EAssetAction.None == sasset.Action()) {
                 //Do nothing. for now.
             }
-            if(GameDataTypes.EAssetAction.Construct == sasset.Action()){
-                if(sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
+            if (GameDataTypes.EAssetAction.Construct == sasset.Action()) {
+                if (sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
                     sasset.IncrementStep();
-                }
-                else
-                {
+                } else {
                     sasset.PopCommand();
                 }
                 //Do nothing. for now.
             }
-            if(GameDataTypes.EAssetAction.Death == sasset.Action()){
+            if (GameDataTypes.EAssetAction.Death == sasset.Action()) {
                 //do nothing for now.
             }
         }
 
-        if (staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData)) {
+        if (staticAssetRenderer.UpdateStaticAssets(tiledMap, map, playerData)) {
             renderFog();
         }
     }
