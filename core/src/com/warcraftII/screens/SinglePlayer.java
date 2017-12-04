@@ -483,7 +483,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
 
-        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Black);
+        gameData.allUnits.AddUnit(690,690, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Red);
         gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman, GameDataTypes.EPlayerColor.Green);
         gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant, GameDataTypes.EPlayerColor.Orange);
         gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
@@ -840,7 +840,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
              if (cur.touched && cur.color == gameData.playerData.get(1).Color()) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || attackButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
@@ -925,8 +925,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sUnit.curState = GameDataTypes.EUnitState.Patrol;
                     usedCount += 1;
                 } else if (standGroundButton.isPressed()) {
+                    sUnit.stopMovement();
                     usedCount += 1;
                 } else if (attackButton.isPressed()) {
+                    // This is handled in singleSelected because it needs to target whatever individual unit was touched
                     usedCount += 1;
                 } else if (buildSimpleButton.isPressed()) {
                     // TODO: why
