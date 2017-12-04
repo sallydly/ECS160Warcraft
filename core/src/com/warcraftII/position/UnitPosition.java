@@ -3,6 +3,8 @@ package com.warcraftII.position;
 
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 
+import static java.lang.Math.round;
+
 /**
  * Created by Kimi on 11/10/2017.
  * 
@@ -16,6 +18,10 @@ public class UnitPosition extends Position {
 
     public UnitPosition(int x, int y) {
         super(x,y);
+    }
+
+    public UnitPosition(float x, float y) {
+        super(round(x), round(y));
     }
 
     public UnitPosition(UnitPosition pos) {
