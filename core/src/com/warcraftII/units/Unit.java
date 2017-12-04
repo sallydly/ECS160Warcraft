@@ -670,28 +670,40 @@ public class Unit {
         return UnitMove(cur, "walk", totalTime, gData);
     }
 
+    public boolean pathable(float x, float y, GameData gData) {
+        TilePosition tilePos = new TilePosition(new UnitPosition(round(x), round(y)));
+        StaticAsset selectedAsset = gData.map.StaticAssetAt(tilePos);
+        if (selectedAsset != null) {
+            return false;
+        }
+        else if (gData.map.IsTraversable(gData.map.TileType(tilePos))) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     // Returns true if it's reached the destination, false if it hasn't
     public boolean UnitMove(IndividualUnit cur, String type, float totalTime, GameData gData) {
         if ((cur.getMidX() != cur.currentxmove) || (cur.getMidY() != cur.currentymove)) {
-            // TODO: do actual pathfinding
-
             boolean north, south, east, west;
             north = south = west = east = false;
 
-            if (cur.getMidX() > cur.currentxmove) {
+            if (cur.getMidX() > cur.currentxmove && pathable((cur.getX() - cur.speed/10),cur.getY(), gData)) {
                 cur.setX(cur.getX() - cur.speed/10);
                 west = true;
-            } else if (cur.getMidX() < cur.currentxmove) {
+            } else if (cur.getMidX() < cur.currentxmove && pathable((cur.getX() + cur.speed/10),cur.getY(), gData)) {
                 cur.setX(cur.getX()+ cur.speed/10);
                 east = true;
             } else {
                 // stay in X
             }
 
-            if (cur.getMidY() > cur.currentymove) {
+            if (cur.getMidY() > cur.currentymove && pathable(cur.getX(),(cur.getY() - cur.speed/10), gData)) {
                 cur.setY(cur.getY() - cur.speed/10);
                 south = true;
-            } else if (cur.getMidY() < cur.currentymove) {
+            } else if (cur.getMidY() < cur.currentymove && pathable(cur.getX(),(cur.getY() + cur.speed/10), gData)) {
                 cur.setY(cur.getY() + cur.speed/10);
                 north = true;
             } else {
@@ -715,6 +727,8 @@ public class Unit {
                 cur.direction = GameDataTypes.EDirection.East;
             } else if (west) {
                 cur.direction = GameDataTypes.EDirection.West;
+            } else {
+                cur.stopMovement();
             }
 
             cur.curAnim = GenerateAnimation(cur, type);
