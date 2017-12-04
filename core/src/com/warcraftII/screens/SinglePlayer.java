@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -34,6 +35,7 @@ import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
 
 import com.warcraftII.player_asset.PlayerAssetType;
+import com.warcraftII.player_asset.PlayerCapability;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.Position;
@@ -135,6 +137,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean buildSimpleButtonIsPressed;
     private boolean buildAdvancedButtonIsPressed;
+    private boolean isPlacingBuilding;
+
 
 
     //For wall building:
@@ -215,7 +219,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndY = position.y;
 
         // adjust pointer drag amount by mapCamera zoom level
-        if(!selectButton.isPressed()) {
+        if(!selectButton.isPressed() && !isPlacingBuilding) {
             deltaX *= mapCamera.zoom;
             deltaY *= mapCamera.zoom;
 
@@ -251,14 +255,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
 
-        /*moveButton.addListener(new InputListener() {
+        moveButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 movement = 1;
                 return true;
             }
         });
-        */
+
         standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -296,7 +300,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 fillSideBarTable();
             }
         });
-        /*
+
         attackButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -310,7 +314,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 patrol = 1;
                 return true;
             }
-        });*/
+        });
 
         mapCamera = new OrthographicCamera();
         mapViewport = new FitViewport(Gdx.graphics.getWidth() * .75f, Gdx.graphics.getHeight() * .95f, mapCamera);
@@ -495,7 +499,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-                if(buildSimpleButton.isPressed()) {
+                if(isPlacingBuilding) {
                     TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
 
                     //centering the staticasset about the touch:
@@ -929,7 +933,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartY = position.y;
 
 
-        if(buildSimpleButton.isPressed()) {
+        if(isPlacingBuilding) {
             TilePosition tpos = new TilePosition(new UnitPosition((int) position.x,(int) position.y));
 
             typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
@@ -962,6 +966,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         } else {
             isAssetSelected = false;
             buildSimpleButtonIsPressed = false;
+            selectedAsset = null;
             fillSideBarTable();
         }
 
