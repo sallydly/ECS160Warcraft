@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -923,10 +924,10 @@ public class AssetDecoratedMap extends TerrainMap {
  *
  */
 //TODO: Do we need the visibility map?
-/*
-    std.shared_ptr< CVisibilityMap > CreateVisibilityMap() const{
-        return std.make_shared< CVisibilityMap >(Width(), Height(), CPlayerAssetType.MaxSight());
-    }*/
+
+    public VisibilityMap CreateVisibilityMap() {
+        return new VisibilityMap(Width(), Height(), PlayerAssetType.MaxSight());
+    }
 
 
     /**

@@ -14,9 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
+import com.warcraftII.renderer.FogRenderer;
 import com.warcraftII.renderer.MapRenderer;
 import com.warcraftII.renderer.StaticAssetRenderer;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
@@ -50,16 +52,21 @@ public class GameData {
     public Skin skin;
 
     public AssetDecoratedMap map;
+    public VisibilityMap visibilityMap;
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
+    public FogRenderer fogRenderer;
 
     public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
+    public Vector<PlayerData> oldPlayerData;
+
     public UnitActions unitActions;
     public Unit allUnits;
 
+    public boolean isInitial = true;
     public float elapsedTime;
     public float cumulativeTime = 0; // for slowing down timestep a bit.
 
@@ -70,7 +77,6 @@ public class GameData {
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         tiledMap = new TiledMap();
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
-
         // initialize things that aren't dependent on the map.
         Position.setTileDimensions(TILE_HEIGHT,TILE_WIDTH);
         PlayerAssetType.LoadTypes();
@@ -84,7 +90,9 @@ public class GameData {
         UnitPosition.setMapDimensions(map);
 
         mapRenderer = new MapRenderer(map);
-        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
+        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(), map.Height(), mapName);
+        fogRenderer = new FogRenderer();
+
         staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
     }
@@ -97,12 +105,32 @@ public class GameData {
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
-        TiledMapTileLayer staticAssetsLayer = null;
-        staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
-
+        TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
             layers.add(staticAssetsLayer);
         }
+
+        TiledMapTileLayer fogLayer = fogRenderer.renderFog(map, playerData);
+        tiledMap.getLayers().add(fogLayer);
+    }
+
+    public void renderFog() {
+        TiledMapTileLayer fogLayer = fogRenderer.renderFog(map, playerData);
+        int oldFogLayerIndex = tiledMap.getLayers().getIndex("Fog");
+        tiledMap.getLayers().remove(oldFogLayerIndex);
+        tiledMap.getLayers().add(fogLayer);
+//        boolean isDifferent = false;
+//        for(int i = 0; i < oldPlayerData.size(); ++i) {
+//            if(oldPlayerData.get(i).StaticAssets().size() != playerData.get(i).StaticAssets().size()) {
+//                isDifferent = true;
+//            }
+//        }
+//        if (isDifferent || isInitial) {
+//            System.out.println("IsDifferent or Initial");
+//            oldPlayerData = new Vector<PlayerData>(playerData);
+//
+//            isInitial = false;
+//        }
     }
 
     //not sure where to put this function...putting it here because it's a function that uses multiple classes
@@ -174,7 +202,9 @@ public class GameData {
             }
         }
 
-        staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
+        if (staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData)) {
+            renderFog();
+        }
     }
 
 

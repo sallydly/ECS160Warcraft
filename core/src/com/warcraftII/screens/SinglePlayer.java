@@ -180,28 +180,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrol = 0;
         ability = 0;
         mine = 0;
-/*
-        TextureAtlas[] unitTextures = {
-                new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")),
-                new TextureAtlas(Gdx.files.internal("atlas/Footman.atlas")),
-                new TextureAtlas(Gdx.files.internal("atlas/Archer.atlas")),
-                new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas"))
-        };
-*/
-
-/* Do we need this code???
-        tile = new Sprite(terrain.findRegion("shallow-water-F-0"));
-        tile.setScale(5);
-        tile.setPosition(300, 300);
-        table = new Table(skin);
-        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        table.align(Align.bottomLeft);
-        */
-
-//        stage = new Stage(new ScreenViewport());
-
-
-//        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // Make Buttons for the Unit Actions
         gameData.unitActions.createBasicSkin();
@@ -425,17 +403,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
 
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
         gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
-
-        gameData.TimeStep();
-
-/*        mapStage.getViewport().apply();
+        /*        mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();*/
 
@@ -478,6 +452,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.getViewport().apply();
         mapStage.act();
         mapStage.draw();
+        gameData.TimeStep();
+
     }
 
     public void specialButtons() {
