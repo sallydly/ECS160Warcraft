@@ -297,7 +297,7 @@ public class PlayerAssetType {
     public static boolean LoadTypes(){
         boolean ReturnStatus = false;
         DRegistry = new HashMap<String, PlayerAssetType>();
-        
+
         FileHandle ResDirectory = Gdx.files.internal("res");
         FileHandle[] DatFileArray = ResDirectory.list(".dat");
         for (FileHandle fh : DatFileArray) {
