@@ -456,17 +456,14 @@ public class Unit {
                 cur.attackEnd = false;
                 cur.animStart = totalTime;
             }
-            if (totalTime-cur.animStart >= 50) {
+            if (totalTime-cur.animStart >= 2) {
                 cur.selectedAsset.EndMining();
-                cur.resourceAmount += 10;
+                cur.resourceAmount += 100;
+                cur.hidden = false;
                 cur.abilities.add(CarryingGold);
-            }
-
-            if (cur.resourceAmount >= 100) {
+                cur.curAnim = GenerateAnimation(cur, "gold");
                 if (SetReturnDest(cur, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnMine;
-                    cur.curAnim = GenerateAnimation(cur, "gold");
-                    cur.hidden = false;
                 } else {
                     System.out.println("No where to drop off resources, going Idle");
                     cur.curState = GameDataTypes.EUnitState.Idle;
