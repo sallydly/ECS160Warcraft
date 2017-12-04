@@ -583,7 +583,7 @@ public class Unit {
                         cur.attackEnd = false;
                         cur.animStart = totalTime;
                     }
-                    if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime) {
+                    if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime*.05) {
                         cur.selectedAsset.decrementHitPoints(cur.attackDamage);
                         cur.attackEnd = true;
                     } else {
@@ -607,7 +607,7 @@ public class Unit {
                     cur.attackEnd = false;
                     cur.animStart = totalTime;
                 }
-                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime) {
+                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart) && totalTime - cur.animStart > cur.attackTime*.05) {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
@@ -729,11 +729,18 @@ public class Unit {
             if (cur.inProgressBuilding == null) {
                 // if Construction hasn't started
 
-                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && gData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
+                PlayerData buildingPlayer = gData.playerData.get(1);
+                for (PlayerData p : gData.playerData) {
+                    if (p.Color() == cur.color) {
+                        buildingPlayer = p;
+                        break;
+                    }
+                }
+                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && buildingPlayer.PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
                     // If you even can build, set inProgressBuilding to the building
                     gData.selectedUnits.remove(cur);
                     cur.hidden = true;
-                    cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
+                    cur.inProgressBuilding = buildingPlayer.ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
                 } else {
                     // If you can't, go Idle (should probably error/otherwise handle this)
                     cur.stopMovement();
