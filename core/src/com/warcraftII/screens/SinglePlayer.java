@@ -78,7 +78,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton newAbility;
 
     private TextButton selectButton;
-    private Label selectCount;
+    private TextButton cancelButton;
     private TextureAtlas sidebarIconAtlas;
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -152,6 +152,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
+        cancelButton = new TextButton("Cancel", skin);
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
         buildSimpleButton = new TextButton("Build Simple", skin);
@@ -159,7 +160,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
         buildFarmButton = new TextButton("Build Farm", skin);
 
-        selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
         buildSimpleButtonIsPressed = false;
@@ -247,6 +247,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buildSimpleButtonIsPressed = true;
+                fillSideBarTable();
+            }
+        });
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = false;
                 fillSideBarTable();
             }
         });
@@ -523,6 +530,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case Convey:
                     break;
                 case Cancel:
+                    sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildWall:
                     break;
@@ -574,16 +583,22 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 case BuildRanger:
                     break;
                 case BuildFarm:
+                    sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildTownHall:
                     break;
                 case BuildBarracks:
                     break;
                 case BuildLumberMill:
+                    sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildBlacksmith:
                     break;
                 case BuildKeep:
+                    sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2);
+                    sidebarTable.row();
                     break;
                 case BuildCastle:
                     break;
@@ -598,13 +613,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
-        sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2);
-        sidebarTable.row();
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        if (buildSimpleButtonIsPressed) {
+            sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2);
+            sidebarTable.row();
+        } else {
+            sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+            sidebarTable.row();
+        }
+
         sidebarStage.draw();
     }
 
@@ -793,10 +809,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = multiSelectUpdate(position);
         } else {
             newSelection = singleSelectUpdate();
-        }
-
-        if (newSelection) {
-            buildSimpleButtonIsPressed = false;
         }
 
         if (updateSelected(position) && !newSelection) {
