@@ -71,6 +71,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton repairButton;
     private TextButton mineButton;
     private TextButton buildSimpleButton;
+    private TextButton buildKeepButton;
+    private TextButton buildLumberMillButton;
+    private TextButton buildFarmButton;
+
     private TextButton newAbility;
 
     private TextButton selectButton;
@@ -115,6 +119,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
+    private boolean buildSimpleButtonIsPressed;
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -150,10 +155,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
         buildSimpleButton = new TextButton("Build Simple", skin);
+        buildKeepButton = new TextButton("Build Keep", skin);
+        buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
+        buildFarmButton = new TextButton("Build Farm", skin);
+
         selectCount = new Label("", skin);
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
-
+        buildSimpleButtonIsPressed = false;
         /*standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -232,6 +241,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //attack = 0;
                 //mine = 0;
                 //ability = 0;
+            }
+        });
+        buildSimpleButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = true;
+                fillSideBarTable();
             }
         });
         /*
@@ -474,7 +490,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.clearChildren();
 
         // determine context buttons based on selected units
-        capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        if (buildSimpleButtonIsPressed) {
+            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
+        } else {
+            capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
+        }
         log.info(capabilities.toString());
 
 
@@ -578,6 +598,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
 
+        sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
+        sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2);
+        sidebarTable.row();
         sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
         sidebarStage.draw();
     }
@@ -769,11 +795,17 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = singleSelectUpdate();
         }
 
+        if (newSelection) {
+            buildSimpleButtonIsPressed = false;
+        }
+
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
         } else if (!selectButton.isPressed()){
             fillSideBarTable();
         }
+
+
 
         return true;
     }
