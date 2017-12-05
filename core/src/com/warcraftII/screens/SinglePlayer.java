@@ -596,6 +596,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         heightZoomRatio = gameData.map.Height() * gameData.TILE_HEIGHT / mapCamera.viewportHeight;
         widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
+
+
+        for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
+            for (Unit.IndividualUnit cur : allUnits.unitMap.get(color)) {
+                mapStage.addActor(cur);
+            }
+        }
     }
 
     private void fillSideBarTable() {
