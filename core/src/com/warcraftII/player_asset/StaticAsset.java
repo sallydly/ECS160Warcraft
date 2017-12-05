@@ -90,8 +90,9 @@ public class StaticAsset extends PlayerAsset{
     public int decrementHitPoints(int hitPoints){
         if (DHitPoints  == 0)
             return 0; //dont do anything more.
+
         DHitPoints -= hitPoints;
-        if(0 > DHitPoints){
+        if(0 >= DHitPoints){
             DHitPoints = 0;
             SAssetCommand deathcommand = new SAssetCommand();
             deathcommand.DAction = EAssetAction.Death;
