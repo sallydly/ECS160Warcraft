@@ -160,7 +160,7 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            if (inProgressBuilding == null && !hidden) {
+            if (inProgressBuilding == null && !hidden ) {
                 batch.draw(curTexture, getX(), getY());
             }
         }
