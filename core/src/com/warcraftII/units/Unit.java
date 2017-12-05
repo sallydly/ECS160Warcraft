@@ -79,7 +79,7 @@ public class Unit {
         public int attackTime = 10;
         public int reloadTime = 10;
         public boolean isMoving = false;
-        public boolean isVisible = false;
+        public boolean isVisible = true;
         // Gold Cost
         // Lumber Cost
         // Stone Cost
@@ -160,7 +160,7 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            if (inProgressBuilding == null && !hidden && isVisible) {
+            if (inProgressBuilding == null && !hidden ) {
                 batch.draw(curTexture, getX(), getY());
             }
         }
