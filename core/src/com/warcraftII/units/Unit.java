@@ -564,7 +564,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth());
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range*1.75 * Position.tileWidth());
     }
 
     private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {

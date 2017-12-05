@@ -282,7 +282,7 @@ public class StaticAsset extends PlayerAsset{
                     this.DCurrentState = EState.INACTIVE;
                     break;
             }
-            return DCommands.lastElement().DAction;
+            return action;
         }
         return EAssetAction.None;
     }
