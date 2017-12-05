@@ -130,20 +130,20 @@ public class VisibilityMap {
 
         for(StaticAsset CurAsset : assets) {
             if(CurAsset != null) {
-                System.out.println("Altering VisibilityMap with StaticAsset");
+                //System.out.println("Altering VisibilityMap with StaticAsset");
                 TilePosition Anchor = CurAsset.tilePosition();
                 int Sight = CurAsset.EffectiveSight() + CurAsset.Size()/2;
                 int SightSquared = Sight * Sight;
-                System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
-                System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
-                System.out.println("MaxVisibility: " + maxVisibility);
+                //System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
+                //System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
+                //System.out.println("MaxVisibility: " + maxVisibility);
                 int oldX = Anchor.X();
                 int oldY = Anchor.Y();
                 Anchor.X(Anchor.X() + CurAsset.Size()/2);
                 Anchor.Y(Anchor.Y() + CurAsset.Size()/2);
 
-                System.out.println("Asset Size " + CurAsset.Size());
-                System.out.println("New Anchor: " + Anchor.X() + " " + Anchor.Y());
+                //System.out.println("Asset Size " + CurAsset.Size());
+                //System.out.println("New Anchor: " + Anchor.X() + " " + Anchor.Y());
 
                 for(int X = 0; X <= Sight; X++) {
                     int XSquared = X * X;
@@ -227,14 +227,14 @@ public class VisibilityMap {
         for(Unit.IndividualUnit unit : individualUnitList) {
             if(unit != null) {
                 unit.isVisible = true;
-                System.out.println("Altering VisibilityMap with IndividualUnit");
+                //System.out.println("Altering VisibilityMap with IndividualUnit");
 //                TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
                 TilePosition Anchor = new TilePosition(new UnitPosition((int)(unit.getMidX()), (int)(unit.getMidY())));
                 int Sight = unit.sight;
                 int SightSquared = Sight * Sight;
-                System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
-                System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
-                System.out.println("MaxVisibility: " + maxVisibility);
+                //System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
+                //System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
+                //System.out.println("MaxVisibility: " + maxVisibility);
 
                 for(int X = 0; X <= Sight; X++) {
                     int XSquared = X * X;

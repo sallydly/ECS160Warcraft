@@ -88,6 +88,8 @@ public class StaticAsset extends PlayerAsset{
     }
 
     public int decrementHitPoints(int hitPoints){
+        if (hitPoints  == 0)
+            return 0; //dont do anything more.
         DHitPoints -= hitPoints;
         if(0 > DHitPoints){
             DHitPoints = 0;

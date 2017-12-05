@@ -646,7 +646,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         log.info(capabilities.toString());
 
         if(isAssetSelected){
-            if(buildSimpleButton.isPressed()) {
+            if(buildSimpleButtonIsPressed) {
                 for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
                     TextButton newButton = null;
                     if (PlayerCapability.IsBuildingUnit(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
