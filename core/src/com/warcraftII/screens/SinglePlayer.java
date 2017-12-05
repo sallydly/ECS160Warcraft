@@ -679,9 +679,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         public void clicked(InputEvent event, float x, float y) {
                             if (gameData.playerData.get(1).PlayerCanAffordAsset(PlayerCapability.AssetFromCapability(capabilityType)) == 0) {
                                 if(isAssetSelected){
-                                    gameData.playerData.get(1).BuildingUpgrade(selectedAsset,
+                                    selectedAsset = gameData.playerData.get(1).BuildingUpgrade(selectedAsset,
                                             GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType)),
                                             gameData.map);
+                                    capabilities = selectedAsset.assetType().CapabilitiesVector();
+                                    buildSimpleButtonIsPressed = false;
+                                    buildAdvancedButtonIsPressed = false;
+                                    fillSideBarTable();
                                 }
                             }
                         }
