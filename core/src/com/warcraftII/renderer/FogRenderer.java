@@ -3,6 +3,7 @@ package com.warcraftII.renderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.warcraftII.player_asset.PlayerData;
@@ -18,6 +19,7 @@ public class FogRenderer {
     private TextureRegion allBlackFog;
     private TextureRegion partialFog;
     private TextureRegion partialPartialFog;
+    public VisibilityMap visibilityMap;
 
     public FogRenderer() {
         this.fogAtlas = new TextureAtlas(Gdx.files.internal("atlas/fog.atlas"));
@@ -38,18 +40,33 @@ public class FogRenderer {
 //        return createFogLayer(assetDecoratedMap, visibilityMap);
 //    }
 
+    public TiledMapTileLayer createBlackLayer(AssetDecoratedMap assetDecoratedMap) {
+        TiledMapTileLayer blackLayer = new TiledMapTileLayer(assetDecoratedMap.Width(), assetDecoratedMap.Height(), 32, 32);
+        blackLayer.setName("Fog");
+
+        for(int xIndex = 0 ; xIndex < assetDecoratedMap.Height(); ++xIndex) {
+            for (int yIndex = 0; yIndex < assetDecoratedMap.Width(); ++yIndex) {
+                int Xpos = xIndex;
+                int Ypos = assetDecoratedMap.Height() - yIndex - 1;
+                TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
+                blackCell.setTile(new StaticTiledMapTile(allBlackFog));
+                blackLayer.setCell(Xpos, Ypos, blackCell);
+            }
+        }
+
+        return blackLayer;
+    }
+
     public TiledMapTileLayer createFogLayer(AssetDecoratedMap assetDecoratedMap,
-                                       Vector<PlayerData> playerDataVector,
-                                       List<Unit.IndividualUnit> individualUnitList) {
-        VisibilityMap visibilityMap = assetDecoratedMap.CreateVisibilityMap();
+                                       PlayerData currentPlayer,
+                                       List<Unit.IndividualUnit> currentPlayerUnitList) {
         TiledMapTileLayer fogLayer = new TiledMapTileLayer(assetDecoratedMap.Width(), assetDecoratedMap.Height(), 32, 32);
         fogLayer.setName("Fog");
 
-        for(PlayerData playerData : playerDataVector) {
-            visibilityMap.updateAssets(playerData.StaticAssets());
-        }
+        visibilityMap = assetDecoratedMap.CreateVisibilityMap();
 
-        visibilityMap.updateUnits(individualUnitList);
+        visibilityMap.updateAssets(currentPlayer.StaticAssets());
+        visibilityMap.updateUnits(currentPlayerUnitList);
 
         for(int xIndex = 0 ; xIndex < assetDecoratedMap.Height(); ++xIndex) {
             for(int yIndex = 0; yIndex < assetDecoratedMap.Width(); ++yIndex) {
@@ -60,7 +77,7 @@ public class FogRenderer {
                 switch (CURRENT_TILE) {
                     case None:
                         TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
-                        blackCell.setTile(new StaticTiledMapTile(allBlackFog));
+                        blackCell.setTile(new StaticTiledMapTile(partialFog));
                         fogLayer.setCell(Xpos, Ypos, blackCell);
                         break;
                     case PartialPartial:

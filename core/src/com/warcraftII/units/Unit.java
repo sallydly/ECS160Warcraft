@@ -75,7 +75,7 @@ public class Unit {
         public int attackTime = 10;
         public int reloadTime = 10;
         public boolean isMoving = false;
-        public boolean isVisible = true;
+        public boolean isVisible = false;
         // Gold Cost
         // Lumber Cost
         // Stone Cost

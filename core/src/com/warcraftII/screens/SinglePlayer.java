@@ -36,6 +36,7 @@ import com.warcraftII.Warcraft;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -894,10 +895,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
-                        sel.target = cur;
-                        sel.currentxmove = cur.getMidX();
-                        sel.currentymove = cur.getMidY();
-                        sel.curState = GameDataTypes.EUnitState.Attack;
+                        if(gameData.fogRenderer.visibilityMap.TileType((int)(cur.getMidX()), (int)(cur.getMidY())) != VisibilityMap.ETileVisibility.None) {
+                            sel.target = cur;
+                            sel.currentxmove = cur.getMidX();
+                            sel.currentymove = cur.getMidY();
+                            sel.curState = GameDataTypes.EUnitState.Attack;
+                        }
                     }
                 } else {
                     cur.touched = false;
@@ -1034,52 +1037,52 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        PlayerData player1 = gameData.playerData.get(0);
-
-        // REMOVING RESOURCES
-        int resourceRemove = 100;
-//        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-//        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-//        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-//        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-//        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-//        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-//        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-//        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-
-
-        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
-        if (chosenStatAsset == null){
-            System.out.println("No asset here...building");
-            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
-            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
-
-            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
-                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
-                lastbuiltasset++;
-            }
-        }
-        else {
-            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-            System.out.println("Asset location: " + chosenStatAsset.tilePosition().X() + " " + chosenStatAsset.tilePosition().Y());
-            if (chosenStatAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine){
-                if (chosenStatAsset.CurrentCommand().DAction == GameDataTypes.EAssetAction.MineGold)
-                {
-                    chosenStatAsset.EndMining();
-                }
-                else
-                {
-                    chosenStatAsset.StartMining();
-                }
-            }
-            else {
-                chosenStatAsset.decrementHitPoints(75);
-            }
-        }
+//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
+//        TilePosition tilePosition = camerePosition.getTilePosition();
+//        int xi = tilePosition.X();
+//        int yi = tilePosition.Y();
+//        PlayerData player1 = gameData.playerData.get(0);
+//
+//        // REMOVING RESOURCES
+//        int resourceRemove = 100;
+////        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+////        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+////        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+////        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+////        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
+////        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
+////        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
+////        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
+//
+//
+//        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
+//        if (chosenStatAsset == null){
+//            System.out.println("No asset here...building");
+//            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
+//            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
+//
+//            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
+//                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
+//                lastbuiltasset++;
+//            }
+//        }
+//        else {
+//            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
+//            System.out.println("Asset location: " + chosenStatAsset.tilePosition().X() + " " + chosenStatAsset.tilePosition().Y());
+//            if (chosenStatAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine){
+//                if (chosenStatAsset.CurrentCommand().DAction == GameDataTypes.EAssetAction.MineGold)
+//                {
+//                    chosenStatAsset.EndMining();
+//                }
+//                else
+//                {
+//                    chosenStatAsset.StartMining();
+//                }
+//            }
+//            else {
+//                chosenStatAsset.decrementHitPoints(75);
+//            }
+//        }
         return false;
     }
 

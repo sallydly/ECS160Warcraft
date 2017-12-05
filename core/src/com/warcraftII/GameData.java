@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
@@ -56,6 +57,7 @@ public class GameData {
     public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
+    public PlayerData currentPlayer;
 
     public UnitActions unitActions;
     public Unit allUnits;
@@ -88,27 +90,39 @@ public class GameData {
 
         staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
+        playerData.get(1).DIsAI = true;
+        currentPlayer = playerData.get(1);
     }
 
     //ONLY USE AT THE BEGINNING.
     public void RenderMap(){
                 /* Rendering the map: */
         MapLayers layers = tiledMap.getLayers();
+        Vector<PlayerData> temp = new Vector<PlayerData>();
+        Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
+
+        temp.add(currentPlayer);
+        for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
+            if(individualUnit.color == currentPlayer.Color()) {
+                currentPlayerUnits.add(individualUnit);
+            }
+        }
+
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
-
-        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, playerData, allUnits.GetAllUnits());
 
         TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
             layers.add(staticAssetsLayer);
         }
+
         tiledMap.getLayers().add(fogLayer);
     }
 
-    public void renderFog() {
-        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, playerData, allUnits.GetAllUnits());
+    public void renderFog(Vector<Unit.IndividualUnit> currentPlayerUnits) {
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
         int oldFogLayerIndex = tiledMap.getLayers().getIndex("Fog");
 
         tiledMap.getLayers().remove(oldFogLayerIndex);
@@ -177,17 +191,25 @@ public class GameData {
             }
         }
 
-        if (staticAssetRenderer.UpdateStaticAssets(tiledMap, map, playerData)) {
-            renderFog();
+        Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
+
+        for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
+            if(individualUnit.color == currentPlayer.Color()) {
+                currentPlayerUnits.add(individualUnit);
+            }
         }
 
-        for(Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
-            if(individualUnit.isMoving) {
-                renderFog();
+        if (staticAssetRenderer.UpdateStaticAssets(tiledMap, map, playerData)) {
+            renderFog(currentPlayerUnits);
+        }
+
+        for(Unit.IndividualUnit individualUnit : currentPlayerUnits) {
+            if(individualUnit.isVisible) {
+                renderFog(currentPlayerUnits);
+                break;
             }
         }
     }
-
 
     public void dispose() {
         terrain.dispose();

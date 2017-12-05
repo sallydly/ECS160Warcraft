@@ -3,6 +3,7 @@ package com.warcraftII.player_asset;
 //import com.warcraftII.asset.player.PlayerAsset;
 
 import com.warcraftII.position.TilePosition;
+import com.warcraftII.position.UnitPosition;
 import com.warcraftII.units.Unit;
 
 import java.util.List;
@@ -227,7 +228,8 @@ public class VisibilityMap {
             if(unit != null) {
                 unit.isVisible = true;
                 System.out.println("Altering VisibilityMap with IndividualUnit");
-                TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
+//                TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
+                TilePosition Anchor = new TilePosition(new UnitPosition((int)(unit.getMidX()), (int)(unit.getMidY())));
                 int Sight = unit.sight;
                 int SightSquared = Sight * Sight;
                 System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
