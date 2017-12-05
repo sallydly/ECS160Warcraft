@@ -17,8 +17,8 @@ import java.util.Vector;
 public class PlayerData {
     private Logger log = new Logger("PlayerData", 2);
 
-    protected boolean DIsAI;
-    protected EPlayerColor DColor;
+    public boolean DIsAI = true;
+    public EPlayerColor DColor;
     //VisibilityMap DVisibilityMap;
     //CAssetDecoratedMap DActualMap;
     //CAssetDecoratedMa DPlayerMap;

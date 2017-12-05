@@ -465,7 +465,7 @@ public class TerrainMap {
         ETerrainTileType LL = DTerrainMap.get(y + 1).get(x);
         ETerrainTileType LR = DTerrainMap.get(y + 1).get(x + 1);
 
-//        //HM: added to update Partial map
+//        //HM: added to updateAssets Partial map
 //        Byte ULP = DPartials.get(y).get(x);
 //        Byte URP = DPartials.get(y).get(x + 1);
 //        Byte LLP = DPartials.get(y + 1).get(x);

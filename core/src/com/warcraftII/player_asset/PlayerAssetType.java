@@ -16,10 +16,6 @@ import java.util.Map;
 
 import static com.warcraftII.GameDataTypes.to_underlying;
 
-/**
- * Created by Kimi on 11/12/2017.
- */
-
 public class PlayerAssetType {
     private static Logger log = new Logger("PlayerAssetType", 2);
 
@@ -46,10 +42,10 @@ public class PlayerAssetType {
     protected int DBasicDamage;
     protected int DPiercingDamage;
     protected int DRange;
-    protected static Map<String, PlayerAssetType > DRegistry;
-    protected static Vector<String> DTypeStrings;
+    protected static Map<String, PlayerAssetType > DRegistry = new HashMap<String, PlayerAssetType>();
+    protected static Vector<String> DTypeStrings = new Vector<String>();
 
-    public static Map<String, EAssetType > DNameTypeTranslation;
+    public static Map<String, EAssetType > DNameTypeTranslation = new HashMap<String, EAssetType>();
 
     static{
         init();
@@ -525,10 +521,18 @@ public class PlayerAssetType {
     }
 
 
-    /*
     public static int MaxSight(){
+        int MaxSightFound = 0;
 
+        for (String assetName : DRegistry.keySet()) {
+            PlayerAssetType assetType = DRegistry.get(assetName);
+            MaxSightFound = MaxSightFound > (assetType.DSight + assetType.DSight) ? MaxSightFound : (assetType.DSight + assetType.DSight);
+        }
+
+        return MaxSightFound;
     }
+
+    /*
     public static std.shared_ptr< CPlayerAssetType > FindDefaultFromName( std.string &name){
 
     }

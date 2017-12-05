@@ -247,8 +247,8 @@ public class StaticAssetRenderer {
         return assetLayer;
     }
 
-    public void UpdateStaticAssets(TiledMap tmap, AssetDecoratedMap map, Vector<PlayerData> playerData) {
-
+    public boolean UpdateStaticAssets(TiledMap tmap, AssetDecoratedMap map, Vector<PlayerData> playerData) {
+        boolean assetDeath = false;
         TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
 
         for (PlayerData player : playerData) {
@@ -449,12 +449,14 @@ public class StaticAssetRenderer {
                             DeathRowBuildings.add(StatAsset);
                             itr.remove();
                             map.RemoveStaticAsset(StatAsset);
+                            assetDeath = true;
                         }
                         break;
 
                 }
             }
         }
+        return assetDeath;
     }
 
     protected class BuildingEffect {
