@@ -86,7 +86,7 @@ public class GameData {
 
         mapRenderer = new MapRenderer(map);
         staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(), map.Height(), mapName);
-        fogRenderer = new FogRenderer();
+        fogRenderer = new FogRenderer(map);
 
         staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);

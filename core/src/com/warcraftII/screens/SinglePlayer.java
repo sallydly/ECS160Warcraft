@@ -940,14 +940,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-
         TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
         //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         //or:
         //Vector<Boolean> capabilities;
 
-        if(buildSimpleButtonIsPressed && assetToBuild!=null) {
+        if(buildSimpleButtonIsPressed && assetToBuild != null) {
             //centering the staticasset about the touch:
             tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
             tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
@@ -1025,11 +1024,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
+                    //TODO: ADD visible check
                     for (Unit.IndividualUnit sel : selectedUnits) {
-                        sel.target = cur;
-                        sel.currentxmove = cur.getMidX();
-                        sel.currentymove = cur.getMidY();
-                        sel.curState = GameDataTypes.EUnitState.Attack;
+                        if(gameData.fogRenderer.visibilityMap.TileType((int)cur.getMidX(), (int)cur.getMidY()) != VisibilityMap.ETileVisibility.None) {
+                            sel.target = cur;
+                            sel.currentxmove = cur.getMidX();
+                            sel.currentymove = cur.getMidY();
+                            sel.curState = GameDataTypes.EUnitState.Attack;
+                        }
                     }
                     cur.touched = false;
                 } else if (cur.color == gameData.playerData.get(1).Color()){

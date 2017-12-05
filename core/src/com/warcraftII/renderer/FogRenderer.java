@@ -21,11 +21,13 @@ public class FogRenderer {
     private TextureRegion partialPartialFog;
     public VisibilityMap visibilityMap;
 
-    public FogRenderer() {
+    public FogRenderer(AssetDecoratedMap assetDecoratedMap) {
         this.fogAtlas = new TextureAtlas(Gdx.files.internal("atlas/fog.atlas"));
         this.allBlackFog = fogAtlas.findRegion("pb-00");
         this.partialFog = fogAtlas.findRegion("partial");
         this.partialPartialFog = fogAtlas.findRegion("pf-00");
+        visibilityMap = assetDecoratedMap.CreateVisibilityMap();
+
     }
 
 //    public TiledMapTileLayer renderAssetsFog(AssetDecoratedMap assetDecoratedMap,
@@ -63,8 +65,6 @@ public class FogRenderer {
         TiledMapTileLayer fogLayer = new TiledMapTileLayer(assetDecoratedMap.Width(), assetDecoratedMap.Height(), 32, 32);
         fogLayer.setName("Fog");
 
-        visibilityMap = assetDecoratedMap.CreateVisibilityMap();
-
         visibilityMap.updateAssets(currentPlayer.StaticAssets());
         visibilityMap.updateUnits(currentPlayerUnitList);
 
@@ -77,7 +77,7 @@ public class FogRenderer {
                 switch (CURRENT_TILE) {
                     case None:
                         TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
-                        blackCell.setTile(new StaticTiledMapTile(partialFog));
+                        blackCell.setTile(new StaticTiledMapTile(allBlackFog));
                         fogLayer.setCell(Xpos, Ypos, blackCell);
                         break;
                     case PartialPartial:
@@ -86,14 +86,14 @@ public class FogRenderer {
 //                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
                         break;
                     case Partial:
-//                        TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
-//                        partialCell.setTile(new StaticTiledMapTile(partialFog));
-//                        fogLayer.setCell(Xpos, Ypos, partialCell);
                         break;
-                    case Visible:
                     case SeenPartial:
                     case Seen:
+                        TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
+                        partialCell.setTile(new StaticTiledMapTile(partialFog));
+                        fogLayer.setCell(Xpos, Ypos, partialCell);
                         break;
+                    case Visible:
                 }
             }
         }
