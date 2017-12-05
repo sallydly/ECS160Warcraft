@@ -144,11 +144,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     //For wall building:
      private boolean wallStarted = false;
 
-     //DEBUG:
-     //TODO: Determine this from the button
-     GameDataTypes.EStaticAssetType typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
-
-
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -376,7 +371,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // table for layout of sidebar
         sidebarTable = new Table();
-        sidebarTable.setDebug(false, false); // TODO: remove when done laying out table
+        sidebarTable.setDebug(false, false);
         sidebarTable.setFillParent(true);
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
@@ -402,7 +397,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         //Table for the topbar
         topbarTable = new Table();
-        topbarTable.setDebug(true, true); // TODO: remove when done laying out table
+        topbarTable.setDebug(false, false);
         topbarTable.setFillParent(true);
         topbarStage.addActor(topbarTable);
 
@@ -501,8 +496,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
 
                     //centering the staticasset about the touch:
-                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
+                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
 
                     if(assetToBuild == GameDataTypes.EStaticAssetType.Wall)
                     {
@@ -564,8 +559,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
-                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
-                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
+                    tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild) / 2));
+                    tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild) / 2));
 
                     if (assetToBuild == GameDataTypes.EStaticAssetType.Wall) {
 
@@ -974,7 +969,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
             tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
 
-            //TODO: determine the type to be built...and the player color
             gameData.staticAssetRenderer.CreateShadowAsset(assetToBuild, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
         }
 
@@ -1207,9 +1201,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     // This is handled in singleSelected because it needs to target whatever individual unit was touched
                     usedCount += 1;
                 } else if (buildSimpleButton.isPressed()) {
-                    // TODO: why
-                    //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
-                    //sUnit.buildPos = cameraPosition.getTilePosition();
+                    //Nothing here...
                 } else if (repairButton.isPressed()) {
                     TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
