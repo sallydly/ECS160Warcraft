@@ -290,7 +290,7 @@ public class StaticAsset extends PlayerAsset{
     }
 
 
-//TODO: add this
+    //TODO: add this
     public int Sight() {
         return EAssetAction.Construct == Action() ? DType.ConstructionSight() : DType.Sight();
     }

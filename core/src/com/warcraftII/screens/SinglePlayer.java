@@ -376,7 +376,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         // table for layout of sidebar
         sidebarTable = new Table();
-        sidebarTable.setDebug(true, true); // TODO: remove when done laying out table
+        sidebarTable.setDebug(false, false); // TODO: remove when done laying out table
         sidebarTable.setFillParent(true);
         sidebarTable.align(Align.top);
         sidebarStage.addActor(sidebarTable);
@@ -630,7 +630,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         // determine context buttons based on selected units
         if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
             if(isAssetSelected){
-                //capabilities = selectedAsset.assetType().CapabilitiesVector();
+                capabilities = selectedAsset.assetType().CapabilitiesVector();
             }
             else {
                 capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
@@ -643,7 +643,9 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
             }
         }
-        log.info(capabilities.toString());
+
+        //   log.info(capabilities.toString());
+
 
         if(isAssetSelected){
             if(buildSimpleButtonIsPressed) {
@@ -675,7 +677,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     newButton.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            assetToBuild = GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType));
+                            if (gameData.playerData.get(1).PlayerCanAffordAsset(PlayerCapability.AssetFromCapability(capabilityType)) == 0) {
+                                if(isAssetSelected){
+                                    gameData.playerData.get(1).BuildingUpgrade(selectedAsset,
+                                            GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType)),
+                                            gameData.map);
+                                }
+                            }
                         }
                     });
                     sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
@@ -684,11 +692,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             }
             else{
-                if (selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
+                if (selectedAsset.Action() == GameDataTypes.EAssetAction.None && selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
                     sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
                     sidebarTable.row();
                 }
-                if(selectedAsset.assetType().BuildingCapabilitiesVector().size()>0) {
+                if(selectedAsset.Action() == GameDataTypes.EAssetAction.None && selectedAsset.assetType().BuildingCapabilitiesVector().size()>0) {
                     sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
                     sidebarTable.row();
                 }
@@ -956,9 +964,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
-        //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
-        //or:
-        //Vector<Boolean> capabilities;
 
         if(buildSimpleButtonIsPressed && assetToBuild != null) {
             //centering the staticasset about the touch:
@@ -997,8 +1002,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (isAssetSelected && (!attackButton.isPressed() && !selectedUnits.isEmpty())) {
             // Won't fire if selectedUnits are trying to attack it
 
-            //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
-            //capabilities = selectedAsset.assetType().Capabilities();//booleans
+            capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             selectedUnits.removeAllElements(); // Removes all currently selected units?
             fillSideBarTable();
             return true; //Ignores all other asset selection?

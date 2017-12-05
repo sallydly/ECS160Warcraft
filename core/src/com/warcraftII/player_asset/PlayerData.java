@@ -225,6 +225,18 @@ public class PlayerData {
         return ConsAsset;
     }
 
+    public StaticAsset BuildingUpgrade(StaticAsset sasset, EStaticAssetType toType, AssetDecoratedMap map) {
+        TilePosition pos = sasset.tilePosition();
+        EPlayerColor color = sasset.owner();
+
+        DeleteStaticAsset(sasset);
+        map.RemoveStaticAsset(sasset);
+
+        ConstructStaticAsset(pos,toType,map);
+        return sasset;
+    }
+
+
 
     public void ConstructUnit(StaticAsset builderSAsset,EUnitType type, AssetDecoratedMap map){
         if (builderSAsset.Action() == EAssetAction.None) // make sure its not constructing or dying or building something else
