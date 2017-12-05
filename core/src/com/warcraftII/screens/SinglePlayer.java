@@ -1001,10 +1001,25 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
             fillSideBarTable();
-
-            selectedUnits.removeAllElements();
             return true; //Ignores all other asset selection?
         }
+
+        if (attackButton.isPressed() && !selectedUnits.isEmpty()){
+            StaticAsset targetStatAsset = gameData.map.StaticAssetAt(tpos);
+            if (targetStatAsset != null){
+                for (Unit.IndividualUnit sUnit : selectedUnits) {
+                    if(sUnit.color != targetStatAsset.owner()) {
+                        System.out.println(sUnit.color.toString() + " is attacking" + targetStatAsset.owner().toString());
+                        sUnit.curState = GameDataTypes.EUnitState.AttackBuilding;
+                        sUnit.targetBuilding = targetStatAsset;
+
+                        sUnit.currentxmove = round(position.x);
+                        sUnit.currentymove = round(position.y);
+                    }
+                }
+            }
+        }
+
 
         // TODO: maybe move this to a element in GameData?
         boolean newSelection;

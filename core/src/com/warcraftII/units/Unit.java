@@ -104,6 +104,7 @@ public class Unit {
         public GameDataTypes.EStaticAssetType toBuild =  null;
 
         public StaticAsset selectedAsset;
+        public StaticAsset targetBuilding;
         public TilePosition selectedTilePosition;
 
 
@@ -346,6 +347,10 @@ public class Unit {
                     case Attack:
                         cur.isMoving = true;
                         UnitAttackState(cur, cur.target, elapsedTime, gData);
+                        break;
+                    case AttackBuilding:
+                        cur.isMoving = true;
+                        UnitAttackBuildingState(cur, cur.targetBuilding, elapsedTime, gData);
                         break;
                     case Patrol:
                         cur.isMoving = true;
@@ -631,6 +636,44 @@ public class Unit {
             cur.stopMovement();
         }
     }
+    private void UnitAttackBuildingState(IndividualUnit cur, StaticAsset target, float totalTime, GameData gData) {
+        if (target == null || target.hitPoints() <= 0){
+            //deleteUnits.add(tar);
+            //tar.curState = GameDataTypes.EUnitState.Dead;
+            cur.targetBuilding = null;
+            cur.stopMovement();
+            cur.curState = GameDataTypes.EUnitState.Idle;
+            return; //dont do anything else.  this is like a break...
+        }
+
+       if (target.hitPoints() > 0) { // maybe set this if to be if tar is not dead
+            // check if tar within cur.range of cur
+            if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)),gData)){
+                if (cur.attackEnd) {
+                    cur.curAnim = GenerateAnimation(cur, "attack");
+                    cur.attackEnd = false;
+                    cur.animStart = totalTime;
+                }
+                if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
+                    target.decrementHitPoints(cur.attackDamage);
+                    cur.attackEnd = true;
+                    System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+String.valueOf(target.hitPoints()) +" health"));
+                    // TODO: make this use the projectiles
+
+                } else {
+                    cur.curTexture = cur.curAnim.getKeyFrame(totalTime-cur.animStart, false);
+                }
+            } else {
+                // Move position should already be set
+                //cur.currentxmove = tar.getMidX();
+                //cur.currentymove = tar.getMidY();
+                UnitMove(cur, totalTime, gData);
+            }
+            // if not, move closer, setting currentxmove and currentymove as needed
+        }
+    }
+
+
 
     private boolean UnitDeadState(IndividualUnit cur, float totalTime, GameData gData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {

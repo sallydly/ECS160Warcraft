@@ -213,6 +213,7 @@ public class GameDataTypes {
         Convey,
         Repair,
         Attack,
+        AttackBuilding,
         StandGround,
         BuildSimple,
         Patrol,
