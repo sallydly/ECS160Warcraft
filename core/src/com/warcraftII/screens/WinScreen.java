@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -30,6 +31,8 @@ public class WinScreen implements Screen {
     private final float SCREEN_DURATION = 2;
     //  get time time when splash starts
     private float currentDuration = 0;
+    private OrthographicCamera camera;
+
 
     public WinScreen(Warcraft game) {
         // disable continuous rendering to improve performance
@@ -38,8 +41,12 @@ public class WinScreen implements Screen {
         this.game = game;
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
-        ScreenViewport port = new ScreenViewport();
+        camera = new OrthographicCamera();
+        camera.position.set(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0);
+        ScreenViewport port = new ScreenViewport(camera);
         port.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        port.setScreenBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        port.apply();
         this.stage = new Stage(port, game.batch);
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/win.mp3"));
         this.music.setVolume( (Volume.getMusicVolume() / 100));
