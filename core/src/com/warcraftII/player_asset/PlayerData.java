@@ -232,7 +232,7 @@ public class PlayerData {
             builderSAsset.DPendingUnitType = type;
         //        builderSAsset.DUnitConstructionTime = PlayerAssetType.BuildTime(GameDataTypes.to_assetType(type));
     //debug:
-            builderSAsset.DUnitConstructionTime = 5;
+            builderSAsset.DUnitConstructionTime = 5; //TODO: change back to 45
             SAssetCommand buildingCommand = new SAssetCommand();
             buildingCommand.DAction = EAssetAction.Capability;
             builderSAsset.EnqueueCommand(buildingCommand);

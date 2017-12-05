@@ -824,7 +824,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
         gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
 
-        gameData.TimeStep();
+        gameData.TimeStep(mapStage);
 
         batch.begin();
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import com.warcraftII.player_asset.PlayerAssetType;
@@ -142,7 +143,7 @@ public class GameData {
 
 
     //Naive timestep.
-    public void TimeStep(){
+    public void TimeStep(Stage mapStage){
 
         if (cumulativeTime < UPDATE_INTERVAL){
             return;
@@ -173,14 +174,15 @@ public class GameData {
                 //do nothing for now.
             }
             if(GameDataTypes.EAssetAction.Capability == sasset.Action()){
-                //Thing is building a unit.  deal with it.
+                //Thing is building a unit.  deal with it
                 if(sasset.Step() < sasset.DUnitConstructionTime * staticAssetRenderer.UpdateFrequency()) {
                     sasset.IncrementStep();
                 }
                 else
                 {
                     TilePosition tpos = map.FindAssetPlacement(sasset); //fix asap
-                    allUnits.AddUnit(tpos,sasset.DPendingUnitType,playerData.get(1).Color());
+                    Unit.IndividualUnit unit = allUnits.AddUnit(tpos,sasset.DPendingUnitType,playerData.get(1).Color());
+                    mapStage.addActor(unit);
                     sasset.PopCommand();
                     sasset.DUnitConstructionTime = 0;
                     sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
