@@ -511,11 +511,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     }
 
 
-                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map)) {
-                        if (gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(assetToBuild)) == 0) {
-                            gameData.playerData.get(1).ConstructStaticAsset(tpos, assetToBuild, gameData.map);
-                        }
-                        }
+
                     gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
 
 //                    // TODO: adapt this to match types
@@ -1180,19 +1176,39 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 } else if (attackButton.isPressed()) {
                     // This is handled in singleSelected because it needs to target whatever individual unit was touched
                     usedCount += 1;
-                } else if (buildSimpleButton.isPressed()) {
+                } else if (buildSimpleButton.isPressed() || buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed || placeAndBuildButton.isPressed()) {
                     // TODO: why
-                    //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
-                    //sUnit.buildPos = cameraPosition.getTilePosition();
-                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
-                    sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-                    sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
+                    GameDataTypes.EUnitState tempState;
+                    switch (typetobebuilt) {
+                        case Barracks:
+                            tempState = GameDataTypes.EUnitState.BuildBarracks;
+                        case Blacksmith:
+                            tempState = GameDataTypes.EUnitState.BuildBlacksmith;
+                        case Farm:
+                            tempState = GameDataTypes.EUnitState.BuildFarm;
+                        case LumberMill:
+                            tempState = GameDataTypes.EUnitState.BuildLumberMill;
+                        case ScoutTower:
+                            tempState = GameDataTypes.EUnitState.BuildScoutTower;
+                        case TownHall:
+                            tempState = GameDataTypes.EUnitState.BuildTownHall;
+                        case Wall:
+                            tempState = GameDataTypes.EUnitState.BuildWall;
+                        default:
+                            tempState = GameDataTypes.EUnitState.BuildTownHall;
+                    }
+
+                    sUnit.buildPos = tpos;
+                    //sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    //sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
                     //sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
                     sUnit.currentxmove = round(position.x);
                     sUnit.currentymove = round(position.y);
 
                     // Determine based on typetobebuilt
-                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
+                    sUnit.curState = tempState;
+                    usedCount += 1;
                 } else if (repairButton.isPressed()) {
                     TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);

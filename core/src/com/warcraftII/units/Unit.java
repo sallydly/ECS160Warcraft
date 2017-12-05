@@ -466,9 +466,7 @@ public class Unit {
                 cur.hidden = false;
                 cur.abilities.add(CarryingGold);
                 cur.attackEnd = true;
-            }
 
-            if (cur.resourceAmount >= 500) {
                 cur.curAnim = GenerateAnimation(cur, "gold");
                 if (SetReturnDest(cur, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnMine;
@@ -723,20 +721,20 @@ public class Unit {
             boolean north, south, east, west;
             north = south = west = east = false;
 
-            if (cur.getMidX() > cur.currentxmove && pathable((cur.getX() - cur.speed/10),cur.getY(), gData)) {
+            if (cur.getX() > cur.currentxmove && pathable((cur.getX() - cur.speed/10),cur.getMidY(), gData)) {
                 cur.setX(cur.getX() - cur.speed/10);
                 west = true;
-            } else if (cur.getMidX() < cur.currentxmove && pathable((cur.getX() + cur.speed/10),cur.getY(), gData)) {
+            } else if (cur.getX() < cur.currentxmove && pathable((cur.getX() + cur.speed/10),cur.getY(), gData)) {
                 cur.setX(cur.getX()+ cur.speed/10);
                 east = true;
             } else {
                 // stay in X
             }
 
-            if (cur.getMidY() > cur.currentymove && pathable(cur.getX(),(cur.getY() - cur.speed/10), gData)) {
+            if (cur.getY() > cur.currentymove && pathable(cur.getX(),(cur.getY() - cur.speed/10), gData)) {
                 cur.setY(cur.getY() - cur.speed/10);
                 south = true;
-            } else if (cur.getMidY() < cur.currentymove && pathable(cur.getX(),(cur.getY() + cur.speed/10), gData)) {
+            } else if (cur.getY() < cur.currentymove && pathable(cur.getMidX(),(cur.getY() + cur.speed/10), gData)) {
                 cur.setY(cur.getY() + cur.speed/10);
                 north = true;
             } else {

@@ -180,7 +180,7 @@ public class GameData {
                 else
                 {
                     TilePosition tpos = map.FindAssetPlacement(sasset); //fix asap
-                    allUnits.AddUnit(tpos,sasset.DPendingUnitType,playerData.get(1).Color());
+                    allUnits.AddUnit(tpos, sasset.DPendingUnitType,playerData.get(1).Color());
                     sasset.PopCommand();
                     sasset.DUnitConstructionTime = 0;
                     sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
