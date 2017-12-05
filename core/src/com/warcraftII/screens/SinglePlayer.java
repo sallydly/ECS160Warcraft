@@ -88,6 +88,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton newAbility;
 
     private TextButton selectButton;
+    private TextButton placeAndBuildButton;
     private TextButton cancelButton;
     private TextureAtlas sidebarIconAtlas;
 
@@ -178,6 +179,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
+        placeAndBuildButton = new TextButton("Place & Build", skin);
         cancelButton = new TextButton("Cancel", skin);
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
@@ -213,7 +215,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndY = position.y;
 
         // adjust pointer drag amount by mapCamera zoom level
-        if(!selectButton.isPressed()) {
+        if(!selectButton.isPressed() && !placeAndBuildButton.isPressed()) {
             deltaX *= mapCamera.zoom;
             deltaY *= mapCamera.zoom;
 
@@ -493,7 +495,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-                if(buildSimpleButton.isPressed()) {
+                if(placeAndBuildButton.isPressed()) {
                     TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
 
                     //centering the staticasset about the touch:
@@ -509,8 +511,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
 
                     if (gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map)) {
-                        gameData.playerData.get(1).ConstructStaticAsset(tpos, typetobebuilt, gameData.map);
-                    }
+                        if (gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(assetToBuild)) == 0) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, assetToBuild, gameData.map);
+                        }
+                        }
                     gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
 
 //                    // TODO: adapt this to match types
@@ -535,7 +539,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
 
-                if(buildSimpleButton.isPressed()) {
+                if(placeAndBuildButton.isPressed()) {
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
@@ -563,7 +567,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         }
                         return false;
                     } else {
-
                         gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map);
                     }
                 }
@@ -678,6 +681,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             // end case of static asset selected
         }else { // now dealing with unit being selected...
             if (buildSimpleButtonIsPressed){
+                sidebarTable.add(placeAndBuildButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                sidebarTable.row();
                 for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
                     TextButton newButton = null;
                     if (PlayerCapability.IsBuildingBuilding(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
@@ -685,7 +690,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         newButton.addListener(new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                unitToBuild = GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType));
+                                assetToBuild = GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType));
                             }
                         });
                         sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
@@ -933,28 +938,26 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartY = position.y;
 
 
-        if(buildSimpleButton.isPressed()) {
-            TilePosition tpos = new TilePosition(new UnitPosition((int) position.x,(int) position.y));
-
-            typetobebuilt = GameDataTypes.EStaticAssetType.TownHall;
-
-            //centering the staticasset about the touch:
-            tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-            tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-
-            //TODO: determine the type to be built...and the player color
-            gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
-        }
-
-
-        //Asset Selection code here...I assume will override all others...?
         TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
         //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         //or:
         //Vector<Boolean> capabilities;
 
+        if(buildSimpleButtonIsPressed && assetToBuild!=null) {
+            //centering the staticasset about the touch:
+            tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
+            tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
 
+            //TODO: determine the type to be built...and the player color
+            gameData.staticAssetRenderer.CreateShadowAsset(assetToBuild, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
+        }
+
+        if (!placeAndBuildButton.isPressed()){
+            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
+        }
+
+        //Asset Selection code here...I assume will override all others...?
         // move most of this to singleSelect?
         isAssetSelected = false;
 
@@ -966,6 +969,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         } else {
             isAssetSelected = false;
             selectedAsset = null;
+            buildSimpleButtonIsPressed = false;
+            buildAdvancedButtonIsPressed = false;
         }
 
         //Returns capabilities:
@@ -985,6 +990,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = multiSelectUpdate(position);
         } else {
             newSelection = singleSelectUpdate();
+        }
+
+        if (newSelection){
+            buildSimpleButtonIsPressed = false;
+            buildAdvancedButtonIsPressed = false;
         }
 
         if (updateSelected(position) && !newSelection) {
@@ -1212,7 +1222,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || moveButton.isPressed()) {
+        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || moveButton.isPressed() || placeAndBuildButton.isPressed()) {
 
             return false;
         }
