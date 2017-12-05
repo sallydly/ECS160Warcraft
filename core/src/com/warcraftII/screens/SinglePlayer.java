@@ -502,7 +502,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
                     tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
 
-                    if(typetobebuilt == GameDataTypes.EStaticAssetType.Wall)
+                    if(assetToBuild == GameDataTypes.EStaticAssetType.Wall)
                     {
                         gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                         wallStarted = false;
@@ -546,7 +546,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
                     tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt) / 2));
 
-                    if (typetobebuilt == GameDataTypes.EStaticAssetType.Wall) {
+                    if (assetToBuild == GameDataTypes.EStaticAssetType.Wall) {
 
                         if (!wallStarted) {
                             if (gameData.map.CanPlaceStaticAsset(tpos, GameDataTypes.EStaticAssetType.Wall)) {
@@ -824,7 +824,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
         gameData.cumulativeTime += Gdx.graphics.getRawDeltaTime();
 
-        gameData.TimeStep();
+        gameData.TimeStep(mapStage);
 
         batch.begin();
 
