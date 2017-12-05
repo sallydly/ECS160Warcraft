@@ -55,7 +55,6 @@ public class FogRenderer {
                 blackLayer.setCell(Xpos, Ypos, blackCell);
             }
         }
-
         return blackLayer;
     }
 

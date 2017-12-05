@@ -204,7 +204,6 @@ public class GameData {
                     sasset.DUnitConstructionTime = 0;
                     sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
                 }
-
             }
         }
 
@@ -220,12 +219,7 @@ public class GameData {
             renderFog(currentPlayerUnits);
         }
 
-        for(Unit.IndividualUnit individualUnit : currentPlayerUnits) {
-            if(individualUnit.isVisible) {
-                renderFog(currentPlayerUnits);
-                break;
-            }
-        }
+        renderFog(currentPlayerUnits);
     }
 
     public void dispose() {
