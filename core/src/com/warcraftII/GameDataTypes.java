@@ -215,13 +215,6 @@ public class GameDataTypes {
         Attack,
         StandGround,
         BuildSimple,
-        BuildTownHall,
-        BuildFarm,
-        BuildBarracks,
-        BuildLumberMill,
-        BuildScoutTower,
-        BuildBlacksmith,
-        BuildWall,
         Patrol,
         Dead
     }

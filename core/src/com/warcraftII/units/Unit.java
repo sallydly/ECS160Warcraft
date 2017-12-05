@@ -97,10 +97,11 @@ public class Unit {
         public float currentymove;
         public float patrolxmove;
         public float patrolymove;
+
         public TilePosition buildPos = null;
         public StaticAsset inProgressBuilding = null;
         public int resourceAmount = 0;
-
+        public GameDataTypes.EStaticAssetType toBuild =  null;
 
         public StaticAsset selectedAsset;
         public TilePosition selectedTilePosition;
@@ -383,26 +384,8 @@ public class Unit {
                             toDelete.add(cur);
                         }
                         break;
-                    case BuildBarracks:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Barracks, elapsedTime, gData);
-                        break;
-                    case BuildBlacksmith:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Blacksmith, elapsedTime, gData);
-                        break;
-                    case BuildFarm:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Farm, elapsedTime, gData);
-                        break;
-                    case BuildLumberMill:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.LumberMill, elapsedTime, gData);
-                        break;
-                    case BuildScoutTower:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.ScoutTower, elapsedTime, gData);
-                        break;
-                    case BuildTownHall:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.TownHall, elapsedTime, gData);
-                        break;
-                    case BuildWall:
-                        UnitBuild(cur, GameDataTypes.EStaticAssetType.Wall, elapsedTime, gData);
+                    case BuildSimple:
+                        UnitBuild(cur, cur.inProgressBuilding, elapsedTime, gData);
                         break;
                     default:
                         System.out.println("Invalid state");
@@ -753,23 +736,24 @@ public class Unit {
         }
     }
 
-    private void UnitBuild(IndividualUnit cur, GameDataTypes.EStaticAssetType toBuild, float totalTime, GameData gData) {
-
+    private void UnitBuild(IndividualUnit cur, StaticAsset newBuilding, float totalTime, GameData gData) {
         //if (sqrt(pow((cur.currentxmove-cur.getMidX()), 2)  + pow((cur.currentymove-cur.getMidY()), 2)) <= (PlayerAssetType.StaticAssetSize(toBuild)/2) + cur.range * gData.TILE_WIDTH ) {
         if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), gData)) {
             // If unit is in range of the building
 
             if (cur.inProgressBuilding == null) {
-                // if Construction hasn't started
 
-                if (gData.map.CanPlaceStaticAsset(cur.buildPos, toBuild) && gData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(toBuild)) == 0) {
-                    // If you even can build, set inProgressBuilding to the building
+                if (cur.toBuild  == GameDataTypes.EStaticAssetType.Wall){
+                    //special case for wall
+                    StaticAsset buildySAsset = gData.map.StaticAssetAt(cur.buildPos);
+                    if (buildySAsset != null){
+                        cur.inProgressBuilding = buildySAsset;
+                    }
+                }
+                else {
+                    // if Construction hasn't started
                     gData.selectedUnits.remove(cur);
-                    cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, toBuild, gData.map);
-                } else {
-                    // If you can't, go Idle (should probably error/otherwise handle this)
-                    cur.stopMovement();
-                    cur.curState = GameDataTypes.EUnitState.Idle;
+                    cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, cur.toBuild, gData.map);
                 }
             } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
                 // If construction is completed, go idle

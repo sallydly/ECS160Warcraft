@@ -506,6 +506,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                     if(assetToBuild == GameDataTypes.EStaticAssetType.Wall)
                     {
+                        if (!selectedUnits.isEmpty()) {
+                            for (Unit.IndividualUnit sUnit : selectedUnits) {
+                                sUnit.curState = GameDataTypes.EUnitState.BuildSimple;
+                                sUnit.toBuild = assetToBuild;
+
+                                sUnit.buildPos = tpos;
+
+                                sUnit.currentxmove = round(position.x);
+                                sUnit.currentymove = round(position.y);
+                            }
+                        }
+
                         gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                         wallStarted = false;
                         return false;
@@ -514,16 +526,23 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                     if (gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map)) {
                         if (gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(assetToBuild)) == 0) {
-                            gameData.playerData.get(1).ConstructStaticAsset(tpos, assetToBuild, gameData.map);
+                            //StaticAsset sasset = gameData.playerData.get(1).ConstructStaticAsset(tpos, assetToBuild, gameData.map);
+                            if (!selectedUnits.isEmpty()) {
+                                for (Unit.IndividualUnit sUnit : selectedUnits) {
+                                    sUnit.curState = GameDataTypes.EUnitState.BuildSimple;
+                                    sUnit.toBuild = assetToBuild;
+
+                                    sUnit.buildPos = tpos;
+
+                                    sUnit.currentxmove = round(position.x);
+                                    sUnit.currentymove = round(position.y);
+
+                                }
+                            }
                         }
-                        }
+                    }
                     gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
-
-//                    // TODO: adapt this to match types
-//                    for (Unit.IndividualUnit sUnit : selectedUnits) {
-//
                 }
-
 
 
                 if (selectButton.isPressed()) {
@@ -953,6 +972,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         if (!placeAndBuildButton.isPressed()){
             gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
         }
+        else
+        {
+            return true;  // dont want to do anything else then
+        }
 
         //Asset Selection code here...I assume will override all others...?
         // move most of this to singleSelect?
@@ -960,7 +983,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
-        if (chosenStatAsset != null && !anyButtonHeld()) {
+        if (chosenStatAsset != null && !anyButtonHeld() && chosenStatAsset.owner()==gameData.playerData.get(1).Color()) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
         } else {
@@ -978,6 +1001,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
             fillSideBarTable();
+
+            selectedUnits.removeAllElements();
             return true; //Ignores all other asset selection?
         }
 
@@ -1000,8 +1025,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             fillSideBarTable();
         }
 
-
-
         return true;
     }
 
@@ -1015,8 +1038,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
-             if (cur.touched) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
+            if (cur.touched) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || placeAndBuildButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     //TODO: ADD visible check
@@ -1164,15 +1187,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     // TODO: why
                     //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
                     //sUnit.buildPos = cameraPosition.getTilePosition();
-                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
-                    sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-                    sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-                    //sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
-                    sUnit.currentxmove = round(position.x);
-                    sUnit.currentymove = round(position.y);
-
-                    // Determine based on typetobebuilt
-                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
                 } else if (repairButton.isPressed()) {
                     TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
