@@ -1,7 +1,6 @@
 package com.warcraftII;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,16 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
+import com.warcraftII.renderer.FogRenderer;
 import com.warcraftII.renderer.MapRenderer;
 import com.warcraftII.renderer.StaticAssetRenderer;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActions;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -53,10 +53,12 @@ public class GameData {
     public TiledMap tiledMap;
     public MapRenderer mapRenderer;
     public StaticAssetRenderer staticAssetRenderer;
-
+    public FogRenderer fogRenderer;
     public OrthographicCamera mapCamera;
 
     public Vector<PlayerData> playerData;
+    public PlayerData currentPlayer;
+
     public UnitActions unitActions;
     public Unit allUnits;
     public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>(9);
@@ -70,7 +72,6 @@ public class GameData {
         terrain = new TextureAtlas(Gdx.files.internal("atlas/Terrain.atlas"));
         tiledMap = new TiledMap();
         skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
-
         // initialize things that aren't dependent on the map.
         Position.setTileDimensions(TILE_HEIGHT,TILE_WIDTH);
         PlayerAssetType.LoadTypes();
@@ -84,25 +85,48 @@ public class GameData {
         UnitPosition.setMapDimensions(map);
 
         mapRenderer = new MapRenderer(map);
-        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(),map.Height(), mapName);
+        staticAssetRenderer = new StaticAssetRenderer(tiledMap, map.Width(), map.Height(), mapName);
+        fogRenderer = new FogRenderer(map);
+
         staticAssetRenderer.UpdateFrequency((int)UPDATE_FREQUENCY/SPEEDUP_FACTOR);
         playerData = PlayerData.LoadAllPlayers(map,allUnits);
+        playerData.get(1).DIsAI = true;
+        currentPlayer = playerData.get(1);
     }
 
     //ONLY USE AT THE BEGINNING.
     public void RenderMap(){
                 /* Rendering the map: */
         MapLayers layers = tiledMap.getLayers();
+        Vector<PlayerData> temp = new Vector<PlayerData>();
+        Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
+
+        temp.add(currentPlayer);
+        for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
+            if(individualUnit.color == currentPlayer.Color()) {
+                currentPlayerUnits.add(individualUnit);
+            }
+        }
+
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
 
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
 
-        TiledMapTileLayer staticAssetsLayer = null;
-        staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
-
+        TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
             layers.add(staticAssetsLayer);
         }
+
+        tiledMap.getLayers().add(fogLayer);
+    }
+
+    public void renderFog(Vector<Unit.IndividualUnit> currentPlayerUnits) {
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
+        int oldFogLayerIndex = tiledMap.getLayers().getIndex("Fog");
+
+        tiledMap.getLayers().remove(oldFogLayerIndex);
+        tiledMap.getLayers().add(fogLayer);
     }
 
     //not sure where to put this function...putting it here because it's a function that uses multiple classes
@@ -140,7 +164,6 @@ public class GameData {
         }
     }
 
-
     //Naive timestep.
     public void TimeStep(){
 
@@ -151,25 +174,19 @@ public class GameData {
             cumulativeTime = 0;
         }
 
-        Iterator<StaticAsset> iter = map.StaticAssets().iterator();
-
-        while(iter.hasNext())
-        {
-            StaticAsset sasset = iter.next();
-            if(GameDataTypes.EAssetAction.None == sasset.Action()){
+        for (StaticAsset sasset : map.StaticAssets()) {
+            if (GameDataTypes.EAssetAction.None == sasset.Action()) {
                 //Do nothing. for now.
             }
-            if(GameDataTypes.EAssetAction.Construct == sasset.Action()){
-                if(sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
+            if (GameDataTypes.EAssetAction.Construct == sasset.Action()) {
+                if (sasset.Step() < sasset.assetType().BuildTime() * staticAssetRenderer.UpdateFrequency()) {
                     sasset.IncrementStep();
-                }
-                else
-                {
+                } else {
                     sasset.PopCommand();
                 }
                 //Do nothing. for now.
             }
-            if(GameDataTypes.EAssetAction.Death == sasset.Action()){
+            if (GameDataTypes.EAssetAction.Death == sasset.Action()) {
                 //do nothing for now.
             }
             if(GameDataTypes.EAssetAction.Capability == sasset.Action()){
@@ -189,9 +206,25 @@ public class GameData {
             }
         }
 
-        staticAssetRenderer.UpdateStaticAssets(tiledMap,map,playerData);
-    }
+        Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
 
+        for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
+            if(individualUnit.color == currentPlayer.Color()) {
+                currentPlayerUnits.add(individualUnit);
+            }
+        }
+
+        if (staticAssetRenderer.UpdateStaticAssets(tiledMap, map, playerData)) {
+            renderFog(currentPlayerUnits);
+        }
+
+        for(Unit.IndividualUnit individualUnit : currentPlayerUnits) {
+            if(individualUnit.isVisible) {
+                renderFog(currentPlayerUnits);
+                break;
+            }
+        }
+    }
 
     public void dispose() {
         terrain.dispose();

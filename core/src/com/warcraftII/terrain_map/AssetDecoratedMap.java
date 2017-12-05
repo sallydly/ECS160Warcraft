@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.StaticAsset;
+import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes.*;
 import com.warcraftII.position.TilePosition;
@@ -446,13 +447,13 @@ public class AssetDecoratedMap extends TerrainMap {
 
 
     /**
-     * Remove lumber from a given tile position and update the partials map
+     * Remove lumber from a given tile position and updateAssets the partials map
      *
      * @param[in] pos The tile to remove lumber from
      * @param[in] from Position used to determine which terrain tile to remove lumber from
      * @param[in] amount The amount of lumber to remove
      *
-     * @return boolean indicating whether a tile partial was changed and we need to update the rendering
+     * @return boolean indicating whether a tile partial was changed and we need to updateAssets the rendering
      *
      */
 
@@ -556,13 +557,13 @@ public class AssetDecoratedMap extends TerrainMap {
 
 
     /**
-     * Remove stone from a given tile position and update the partials map
+     * Remove stone from a given tile position and updateAssets the partials map
      *
      * @param[in] pos The tile to remove stone from
      * @param[in] from The asset's position that is removing the stone
      * @param[in] amount The amount of stone to remove
      *
-     * @return boolean indicating whether a tile partial was changed and we need to update the rendering
+     * @return boolean indicating whether a tile partial was changed and we need to updateAssets the rendering
      *
      */
 
@@ -924,10 +925,10 @@ public class AssetDecoratedMap extends TerrainMap {
  *
  */
 //TODO: Do we need the visibility map?
-/*
-    std.shared_ptr< CVisibilityMap > CreateVisibilityMap() const{
-        return std.make_shared< CVisibilityMap >(Width(), Height(), CPlayerAssetType.MaxSight());
-    }*/
+
+    public VisibilityMap CreateVisibilityMap() {
+        return new VisibilityMap(Width(), Height(), PlayerAssetType.MaxSight());
+    }
 
 
     /**
