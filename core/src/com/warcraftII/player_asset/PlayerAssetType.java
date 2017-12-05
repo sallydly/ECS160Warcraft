@@ -254,6 +254,30 @@ public class PlayerAssetType {
         return ReturnVector;
     }
 
+    public Vector<EAssetCapabilityType> UnitCapabilitiesVector() {
+        Vector<EAssetCapabilityType> ReturnVector = new Vector<EAssetCapabilityType>();
+        List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
+
+        for(int Index = to_underlying(EAssetCapabilityType.None); Index < to_underlying(EAssetCapabilityType.Max); Index++){
+            if(DCapabilities.get(Index)&& PlayerCapability.IsBuildingUnit(EAssetCapabilityType.values()[Index])){
+                ReturnVector.add(values.get(Index));
+            }
+        }
+        return ReturnVector;
+    }
+
+    public Vector<EAssetCapabilityType> BuildingCapabilitiesVector() {
+        Vector<EAssetCapabilityType> ReturnVector = new Vector<EAssetCapabilityType>();
+        List< EAssetCapabilityType > values = Arrays.asList(EAssetCapabilityType.values());
+
+        for(int Index = to_underlying(EAssetCapabilityType.None); Index < to_underlying(EAssetCapabilityType.Max); Index++){
+            if(DCapabilities.get(Index) && PlayerCapability.IsBuildingBuilding(EAssetCapabilityType.values()[Index])){
+                ReturnVector.add(values.get(Index));
+            }
+        }
+        return ReturnVector;
+    }
+
     public void AddCapability(EAssetCapabilityType capability){
         if((0 > to_underlying(capability))||(DCapabilities.size() <= to_underlying(capability))){
             return;
@@ -293,7 +317,7 @@ public class PlayerAssetType {
     public static boolean LoadTypes(){
         boolean ReturnStatus = false;
         DRegistry = new HashMap<String, PlayerAssetType>();
-        
+
         FileHandle ResDirectory = Gdx.files.internal("res");
         FileHandle[] DatFileArray = ResDirectory.list(".dat");
         for (FileHandle fh : DatFileArray) {
@@ -471,6 +495,31 @@ public class PlayerAssetType {
         return returnstatus;
 
     }
+
+    public static int LumberCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.LumberCost();
+    }
+
+    public static int GoldCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.GoldCost();
+    }
+
+    public static int StoneCost(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.StoneCost();
+    }
+
+    public static int BuildTime(EAssetType type){
+        String name = TypeToName(type);
+        PlayerAssetType pat = DRegistry.get(name);
+        return pat.BuildTime();
+    }
+
 
     public static int MaxSight(){
         int MaxSightFound = 0;

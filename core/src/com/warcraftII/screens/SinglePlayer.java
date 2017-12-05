@@ -32,12 +32,16 @@ import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.Volume;
 import com.warcraftII.Warcraft;
+import com.warcraftII.player_asset.PlayerCapability;
 
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.PlayerData;
+import com.warcraftII.player_asset.PlayerCapability;
 import com.warcraftII.player_asset.StaticAsset;
 import com.warcraftII.player_asset.VisibilityMap;
 import com.warcraftII.position.CameraPosition;
+import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
 import com.warcraftII.terrain_map.TileTypes;
@@ -46,6 +50,8 @@ import com.warcraftII.units.UnitActionRenderer;
 
 import java.util.Vector;
 
+
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 
@@ -61,7 +67,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private SpriteBatch sb;
 
     private int movement;
-    private int lastbuiltasset = 0; //DEBUG
     public int attack;
     public int patrol;
     public int mine;
@@ -77,10 +82,16 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     private TextButton repairButton;
     private TextButton mineButton;
     private TextButton buildSimpleButton;
+    private TextButton buildAdvancedButton;
+    private TextButton buildKeepButton;
+    private TextButton buildLumberMillButton;
+    private TextButton buildFarmButton;
+
     private TextButton newAbility;
 
     private TextButton selectButton;
-    private Label selectCount;
+    private TextButton placeAndBuildButton;
+    private TextButton cancelButton;
     private TextureAtlas sidebarIconAtlas;
 
     public OrthogonalTiledMapRenderer orthomaprenderer;
@@ -120,8 +131,15 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     UnitActionRenderer unitActionRenderer;
     private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
 
+    private GameDataTypes.EStaticAssetType assetToBuild;
+    private GameDataTypes.EUnitType unitToBuild;
+
+
     private boolean isAssetSelected;
     private StaticAsset selectedAsset;
+    private boolean buildSimpleButtonIsPressed;
+    private boolean buildAdvancedButtonIsPressed;
+
 
     //For wall building:
      private boolean wallStarted = false;
@@ -163,13 +181,19 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         patrolButton = new TextButton("Patrol", skin);
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
+        placeAndBuildButton = new TextButton("Place & Build", skin);
+        cancelButton = new TextButton("Cancel", skin);
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
-        buildSimpleButton = new TextButton("Build Simple", skin);
-        selectCount = new Label("", skin);
+        buildSimpleButton = new TextButton("Build", skin);
+        buildAdvancedButton = new TextButton("Upgrade",skin);
+        buildKeepButton = new TextButton("Build Keep", skin);
+        buildLumberMillButton = new TextButton("Build Lumber Mill", skin);
+        buildFarmButton = new TextButton("Build Farm", skin);
+
         sidebarIconAtlas = new TextureAtlas(Gdx.files.internal("atlas/icons.atlas"));
         unitActionRenderer = new UnitActionRenderer(gameData.playerData.get(1).Color(), gameData.playerData.get(1));
-
+        buildSimpleButtonIsPressed = false;
         /*standGroundButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -193,7 +217,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchEndY = position.y;
 
         // adjust pointer drag amount by mapCamera zoom level
-        if(!selectButton.isPressed()) {
+        if(!selectButton.isPressed() && !placeAndBuildButton.isPressed()) {
             deltaX *= mapCamera.zoom;
             deltaY *= mapCamera.zoom;
 
@@ -248,6 +272,30 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 //attack = 0;
                 //mine = 0;
                 //ability = 0;
+            }
+        });
+        buildSimpleButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = true;
+                buildAdvancedButtonIsPressed = false;
+                fillSideBarTable();
+            }
+        });
+        buildAdvancedButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = false;
+                buildAdvancedButtonIsPressed = true;
+                fillSideBarTable();
+            }
+        });
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildSimpleButtonIsPressed = false;
+                buildAdvancedButtonIsPressed = false;
+                fillSideBarTable();
             }
         });
         /*
@@ -449,11 +497,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndX = position.x;
                 touchEndY = position.y;
 
-                //co-opting select button for now
-                if(selectButton.isPressed())
-                {
-                    UnitPosition upos = new UnitPosition((int) touchEndX,(int) touchEndY);
-                    TilePosition tpos = new TilePosition(upos);
+                if(placeAndBuildButton.isPressed()) {
+                    TilePosition tpos = new TilePosition(new UnitPosition((int) touchEndX,(int) touchEndY));
 
                     //centering the staticasset about the touch:
                     tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
@@ -461,18 +506,24 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
                     if(typetobebuilt == GameDataTypes.EStaticAssetType.Wall)
                     {
-                        gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                        gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
                         wallStarted = false;
                         return false;
                     }
 
 
-                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos,gameData.tiledMap,gameData.map)) {
-                        gameData.playerData.get(1).ConstructStaticAsset(tpos,typetobebuilt,gameData.map);
-                    }
-                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap,gameData.map);
+                    if (gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map)) {
+                        if (gameData.playerData.get(1).PlayerCanAffordAsset(GameDataTypes.to_assetType(assetToBuild)) == 0) {
+                            gameData.playerData.get(1).ConstructStaticAsset(tpos, assetToBuild, gameData.map);
+                        }
+                        }
+                    gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
 
+//                    // TODO: adapt this to match types
+//                    for (Unit.IndividualUnit sUnit : selectedUnits) {
+//
                 }
+
 
 
                 if (selectButton.isPressed()) {
@@ -490,7 +541,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 touchEndY = position.y;
 
 
-                if(selectButton.isPressed()) {
+                if(placeAndBuildButton.isPressed()) {
                     UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
                     TilePosition tpos = new TilePosition(upos);
                     //centering the staticasset about the touch:
@@ -518,7 +569,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         }
                         return false;
                     } else {
-
                         gameData.staticAssetRenderer.MoveShadowAsset(tpos, gameData.tiledMap, gameData.map);
                     }
                 }
@@ -547,7 +597,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         widthZoomRatio = gameData.map.Width() * gameData.TILE_WIDTH / mapCamera.viewportWidth;
         gameData.elapsedTime = 0;
 
-        gameData.allUnits.AddUnit(690,3, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Black);
+        gameData.allUnits.AddUnit(690,690, GameDataTypes.EUnitType.Archer, GameDataTypes.EPlayerColor.Red);
         gameData.allUnits.AddUnit(600,4, GameDataTypes.EUnitType.Footman, GameDataTypes.EPlayerColor.Green);
         gameData.allUnits.AddUnit(770,40, GameDataTypes.EUnitType.Peasant, GameDataTypes.EPlayerColor.Orange);
         gameData.allUnits.AddUnit(900,68, GameDataTypes.EUnitType.Ranger, GameDataTypes.EPlayerColor.Purple);
@@ -564,116 +614,218 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarTable.clearChildren();
 
         // determine context buttons based on selected units
-        capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
-        log.info(capabilities.toString());
+        if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
+            if(isAssetSelected){
+                //capabilities = selectedAsset.assetType().CapabilitiesVector();
+            }
+            else {
+                capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.BuildSimple);
+            }
+        } else {
+            if (isAssetSelected) {
+                capabilities = selectedAsset.assetType().CapabilitiesVector();
+            } else {
+                capabilities = unitActionRenderer.DrawUnitAction(selectedUnits, GameDataTypes.EAssetCapabilityType.None);
 
-
-        for(GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
-            switch(capabilityType) {
-                case None:
-                    break;
-                case Move:
-                    sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case Repair:
-                    sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case Mine:
-                    sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case BuildSimple:
-                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case BuildAdvanced:
-                    break;
-                case Convey:
-                    break;
-                case Cancel:
-                    break;
-                case BuildWall:
-                    break;
-                case Attack:
-                    sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case StandGround:
-                    sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case Patrol:
-                    sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2);
-                    sidebarTable.row();
-                    break;
-                case WeaponUpgrade1:
-                    break;
-                case WeaponUpgrade2:
-                    break;
-                case WeaponUpgrade3:
-                    break;
-                case ArrowUpgrade1:
-                    break;
-                case ArrowUpgrade2:
-                    break;
-                case ArrowUpgrade3:
-                    break;
-                case ArmorUpgrade1:
-                    break;
-                case ArmorUpgrade2:
-                    break;
-                case ArmorUpgrade3:
-                    break;
-                case Longbow:
-                    break;
-                case RangerScouting:
-                    break;
-                case Marksmanship:
-                    break;
-                case Max:
-                    break;
-                case BuildPeasant:
-                    break;
-                case BuildFootman:
-                    break;
-                case BuildArcher:
-                    break;
-                case BuildRanger:
-                    break;
-                case BuildFarm:
-                    break;
-                case BuildTownHall:
-                    break;
-                case BuildBarracks:
-                    break;
-                case BuildLumberMill:
-                    break;
-                case BuildBlacksmith:
-                    break;
-                case BuildKeep:
-                    break;
-                case BuildCastle:
-                    break;
-                case BuildScoutTower:
-                    break;
-                case BuildGuardTower:
-                    break;
-                case BuildCannonTower:
-                    break;
-                default:
-                    break;
             }
         }
+        log.info(capabilities.toString());
 
-        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2);
+        if(isAssetSelected){
+            if(buildSimpleButton.isPressed()) {
+                for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    TextButton newButton = null;
+                    if (PlayerCapability.IsBuildingUnit(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
+                        newButton = new TextButton(capabilityType.toString(), skin);
+                    newButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            PlayerData player = gameData.playerData.get(1);
+                            if (player.PlayerCanAffordAsset(PlayerCapability.AssetFromCapability(capabilityType)) == 0) {
+                                player.ConstructUnit(selectedAsset,
+                                        GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType)),
+                                        gameData.map);
+                            }
+                        }
+                    });
+                    sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                    }
+                }
+            }
+            else if (buildAdvancedButtonIsPressed){
+            for(final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                TextButton newButton = null;
+                if (PlayerCapability.IsBuildingBuilding(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None) {
+                    newButton = new TextButton(capabilityType.toString(), skin);
+                    newButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            assetToBuild = GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType));
+                        }
+                    });
+                    sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+            }
+            }
+            else{
+                if (selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+                if(selectedAsset.assetType().BuildingCapabilitiesVector().size()>0) {
+                    sidebarTable.add(buildAdvancedButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
+            }
+
+            // end case of static asset selected
+        }else { // now dealing with unit being selected...
+            if (buildSimpleButtonIsPressed){
+                sidebarTable.add(placeAndBuildButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                sidebarTable.row();
+                for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    TextButton newButton = null;
+                    if (PlayerCapability.IsBuildingBuilding(capabilityType) && PlayerCapability.AssetFromCapability(capabilityType) != GameDataTypes.EAssetType.None){
+                        newButton = new TextButton(capabilityType.toString(), skin);
+                        newButton.addListener(new ClickListener() {
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                assetToBuild = GameDataTypes.to_staticAssetType(PlayerCapability.AssetFromCapability(capabilityType));
+                            }
+                        });
+                        sidebarTable.add(newButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                        sidebarTable.row();
+                    }
+                }
+            }
+            else{
+                for (GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
+                    switch (capabilityType) {
+                        case None:
+                            break;
+                        case Move:
+                            sidebarTable.add(moveButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Repair:
+                            sidebarTable.add(repairButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Mine:
+                            sidebarTable.add(mineButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildSimple:
+                            sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildAdvanced:
+                            break;
+                        case Convey:
+                            break;
+                        case Cancel:
+                            sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildWall:
+                            break;
+                        case Attack:
+                            sidebarTable.add(attackButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case StandGround:
+                            sidebarTable.add(standGroundButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case Patrol:
+                            sidebarTable.add(patrolButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case WeaponUpgrade1:
+                            break;
+                        case WeaponUpgrade2:
+                            break;
+                        case WeaponUpgrade3:
+                            break;
+                        case ArrowUpgrade1:
+                            break;
+                        case ArrowUpgrade2:
+                            break;
+                        case ArrowUpgrade3:
+                            break;
+                        case ArmorUpgrade1:
+                            break;
+                        case ArmorUpgrade2:
+                            break;
+                        case ArmorUpgrade3:
+                            break;
+                        case Longbow:
+                            break;
+                        case RangerScouting:
+                            break;
+                        case Marksmanship:
+                            break;
+                        case Max:
+                            break;
+
+                        case BuildPeasant:
+                            break;
+                        case BuildFootman:
+                            break;
+                        case BuildArcher:
+                            break;
+                        case BuildRanger:
+                            break;
+                        case BuildFarm:
+                            sidebarTable.add(buildFarmButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildTownHall:
+                            break;
+                        case BuildBarracks:
+                            break;
+                        case BuildLumberMill:
+                            sidebarTable.add(buildLumberMillButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildBlacksmith:
+                            break;
+                        case BuildKeep:
+                            sidebarTable.add(buildKeepButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                            sidebarTable.row();
+                            break;
+                        case BuildCastle:
+                            break;
+                        case BuildScoutTower:
+                            break;
+                        case BuildGuardTower:
+                            break;
+                        case BuildCannonTower:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
+            sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
+            sidebarTable.row();
+        } else {
+            sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
+            sidebarTable.row();
+        }
+
+        sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
         sidebarStage.draw();
     }
 
 
     @Override
     public void render(float delta) {
+        checkWinLose();
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameData.elapsedTime += Gdx.graphics.getDeltaTime();
@@ -725,6 +877,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         mapStage.act();
         mapStage.draw();
 
+        // Below are the selection boxes (they shouldn't fire at the same time)
         // Asset selection box drawing
         if (isAssetSelected == true) {
 
@@ -739,7 +892,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.end();
         }
 
-
         for (Unit.IndividualUnit sel : selectedUnits) {
             shapeRenderer.setProjectionMatrix(mapCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -747,43 +899,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.rect(sel.getX(), sel.getY(), sel.getWidth(), sel.getHeight());
             shapeRenderer.end();
         }
-    }
-
-    public void specialButtons() {
-        int counter = 0;
-//        for (Actor actor : stage.getActors()) {
-//            if (counter > 3)
-//                actor.remove();
-//            counter = counter + 1;
-//        }
-        /*
-        for (int i = 0; i < allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.size(); i++) {
-            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.Mine) {
-                newAbility = new TextButton("Mine", gameData.unitActions.skin);
-                newAbility.setPosition(5, 70+(20*(i+1))+((3+i+1)*Gdx.graphics.getHeight() / 10));
-                newAbility.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        mine = 1;
-                        return true;
-                    }
-                });
-//                stage.addActor(newAbility);
-            }
-            if (allUnits.unitVector.elementAt(allUnits.selectedUnitIndex).abilities.elementAt(i) == GameDataTypes.EAssetCapabilityType.RangerScouting) {
-                newAbility = new TextButton("Ranger Scouting", gameData.unitActions.skin);
-                newAbility.setPosition(5, 70 + (20 * (i + 1)) + ((3 + i + 1) * Gdx.graphics.getHeight() / 10));
-                newAbility.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        ability = 1;
-                        return true;
-                    }
-                });
-//                stage.addActor(newAbility);
-            }
-        }
-        */
     }
 
     @Override
@@ -825,44 +940,51 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         touchStartX = position.x;
         touchStartY = position.y;
 
-        //co-opting selectbutton for now
-        if(selectButton.isPressed()) {
-            UnitPosition upos = new UnitPosition((int) position.x,(int) position.y);
-            TilePosition tpos = new TilePosition(upos);
 
-            //centering the staticasset about the touch:
-            tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-            tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
-
-            //TODO: determine the type to be built...and the player color
-            gameData.staticAssetRenderer.CreateShadowAsset(typetobebuilt, GameDataTypes.EPlayerColor.values()[1],tpos,gameData.tiledMap,gameData.map);
-        }
-
-        //Asset Selection code here...I assume will override all others...?
-        UnitPosition upos = new UnitPosition((int) position.x, (int) position.y);
-        TilePosition tpos = new TilePosition(upos);
+        TilePosition tpos = new TilePosition(new UnitPosition((int) position.x, (int) position.y));
 
         //Vector<GameDataTypes.EAssetCapabilityType> capabilities;
         //or:
         //Vector<Boolean> capabilities;
 
+        if(buildSimpleButtonIsPressed && assetToBuild!=null) {
+            //centering the staticasset about the touch:
+            tpos.Y(tpos.Y() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
+            tpos.X(tpos.X() - (int) (PlayerAssetType.StaticAssetSize(assetToBuild)/2));
+
+            //TODO: determine the type to be built...and the player color
+            gameData.staticAssetRenderer.CreateShadowAsset(assetToBuild, GameDataTypes.EPlayerColor.values()[1], tpos, gameData.tiledMap, gameData.map);
+        }
+
+        if (!placeAndBuildButton.isPressed()){
+            gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
+        }
+
+        //Asset Selection code here...I assume will override all others...?
+        // move most of this to singleSelect?
         isAssetSelected = false;
 
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
-        if (chosenStatAsset != null) {
+        if (chosenStatAsset != null && !anyButtonHeld()) {
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
         } else {
             isAssetSelected = false;
+            selectedAsset = null;
+            buildSimpleButtonIsPressed = false;
+            buildAdvancedButtonIsPressed = false;
         }
 
         //Returns capabilities:
-        if (isAssetSelected) {
+        if (isAssetSelected && (!attackButton.isPressed() && !selectedUnits.isEmpty())) {
+            // Won't fire if selectedUnits are trying to attack it
+
             //capabilities = selectedAsset.assetType().CapabilitiesVector();//EAssetCapability
             //capabilities = selectedAsset.assetType().Capabilities();//booleans
             selectedUnits.removeAllElements(); // Removes all currently selected units?
-            return false; //Ignores all other asset selection?
+            fillSideBarTable();
+            return true; //Ignores all other asset selection?
         }
 
         // TODO: maybe move this to a element in GameData?
@@ -873,11 +995,18 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             newSelection = singleSelectUpdate();
         }
 
+        if (newSelection){
+            buildSimpleButtonIsPressed = false;
+            buildAdvancedButtonIsPressed = false;
+        }
+
         if (updateSelected(position) && !newSelection) {
             selectedUnits.removeAllElements();
         } else if (!selectButton.isPressed()){
             fillSideBarTable();
         }
+
+
 
         return true;
     }
@@ -889,20 +1018,21 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean singleSelectUpdate() {
+
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
-            if (cur.touched) {
-                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed()) {
+            // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
+             if (cur.touched) {
+                if (moveButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed()) {
                     // should be handled below
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     for (Unit.IndividualUnit sel : selectedUnits) {
-                        if(gameData.fogRenderer.visibilityMap.TileType((int)(cur.getMidX()), (int)(cur.getMidY())) != VisibilityMap.ETileVisibility.None) {
-                            sel.target = cur;
-                            sel.currentxmove = cur.getMidX();
-                            sel.currentymove = cur.getMidY();
-                            sel.curState = GameDataTypes.EUnitState.Attack;
-                        }
+                        sel.target = cur;
+                        sel.currentxmove = cur.getMidX();
+                        sel.currentymove = cur.getMidY();
+                        sel.curState = GameDataTypes.EUnitState.Attack;
                     }
-                } else {
+                    cur.touched = false;
+                } else if (cur.color == gameData.playerData.get(1).Color()){
                     cur.touched = false;
                     selectedUnits.removeAllElements();
                     selectedUnits.add(cur);
@@ -914,6 +1044,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean multiSelectUpdate(Vector3 position) {
+
         // determine position of each edge of multi-select rectangle
         float leftX = Math.min(touchStartX, position.x);
         float rightX = Math.max(touchStartX, position.x);
@@ -924,7 +1055,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         selectedUnits.removeAllElements();
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()){
             // if (clicked within peasant || part of peasant within multi-select rectangle)
-            if ((cur.getX() <= position.x
+            if (((cur.getX() <= position.x
                     && cur.getX() + cur.getWidth() >= position.x
                     && cur.getY() <= position.y
                     && cur.getY() + cur.getHeight() >= position.y)
@@ -932,7 +1063,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     (cur.getX() <= rightX
                             && cur.getX() + cur.getWidth() >= leftX
                             && cur.getY() <= bottomY
-                            && cur.getY() + cur.getHeight() >= topY)) {
+                            && cur.getY() + cur.getHeight() >= topY))
+                    && cur.color == gameData.playerData.get(1).Color()) {
 
                 //if (!selectedUnits.isEmpty() && cur.color == selectedUnits.firstElement().color) {
                 selectedUnits.add(cur);
@@ -977,39 +1109,75 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sUnit.curState = GameDataTypes.EUnitState.Patrol;
                     usedCount += 1;
                 } else if (standGroundButton.isPressed()) {
-                    usedCount += 1;
-                } else if (attackButton.isPressed()) {
+                    sUnit.stopMovement();
                     usedCount += 1;
                 } else if (mineButton.isPressed()) {
-                    CameraPosition cameraPosition = new CameraPosition((int)((position.x - Gdx.graphics.getWidth()*.25)/.75), (int)position.y, mapCamera);
-                    TilePosition tilePosition = cameraPosition.getTilePosition();
-                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePosition);
-                    if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine) {
+                    TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
+                    if (selectedAsset != null && selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine) {
                         sUnit.curState = GameDataTypes.EUnitState.Mine;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedAsset = selectedAsset;
-                        sUnit.selectedTilePosition = tilePosition;
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
                     }
-                    else if (gameData.map.TerrainTileType(tilePosition) == TileTypes.ETerrainTileType.Forest) {
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Forest) {
                         sUnit.curState = GameDataTypes.EUnitState.Lumber;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
-                        sUnit.selectedTilePosition = tilePosition;
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
                     }
-                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingGold)) {
-                        sUnit.curState = GameDataTypes.EUnitState.ReturnMine;
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Rock) {
+                        sUnit.curState = GameDataTypes.EUnitState.Stone;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
-                        sUnit.selectedAsset = selectedAsset;
+                        sUnit.selectedTilePosition = tilePos;
+                        usedCount += 1;
+                    }/*
+                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep) {
+                        if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingGold)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnMine;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                        else if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingLumber)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnLumber;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                        else if (sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingStone)) {
+                            sUnit.curState = GameDataTypes.EUnitState.ReturnStone;
+                            sUnit.currentxmove = round(position.x);
+                            sUnit.currentymove = round(position.y);
+                            sUnit.selectedTilePosition = tilePos;
+                            usedCount += 1;
+                        }
+                    } Sven deleted this not sure if needed */
+                    else {
+                        System.out.println("Can't mine that");
                     }
-                    else if (selectedAsset.staticAssetType() == GameDataTypes.EStaticAssetType.Keep && sUnit.abilities.contains(GameDataTypes.EAssetCapabilityType.CarryingLumber)) {
-                        sUnit.curState = GameDataTypes.EUnitState.ReturnLumber;
-                        sUnit.currentxmove = round(position.x);
-                        sUnit.currentymove = round(position.y);
-                        sUnit.selectedAsset = selectedAsset;
-                    }
+                } else if (attackButton.isPressed()) {
+                    // This is handled in singleSelected because it needs to target whatever individual unit was touched
                     usedCount += 1;
+                } else if (buildSimpleButton.isPressed()) {
+                    // TODO: why
+                    //CameraPosition cameraPosition = new CameraPosition((int)((round(position.x) - Gdx.graphics.getWidth()*.25)/.75), (int)round(position.y), mapCamera);
+                    //sUnit.buildPos = cameraPosition.getTilePosition();
+                    sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
+                    sUnit.buildPos.Y(sUnit.buildPos.Y() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    sUnit.buildPos.X(sUnit.buildPos.X() - (PlayerAssetType.StaticAssetSize(typetobebuilt)/2));
+                    //sUnit.buildPos = new TilePosition(new UnitPosition(round(position.x), round(position.y)+(2*Position.tileHeight())));
+                    sUnit.currentxmove = round(position.x);
+                    sUnit.currentymove = round(position.y);
+
+                    // Determine based on typetobebuilt
+                    sUnit.curState = GameDataTypes.EUnitState.BuildTownHall;
                 } else if (repairButton.isPressed()) {
                     TilePosition tilePos = new TilePosition(new UnitPosition(round(position.x), round(position.y)));
                     StaticAsset selectedAsset = gameData.map.StaticAssetAt(tilePos);
@@ -1037,72 +1205,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-//        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-//        TilePosition tilePosition = camerePosition.getTilePosition();
-//        int xi = tilePosition.X();
-//        int yi = tilePosition.Y();
-//        PlayerData player1 = gameData.playerData.get(0);
-//
-//        // REMOVING RESOURCES
-//        int resourceRemove = 100;
-////        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-////        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-////        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-////        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-////        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-////        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-////        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-////        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-//
-//
-//        StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tilePosition);
-//        if (chosenStatAsset == null){
-//            System.out.println("No asset here...building");
-//            //GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.values()[(lastbuiltasset%11) +1];
-//            GameDataTypes.EStaticAssetType AssetTypeToBuild = GameDataTypes.EStaticAssetType.Wall;
-//
-//            if (gameData.map.CanPlaceStaticAsset(tilePosition, AssetTypeToBuild)) {
-//                player1.ConstructStaticAsset(tilePosition, GameDataTypes.to_assetType(AssetTypeToBuild), gameData.map);
-//                lastbuiltasset++;
-//            }
-//        }
-//        else {
-//            System.out.println("Asset found." + chosenStatAsset.assetType().Name() + " HP: " + String.valueOf(chosenStatAsset.hitPoints()));
-//            System.out.println("Asset location: " + chosenStatAsset.tilePosition().X() + " " + chosenStatAsset.tilePosition().Y());
-//            if (chosenStatAsset.staticAssetType() == GameDataTypes.EStaticAssetType.GoldMine){
-//                if (chosenStatAsset.CurrentCommand().DAction == GameDataTypes.EAssetAction.MineGold)
-//                {
-//                    chosenStatAsset.EndMining();
-//                }
-//                else
-//                {
-//                    chosenStatAsset.StartMining();
-//                }
-//            }
-//            else {
-//                chosenStatAsset.decrementHitPoints(75);
-//            }
-//        }
         return false;
     }
 
     @Override
     public boolean longPress(float x, float y) {
-        //Gdx.graphics.getWidth()*.25 is the space of the sidebar menu, /.75 to scale to the coordinates of the map
-        CameraPosition camerePosition = new CameraPosition((int)((x - Gdx.graphics.getWidth()*.25)/.75), (int)y, mapCamera);
-        TilePosition tilePosition = camerePosition.getTilePosition();
-        int xi = tilePosition.X();
-        int yi = tilePosition.Y();
-        log.info("Tile position: " + xi +" " + yi);
-        int resourceRemove = 200;
-        gameData.RemoveLumber(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveLumber(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi+1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi-1, yi), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi+1), tilePosition, resourceRemove);
-        gameData.RemoveStone(new TilePosition(xi, yi-1), tilePosition, resourceRemove);
         return false;
     }
 
@@ -1118,7 +1225,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || moveButton.isPressed()) {
+        if (selectButton.isPressed() || attackButton.isPressed() || patrolButton.isPressed() || standGroundButton.isPressed() || moveButton.isPressed() || placeAndBuildButton.isPressed()) {
 
             return false;
         }
@@ -1228,5 +1335,30 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     @Override
     public void pinchStop() {
 
+    }
+
+    public void checkWinLose() {
+        Vector<Unit.IndividualUnit> units = allUnits.GetAllUnits();
+        boolean redLost = true;
+        boolean otherLost = true;
+        for(Unit.IndividualUnit unit : units) {
+            if(unit.color == GameDataTypes.EPlayerColor.Red) {
+                redLost = false;
+            } else {
+                otherLost = false;
+            }
+            if(!redLost && !otherLost) {
+                break;
+            }
+        }
+        if(redLost) {
+            game.setScreen(new LoseScreen(game));
+        } else if(otherLost) {
+            game.setScreen(new WinScreen(game));
+        }
+    }
+
+    public boolean anyButtonHeld() {
+        return moveButton.isPressed() || standGroundButton.isPressed() || attackButton.isPressed() || repairButton.isPressed() || mineButton.isPressed() || buildSimpleButton.isPressed() || selectButton.isPressed();
     }
 }

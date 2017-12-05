@@ -172,4 +172,72 @@ public class PlayerCapability {
         }
         return typeStringList.get(to_underlying(type));
     }
+
+
+    public static boolean IsBuildingUnit(GameDataTypes.EAssetCapabilityType type){
+        switch (type){
+            case BuildPeasant:
+            case BuildFootman:
+            case BuildArcher:
+            case BuildRanger:
+                return true;
+            default:
+                return false;
+        }
+    }
+    public static boolean IsBuildingBuilding (GameDataTypes.EAssetCapabilityType type){
+        switch (type) {
+            case BuildFarm:
+            case BuildTownHall:
+            case BuildBarracks:
+            case BuildLumberMill:
+            case BuildBlacksmith:
+            case BuildKeep:
+            case BuildCastle:
+            case BuildScoutTower:
+            case BuildGuardTower:
+            case BuildCannonTower:
+            case BuildWall:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static GameDataTypes.EAssetType AssetFromCapability(GameDataTypes.EAssetCapabilityType type){
+        switch (type) {
+            case BuildPeasant:
+                return GameDataTypes.EAssetType.Peasant;
+            case BuildFootman:
+                return GameDataTypes.EAssetType.Footman;
+            case BuildArcher:
+                return GameDataTypes.EAssetType.Archer;
+            case BuildRanger:
+                return GameDataTypes.EAssetType.Ranger;
+            case BuildFarm:
+                return GameDataTypes.EAssetType.Farm;
+            case BuildTownHall:
+                return GameDataTypes.EAssetType.TownHall;
+            case BuildBarracks:
+                return GameDataTypes.EAssetType.Barracks;
+            case BuildLumberMill:
+                return GameDataTypes.EAssetType.LumberMill;
+            case BuildBlacksmith:
+                return GameDataTypes.EAssetType.Blacksmith;
+            case BuildKeep:
+                return GameDataTypes.EAssetType.Keep;
+            case BuildCastle:
+                return GameDataTypes.EAssetType.Castle;
+            case BuildScoutTower:
+                return GameDataTypes.EAssetType.ScoutTower;
+            case BuildGuardTower:
+                return GameDataTypes.EAssetType.GuardTower;
+            case BuildCannonTower:
+                return GameDataTypes.EAssetType.CannonTower;
+            case BuildWall:
+                return GameDataTypes.EAssetType.Wall;
+            default:
+                return (GameDataTypes.EAssetType.None);
+        }
+    }
 }

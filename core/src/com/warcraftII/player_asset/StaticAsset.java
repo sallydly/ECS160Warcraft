@@ -30,6 +30,9 @@ public class StaticAsset extends PlayerAsset{
     private EPlayerColor DOwner;
 
 
+    public EUnitType DPendingUnitType;
+    public int DUnitConstructionTime;
+
 
     public StaticAsset() {}
 
