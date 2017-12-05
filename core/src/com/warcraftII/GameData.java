@@ -209,11 +209,6 @@ public class GameData {
         Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
 
         for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
-            if(fogRenderer.visibilityMap.TileType((int)individualUnit.getMidX(), (int)individualUnit.getMidY()) == VisibilityMap.ETileVisibility.Visible) {
-                individualUnit.isVisible = true;
-            } else {
-                individualUnit.isVisible = false;
-            }
             if(individualUnit.color == currentPlayer.Color()) {
                 currentPlayerUnits.add(individualUnit);
             }
