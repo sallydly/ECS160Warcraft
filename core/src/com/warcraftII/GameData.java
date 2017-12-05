@@ -202,14 +202,13 @@ public class GameData {
                     sasset.DUnitConstructionTime = 0;
                     sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
                 }
-
             }
         }
 
         Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
 
         for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
-            if(fogRenderer.visibilityMap.TileType((int)individualUnit.getMidX(), (int)individualUnit.getMidY()) == VisibilityMap.ETileVisibility.Visible) {
+            if(fogRenderer.visibilityMap.TileType((int)individualUnit.getMidX(), (int)individualUnit.getMidY()) != VisibilityMap.ETileVisibility.None) {
                 individualUnit.isVisible = true;
             } else {
                 individualUnit.isVisible = false;

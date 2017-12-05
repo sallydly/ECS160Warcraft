@@ -160,7 +160,7 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            if (inProgressBuilding == null && !hidden && isVisible) {
+            if (inProgressBuilding == null && !hidden) {
                 batch.draw(curTexture, getX(), getY());
             }
         }
@@ -680,6 +680,9 @@ public class Unit {
     }
 
     public boolean pathable(float x, float y, GameData gData) {
+        if(true)
+            return true;
+
         TilePosition tilePos = new TilePosition(new UnitPosition(round(x), round(y)));
         StaticAsset selectedAsset = gData.map.StaticAssetAt(tilePos);
         if (selectedAsset != null) {
