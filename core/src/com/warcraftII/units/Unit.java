@@ -436,9 +436,8 @@ public class Unit {
             cur.resourceAmount = 0;
             cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingGold);
             cur.curState = GameDataTypes.EUnitState.Mine;
-            UnitPosition temp = new UnitPosition(cur.selectedTilePosition);
-            cur.currentxmove = temp.X();//+(Position.tileWidth()/2);
-            cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
+            cur.currentxmove = cur.selectedAsset.positionX();//+(Position.tileWidth()/2);
+            cur.currentymove = cur.selectedAsset.positionY();//+(Position.tileHeight()/2);
         } else {
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
             UnitMove(cur, "gold", totalTime, gData);
@@ -700,10 +699,10 @@ public class Unit {
             boolean north, south, east, west;
             north = south = west = east = false;
 
-            if (cur.getMidX() > cur.currentxmove && pathable((cur.getX() - cur.speed/10),cur.getY(), gData)) {
+            if (cur.getMidX() > cur.currentxmove && pathable((cur.getMidX() - cur.speed/10),cur.getMidY(), gData)) {
                 cur.setX(cur.getX() - cur.speed/10);
                 west = true;
-            } else if (cur.getMidX() < cur.currentxmove && pathable((cur.getX() + cur.speed/10),cur.getY(), gData)) {
+            } else if (cur.getMidX() < cur.currentxmove && pathable((cur.getMidX() + cur.speed/10),cur.getMidY(), gData)) {
                 cur.setX(cur.getX()+ cur.speed/10);
                 east = true;
             } else {
