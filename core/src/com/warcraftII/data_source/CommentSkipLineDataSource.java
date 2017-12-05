@@ -56,7 +56,7 @@ public class CommentSkipLineDataSource extends LineDataSource
                     return tempLine.substring(0, i);
                 }
             }
-            log.info(tempLine);
+            //log.info(tempLine);
             //DIsAfterComment = false;
             return tempLine; //if no comment char found in string of length > 1
         }
