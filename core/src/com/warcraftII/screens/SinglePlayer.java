@@ -719,7 +719,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             }
             else{
-                if(selectedAsset.Action() == GameDataTypes.EAssetAction.Construct || selectedAsset.Action() == GameDataTypes.EAssetAction.Capability){
+                if(selectedAsset.Action() == GameDataTypes.EAssetAction.Capability||
+                        selectedAsset.Action() == GameDataTypes.EAssetAction.Construct && selectedAsset.DUpgradedFrom == null){
                     sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(2*sidebarStage.getHeight() / 10);
                     sidebarTable.row();
                 }
