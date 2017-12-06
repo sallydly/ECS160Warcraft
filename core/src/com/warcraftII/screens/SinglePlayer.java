@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -44,6 +45,7 @@ import com.warcraftII.position.CameraPosition;
 import com.warcraftII.position.Position;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.position.UnitPosition;
+import com.warcraftII.renderer.GraphicTileset;
 import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActionRenderer;
@@ -91,6 +93,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
 
     private TextButton selectButton;
     private TextButton placeAndBuildButton;
+    private TextButton backButton;
     private TextButton cancelButton;
     private TextureAtlas sidebarIconAtlas;
 
@@ -177,7 +180,8 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         attackButton = new TextButton("Attack", skin);
         selectButton = new TextButton("Select", skin);
         placeAndBuildButton = new TextButton("Place & Build", skin);
-        cancelButton = new TextButton("Cancel", skin);
+        backButton = new TextButton("Back", skin);
+        cancelButton = new TextButton("Cancel Building", skin);
         repairButton = new TextButton("Repair", skin);
         mineButton = new TextButton("Mine", skin);
         buildSimpleButton = new TextButton("Build", skin);
@@ -285,11 +289,33 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 fillSideBarTable();
             }
         });
-        cancelButton.addListener(new ClickListener() {
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buildSimpleButtonIsPressed = false;
                 buildAdvancedButtonIsPressed = false;
+                fillSideBarTable();
+            }
+        });
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(isAssetSelected){
+                    if(selectedAsset.Action() == GameDataTypes.EAssetAction.Construct)
+                    {
+                        StaticAsset returnedAsset = gameData.playerData.get(1).CancelStaticAssetConstruction(selectedAsset,gameData.map);
+                        TiledMapTileLayer assetLayer = (TiledMapTileLayer) gameData.tiledMap.getLayers().get("StaticAssets");
+                        int YPos = gameData.map.Height() - selectedAsset.tilePosition().Y() - 1; // -1 to account for 0 index
+                        GraphicTileset.RemoveTile(assetLayer, selectedAsset.tilePositionX(),YPos,selectedAsset.Size());
+                        selectedAsset = returnedAsset;
+                        if(returnedAsset == null){
+                            isAssetSelected = false;
+                        }
+                    }
+                    else if (selectedAsset.Action() == GameDataTypes.EAssetAction.Capability){
+                        gameData.playerData.get(1).CancelUnitConstruction(selectedAsset);
+                    }
+                }
                 fillSideBarTable();
             }
         });
@@ -654,8 +680,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                             PlayerData player = gameData.playerData.get(1);
                             if (player.PlayerCanAffordAsset(PlayerCapability.AssetFromCapability(capabilityType)) == 0) {
                                 player.ConstructUnit(selectedAsset,
-                                        GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType)),
-                                        gameData.map);
+                                        GameDataTypes.to_unitType(PlayerCapability.AssetFromCapability(capabilityType)));
+                                buildSimpleButtonIsPressed = false;
+                                buildAdvancedButtonIsPressed = false;
+                                fillSideBarTable();
                             }
                         }
                     });
@@ -691,6 +719,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
             }
             else{
+                if(selectedAsset.Action() == GameDataTypes.EAssetAction.Construct || selectedAsset.Action() == GameDataTypes.EAssetAction.Capability){
+                    sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(2*sidebarStage.getHeight() / 10);
+                    sidebarTable.row();
+                }
                 if (selectedAsset.Action() == GameDataTypes.EAssetAction.None && selectedAsset.assetType().UnitCapabilitiesVector().size()>0) {
                     sidebarTable.add(buildSimpleButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
                     sidebarTable.row();
@@ -700,11 +732,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                     sidebarTable.row();
                 }
             }
-
             // end case of static asset selected
+
         }else { // now dealing with unit being selected...
             if (buildSimpleButtonIsPressed){
-                sidebarTable.add(placeAndBuildButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight() / 10);
+                sidebarTable.add(placeAndBuildButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(2*sidebarStage.getHeight() / 10);
                 sidebarTable.row();
                 for (final GameDataTypes.EAssetCapabilityType capabilityType : capabilities) {
                     TextButton newButton = null;
@@ -832,7 +864,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
         if (buildSimpleButtonIsPressed || buildAdvancedButtonIsPressed) {
-            sidebarTable.add(cancelButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
+            sidebarTable.add(backButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
             sidebarTable.row();
         } else {
             sidebarTable.add(selectButton).width(sidebarStage.getWidth()).colspan(2).prefHeight(sidebarStage.getHeight()/10);
@@ -987,6 +1019,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         StaticAsset chosenStatAsset = gameData.map.StaticAssetAt(tpos);
 
         if (chosenStatAsset != null && !anyButtonHeld() && chosenStatAsset.owner()==gameData.playerData.get(1).Color()) {
+            System.out.println("Found Static Asset" + chosenStatAsset.type().toString()); //debug
             isAssetSelected = true;
             selectedAsset = chosenStatAsset;
         } else {

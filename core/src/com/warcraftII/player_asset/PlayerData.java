@@ -225,20 +225,49 @@ public class PlayerData {
         return ConsAsset;
     }
 
+    public StaticAsset CancelStaticAssetConstruction(StaticAsset constructingSAsset, AssetDecoratedMap map){
+        IncrementGold(constructingSAsset.GoldCost());
+        IncrementLumber(constructingSAsset.LumberCost());
+        IncrementStone(constructingSAsset.StoneCost());
+
+        constructingSAsset.PopCommand();
+        DStaticAssets.remove(constructingSAsset);
+        map.RemoveStaticAsset(constructingSAsset);
+
+        if(constructingSAsset.DUpgradedFrom != null){
+            StaticAsset returningSAsset = CreateStaticAsset(PlayerAssetType.TypeToName(
+                    GameDataTypes.to_assetType(constructingSAsset.DUpgradedFrom)));
+
+            returningSAsset.tilePosition(constructingSAsset.tilePosition());
+
+            DStaticAssets.add(returningSAsset);
+            map.AddStaticAsset(returningSAsset);
+
+            return returningSAsset;
+        }
+
+        return null;
+    }
+
     public StaticAsset BuildingUpgrade(StaticAsset sasset, EStaticAssetType toType, AssetDecoratedMap map) {
         TilePosition pos = sasset.tilePosition();
         EPlayerColor color = sasset.owner();
+        EStaticAssetType typefrom = sasset.staticAssetType();
 
         DeleteStaticAsset(sasset);
         map.RemoveStaticAsset(sasset);
 
-        ConstructStaticAsset(pos,toType,map);
-        return sasset;
+
+        StaticAsset upgasset = ConstructStaticAsset(pos,toType,map);
+        upgasset.DUpgradedFrom = typefrom;
+        upgasset.owner(color);
+
+        return upgasset;
     }
 
 
 
-    public void ConstructUnit(StaticAsset builderSAsset,EUnitType type, AssetDecoratedMap map){
+    public void ConstructUnit(StaticAsset builderSAsset,EUnitType type){
         if (builderSAsset.Action() == EAssetAction.None) // make sure its not constructing or dying or building something else
         {
             builderSAsset.DPendingUnitType = type;
@@ -253,6 +282,25 @@ public class PlayerData {
             DecrementStone(PlayerAssetType.StoneCost(GameDataTypes.to_assetType(type)));
         }
     }
+
+
+    public void CancelUnitConstruction (StaticAsset builderSAsset){
+        if (builderSAsset.Action() == EAssetAction.Capability) // Currently building
+        {
+            IncrementGold(PlayerAssetType.GoldCost(GameDataTypes.to_assetType(builderSAsset.DPendingUnitType)));
+            IncrementLumber(PlayerAssetType.LumberCost(GameDataTypes.to_assetType(builderSAsset.DPendingUnitType)));
+            IncrementStone(PlayerAssetType.StoneCost(GameDataTypes.to_assetType(builderSAsset.DPendingUnitType)));
+
+            builderSAsset.DPendingUnitType = null;
+            builderSAsset.DUnitConstructionTime = 0;
+
+            builderSAsset.PopCommand();
+            builderSAsset.Step(0);
+
+
+        }
+    }
+
 
     /*
 

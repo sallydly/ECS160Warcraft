@@ -799,8 +799,9 @@ public class Unit {
                     gData.selectedUnits.remove(cur);
                     cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, cur.toBuild, gData.map);
                 }
-            } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
-                // If construction is completed, go idle after resetting positiob
+            } else if (cur.inProgressBuilding == null ||
+                    cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
+                // If construction is completed or canceled, go idle after resetting position
                 UnitPosition building = new UnitPosition(cur.inProgressBuilding.tilePosition());
                 cur.setX(building.X());
                 cur.setY(building.Y());

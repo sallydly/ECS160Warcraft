@@ -9,16 +9,8 @@ import com.warcraftII.position.TilePosition;
 import java.util.Vector;
 
 public class StaticAsset extends PlayerAsset{
-    public enum EState {
-        CONSTRUCT_0,
-        CONSTRUCT_1,
-        ACTIVE,
-        INACTIVE,
-        PLACE
-    }
 
     //Add something for asset commands to perform on this static asset
-    private EState DCurrentState;
     private int DHitPoints;
     private int DGold;
     private int DLumber;
@@ -29,6 +21,7 @@ public class StaticAsset extends PlayerAsset{
 
     private EPlayerColor DOwner;
 
+    public EStaticAssetType DUpgradedFrom = null;
 
     public EUnitType DPendingUnitType;
     public int DUnitConstructionTime;
@@ -42,7 +35,6 @@ public class StaticAsset extends PlayerAsset{
         DGold = 0;
         DLumber = 0;
         DPosition = new TilePosition(0, 0);
-        DCurrentState = EState.INACTIVE; // TODO: have a cycle of building-> inactive, active etc.
         DCommands = new Vector<SAssetCommand>();
     }
 
@@ -55,9 +47,6 @@ public class StaticAsset extends PlayerAsset{
     }
 
 
-    public EState state(){
-        return DCurrentState;
-    }
 
     public boolean Alive() {
         return 0 < DHitPoints;
@@ -276,15 +265,6 @@ public class StaticAsset extends PlayerAsset{
     public EAssetAction Action() {
         if(!DCommands.isEmpty()){
             EAssetAction action = DCommands.lastElement().DAction;
-
-            switch(action) {
-                case Construct:
-                    this.DCurrentState = EState.CONSTRUCT_0;
-                    break;
-                case Death:
-                    this.DCurrentState = EState.INACTIVE;
-                    break;
-            }
             return action;
         }
         return EAssetAction.None;
