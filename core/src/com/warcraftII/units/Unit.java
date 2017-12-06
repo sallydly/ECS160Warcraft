@@ -552,7 +552,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range*1.75 * Position.tileWidth());
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * 1.75 * Position.tileWidth());
     }
 
     private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
@@ -568,19 +568,20 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, float buildWidth, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= (buildWidth/2));
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= (buildWidth)*.75);
     }
 
     private boolean InRange(IndividualUnit cur, IndividualUnit tar, GameData gData) {
         return InRange(cur, new UnitPosition(round(tar.getMidX()), round(tar.getMidY())), gData);
     }
 
+    /*
     private boolean InRange(IndividualUnit cur, StaticAsset target, GameData gData) {
         UnitPosition temp = new UnitPosition(target.tilePosition());
         int halfAssetSize = PlayerAssetType.StaticAssetSize(target.staticAssetType())/2;
         return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), temp.X()+halfAssetSize, temp.Y()+halfAssetSize)  <= (cur.range * Position.tileWidth()) + halfAssetSize);
     }
-
+    */
     private void UnitPatrolState(IndividualUnit cur, float totalTime, GameData gData) {
         if (UnitMove(cur, totalTime, gData)) {
             float tempxmove = cur.currentxmove;
@@ -799,7 +800,11 @@ public class Unit {
                     cur.inProgressBuilding = gData.playerData.get(GameDataTypes.to_underlying(cur.color)).ConstructStaticAsset(cur.buildPos, cur.toBuild, gData.map);
                 }
             } else if (cur.inProgressBuilding.Action() == GameDataTypes.EAssetAction.None) {
-                // If construction is completed, go idle
+                // If construction is completed, go idle after resetting positiob
+                UnitPosition building = new UnitPosition(cur.inProgressBuilding.tilePosition());
+                cur.setX(building.X());
+                cur.setY(building.Y());
+
                 cur.inProgressBuilding = null;
                 //gData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.ScoutTower, cur.color, cur.buildPos, gData.tiledMap, gData.map);
                 cur.stopMovement();
