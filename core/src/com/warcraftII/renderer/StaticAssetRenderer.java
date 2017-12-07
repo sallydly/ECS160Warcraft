@@ -384,6 +384,7 @@ public class StaticAssetRenderer {
                         break;
 
                     case Construct:
+                        assetUpdate = true;
                         int ActionSteps = DConstructionStages[GameDataTypes.to_underlying(StatAsset.staticAssetType())] + 1;
 
                         //log.debug(StatAsset.assetType().Name() + String.valueOf(ActionSteps));
@@ -419,9 +420,9 @@ public class StaticAssetRenderer {
 
                             GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
                         }
-                        assetUpdate = true;
                         break;
                     case Death:
+                        assetUpdate = true;
                         if (StatAsset.staticAssetType() == EStaticAssetType.Wall) {
                             stateName = "destroyed_";
                             tileName = stateName + pieceName;
@@ -448,7 +449,6 @@ public class StaticAssetRenderer {
                             DeathRowBuildings.add(StatAsset);
                             itr.remove();
                             map.RemoveStaticAsset(StatAsset);
-                            assetUpdate = true;
                         }
                         break;
 
