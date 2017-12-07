@@ -1,7 +1,10 @@
 package com.warcraftII.player_asset;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.Volume;
 import com.warcraftII.player_asset.SAssetCommand;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.position.TilePosition;
@@ -25,6 +28,9 @@ public class StaticAsset extends PlayerAsset{
 
     public EUnitType DPendingUnitType;
     public int DUnitConstructionTime;
+
+
+    private Sound goldMineSound = Gdx.audio.newSound(Gdx.files.internal("data/snd/buildings/gold-mine.wav"));
 
 
     public StaticAsset() {}
@@ -310,6 +316,7 @@ public class StaticAsset extends PlayerAsset{
             constructCommand.DAction = EAssetAction.MineGold;
             EnqueueCommand(constructCommand);
         }
+        goldMineSound.play(Volume.getFxVolume()/100);
     }
 
     public void EndMining(){
