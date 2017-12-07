@@ -227,8 +227,6 @@ public class GameData {
             TilePosition otherUnitAnchor = new TilePosition(new UnitPosition((int)(otherUnit.getMidX()), (int)(otherUnit.getMidY())));
 
             otherUnit.isVisible = fogRenderer.visibilityMap.TileType(otherUnitAnchor.X(), otherUnitAnchor.Y()) != VisibilityMap.ETileVisibility.None;
-            if(otherUnit.isVisible)
-                System.out.println("OTHER UNIT IS VISIBLE AT: " + otherUnitAnchor.X() + " " + otherUnitAnchor.Y());
         }
     }
 
