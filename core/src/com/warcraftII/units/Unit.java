@@ -286,8 +286,8 @@ public class Unit {
                 break;
         }
 
-        newUnit.setX(x_position-texture.getRegionWidth());
-        newUnit.setY(y_position-texture.getRegionHeight());
+        newUnit.setX(x_position - texture.getRegionWidth());
+        newUnit.setY(y_position - texture.getRegionHeight());
         newUnit.currentxmove = x_position*32;
         newUnit.currentymove = y_position*32;
         newUnit.curState = GameDataTypes.EUnitState.Idle;
@@ -434,8 +434,7 @@ public class Unit {
     }
 
     private void UnitReturnLumberState(IndividualUnit cur, float totalTime, GameData gData) {
-        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
-            cur.stopMovement();
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileHeight(),gData)) {
             gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementLumber(cur.resourceAmount);
             cur.resourceAmount = 0;
             cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingLumber);
@@ -570,7 +569,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, float buildWidth, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= buildWidth*.5); // or (sqrt(2)*buildWidth)*.5
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= sqrt(2)*buildWidth*.5); // or (sqrt(2)*buildWidth)*.5
     }
 
     private boolean InRange(IndividualUnit cur, IndividualUnit tar, GameData gData) {
