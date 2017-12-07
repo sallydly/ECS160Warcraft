@@ -654,7 +654,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth());
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth() + 72/2);
     }
 
     private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
@@ -755,10 +755,12 @@ public class Unit {
         }
 
        if (target.hitPoints() > 0) { // maybe set this if to be if tar is not dead
+           UnitPosition upos = new UnitPosition();
+           upos.setXFromTile(target.tilePositionX() + target.Size()/2);
+           upos.setYFromTile(target.tilePositionY() + target.Size()/2);
 
-
-            // check if tar within cur.range of cur
-            if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)),gData)){
+           // check if tar within cur.range of cur
+            if (InRange(cur, upos, gData)){
 
                 if (cur.attackEnd) {
                     cur.curAnim = GenerateAnimation(cur, "attack");
