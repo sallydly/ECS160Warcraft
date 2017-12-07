@@ -286,8 +286,8 @@ public class Unit {
                 break;
         }
 
-        newUnit.setX(x_position);
-        newUnit.setY(y_position);
+        newUnit.setX(x_position-texture.getRegionWidth());
+        newUnit.setY(y_position-texture.getRegionHeight());
         newUnit.currentxmove = x_position*32;
         newUnit.currentymove = y_position*32;
         newUnit.curState = GameDataTypes.EUnitState.Idle;
@@ -419,13 +419,14 @@ public class Unit {
     }
 
     private void UnitReturnMineState(IndividualUnit cur, float totalTime, GameData gData) {
-        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileHeight(),gData)) {
             gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementGold(cur.resourceAmount);
             cur.resourceAmount = 0;
             cur.abilities.remove(GameDataTypes.EAssetCapabilityType.CarryingGold);
             cur.curState = GameDataTypes.EUnitState.Mine;
-            cur.currentxmove = cur.selectedAsset.positionX();//+(Position.tileWidth()/2);
-            cur.currentymove = cur.selectedAsset.positionY();//+(Position.tileHeight()/2);
+            UnitPosition temp = new UnitPosition(cur.selectedAsset.tilePosition());
+            cur.currentxmove = temp.X();//+(Position.tileWidth()/2);
+            cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
         } else {
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
             UnitMove(cur, "gold", totalTime, gData);
@@ -462,6 +463,7 @@ public class Unit {
                 cur.hidden = false;
                 cur.abilities.add(CarryingGold);
                 cur.curAnim = GenerateAnimation(cur, "gold");
+                cur.attackEnd = true;
                 if (SetReturnDest(cur, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnMine;
                 } else {
@@ -477,8 +479,8 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 10);
-            cur.resourceAmount += 10;
+            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 100);
+            cur.resourceAmount += 100;
             cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
             cur.curAnim = GenerateAnimation(cur, "lumber");
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
@@ -552,7 +554,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * 1.75 * Position.tileWidth());
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= cur.range * Position.tileWidth());
     }
 
     private void UnitRepairState(IndividualUnit cur, float deltaTime, GameData gData) {
@@ -568,7 +570,7 @@ public class Unit {
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, float buildWidth, GameData gData) {
-        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= (buildWidth)*.75);
+        return (distanceBetweenCoords(round(cur.getMidX()), round(cur.getMidY()), target.X(), target.Y()) <= buildWidth*.5); // or (sqrt(2)*buildWidth)*.5
     }
 
     private boolean InRange(IndividualUnit cur, IndividualUnit tar, GameData gData) {
@@ -737,10 +739,10 @@ public class Unit {
                 // stay in X
             }
 
-            if (cur.getMidY() > cur.currentymove && pathable(cur.getX(),(cur.getY() - cur.speed/10), gData)) {
+            if (cur.getMidY() > cur.currentymove && pathable(cur.getMidX(),(cur.getMidY() - cur.speed/10), gData)) {
                 cur.setY(cur.getY() - cur.speed/10);
                 south = true;
-            } else if (cur.getMidY() < cur.currentymove && pathable(cur.getX(),(cur.getY() + cur.speed/10), gData)) {
+            } else if (cur.getMidY() < cur.currentymove && pathable(cur.getMidX(),(cur.getMidY() + cur.speed/10), gData)) {
                 cur.setY(cur.getY() + cur.speed/10);
                 north = true;
             } else {
@@ -766,6 +768,7 @@ public class Unit {
                 cur.direction = GameDataTypes.EDirection.West;
             } else {
                 cur.stopMovement();
+                return true;
             }
 
             cur.curAnim = GenerateAnimation(cur, type);
