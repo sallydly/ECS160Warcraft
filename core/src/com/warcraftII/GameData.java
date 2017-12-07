@@ -1,6 +1,7 @@
 package com.warcraftII;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -65,6 +66,8 @@ public class GameData {
     public Vector<Unit.IndividualUnit> selectedUnits = new Vector<Unit.IndividualUnit>(9);
     public float elapsedTime;
     public float cumulativeTime = 0; // for slowing down timestep a bit.
+
+    private Sound workDoneSound = Gdx.audio.newSound(Gdx.files.internal("data/snd/basic/work-completed.wav"));
 
     public GameData(){
         sb = new SpriteBatch();
@@ -182,6 +185,7 @@ public class GameData {
                     sasset.IncrementStep();
                 } else {
                     sasset.PopCommand();
+                    workDoneSound.play(Volume.getFxVolume()/100);
                 }
                 //Do nothing. for now.
             }
@@ -201,6 +205,7 @@ public class GameData {
                     sasset.PopCommand();
                     sasset.DUnitConstructionTime = 0;
                     sasset.DPendingUnitType = GameDataTypes.EUnitType.None;
+                    workDoneSound.play(Volume.getFxVolume()/100);
                 }
             }
         }

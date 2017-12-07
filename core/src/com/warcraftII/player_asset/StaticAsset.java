@@ -32,7 +32,6 @@ public class StaticAsset extends PlayerAsset{
 
     private Sound goldMineSound = Gdx.audio.newSound(Gdx.files.internal("data/snd/buildings/gold-mine.wav"));
 
-
     public StaticAsset() {}
 
     public StaticAsset(PlayerAssetType type) {

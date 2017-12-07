@@ -1,8 +1,11 @@
 package com.warcraftII.player_asset;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Logger;
 import com.warcraftII.GameDataTypes;
 import com.warcraftII.GameDataTypes.*;
+import com.warcraftII.Volume;
 import com.warcraftII.position.TilePosition;
 import com.warcraftII.terrain_map.AssetDecoratedMap;
 import com.warcraftII.terrain_map.initialization.SAssetInitialization;
@@ -30,6 +33,9 @@ public class PlayerData {
     protected int DLumber;
     protected int DStone;
     protected int DGameCycle;
+
+    private Sound constructionSound = Gdx.audio.newSound(Gdx.files.internal("data/snd/misc/construct.wav"));
+
 
     public PlayerData(AssetDecoratedMap map, EPlayerColor color, Unit allUnits){
         DIsAI = true;
@@ -221,6 +227,8 @@ public class PlayerData {
         DecrementGold(ConsAsset.GoldCost());
         DecrementLumber(ConsAsset.LumberCost());
         DecrementStone(ConsAsset.StoneCost());
+
+        constructionSound.play(Volume.getFxVolume()/100);
 
         return ConsAsset;
     }

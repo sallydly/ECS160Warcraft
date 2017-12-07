@@ -320,7 +320,8 @@ public class Unit {
 
     public IndividualUnit AddUnit(TilePosition tpos, GameDataTypes.EUnitType inUnit, GameDataTypes.EPlayerColor color){
         UnitPosition upos = new UnitPosition(tpos);
-        return AddUnit((float)upos.X(), (float)upos.Y(), inUnit, color);
+        // added fudge factor of half of unit tile height...
+        return AddUnit((float)upos.X(), (float)upos.Y()+72/2, inUnit, color);
     }
 
     public void AddToMap(IndividualUnit in) {

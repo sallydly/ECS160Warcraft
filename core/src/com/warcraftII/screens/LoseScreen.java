@@ -27,7 +27,7 @@ public class LoseScreen implements Screen {
     private BitmapFont kingthings24;
     private Music music;
     //  set SCREEN_DURATION of splash screen
-    private final float SCREEN_DURATION = 2;
+    private final float SCREEN_DURATION = 5;
     //  get time time when splash starts
     private float currentDuration = 0;
 
