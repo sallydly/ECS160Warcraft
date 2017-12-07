@@ -981,12 +981,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 float barWidth = sel.getWidth();
                 float curHP = sel.curHP;
                 float maxHP = sel.maxHP;
-                float curMod = sel.curHP/sel.maxHP;
+                float curMod = curHP/maxHP;
 
-                shapeRenderer.setColor(1, 0, 0, 1);
-                shapeRenderer.rect(sel.getX()+curMod * barWidth , sel.getY(), (1 - curMod)*barWidth, barHeight);
                 shapeRenderer.setColor(0, 1, 0, 1);
-                shapeRenderer.rect(sel.getX(), sel.getY(), curMod*barWidth, barHeight);
+                shapeRenderer.rect(sel.getX(), sel.getY(), barWidth, barHeight);
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(sel.getX()+ curMod * barWidth , sel.getY(), (1 - curMod)*barWidth, barHeight);
                 shapeRenderer.end();
             }
         }
