@@ -99,10 +99,8 @@ public class GameData {
     public void RenderMap(){
                 /* Rendering the map: */
         MapLayers layers = tiledMap.getLayers();
-        Vector<PlayerData> temp = new Vector<PlayerData>();
         Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
 
-        temp.add(currentPlayer);
         for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
             if(individualUnit.color == currentPlayer.Color()) {
                 currentPlayerUnits.add(individualUnit);
@@ -208,10 +206,14 @@ public class GameData {
         }
 
         Vector<Unit.IndividualUnit> currentPlayerUnits = new Vector<Unit.IndividualUnit>();
+        Vector<Unit.IndividualUnit> notYourUnits = new Vector<Unit.IndividualUnit>();
 
         for (Unit.IndividualUnit individualUnit : allUnits.GetAllUnits()) {
             if(individualUnit.color == currentPlayer.Color()) {
+                individualUnit.isVisible = true;
                 currentPlayerUnits.add(individualUnit);
+            } else {
+                notYourUnits.add(individualUnit);
             }
         }
 
@@ -220,6 +222,14 @@ public class GameData {
         }
 
         renderFog(currentPlayerUnits);
+
+        for (Unit.IndividualUnit otherUnit : notYourUnits) {
+            TilePosition otherUnitAnchor = new TilePosition(new UnitPosition((int)(otherUnit.getMidX()), (int)(otherUnit.getMidY())));
+
+            otherUnit.isVisible = fogRenderer.visibilityMap.TileType(otherUnitAnchor.X(), otherUnitAnchor.Y()) != VisibilityMap.ETileVisibility.None;
+            if(otherUnit.isVisible)
+                System.out.println("OTHER UNIT IS VISIBLE AT: " + otherUnitAnchor.X() + " " + otherUnitAnchor.Y());
+        }
     }
 
     public void dispose() {

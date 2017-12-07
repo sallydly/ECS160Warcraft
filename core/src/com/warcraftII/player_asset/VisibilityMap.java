@@ -226,10 +226,9 @@ public class VisibilityMap {
 
         for(Unit.IndividualUnit unit : individualUnitList) {
             if(unit != null) {
-                unit.isVisible = true;
                 //System.out.println("Altering VisibilityMap with IndividualUnit");
-//                TilePosition Anchor = new TilePosition((int)unit.getX() / 32, getHeight() - (int)unit.getY() / 32 - 1);
                 TilePosition Anchor = new TilePosition(new UnitPosition((int)(unit.getMidX()), (int)(unit.getMidY())));
+                System.out.println("UnitAnchor at: " + Anchor.X() + " " + Anchor.Y());
                 int Sight = unit.sight;
                 int SightSquared = Sight * Sight;
                 //System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());

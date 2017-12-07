@@ -79,18 +79,17 @@ public class FogRenderer {
                         blackCell.setTile(new StaticTiledMapTile(allBlackFog));
                         fogLayer.setCell(Xpos, Ypos, blackCell);
                         break;
-                    case PartialPartial:
-//                        TiledMapTileLayer.Cell partialPartialCell = new TiledMapTileLayer.Cell();
-//                        partialPartialCell.setTile(new StaticTiledMapTile(partialPartialFog));
-//                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
-                        break;
-                    case Partial:
-                        break;
                     case SeenPartial:
                     case Seen:
                         TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
                         partialCell.setTile(new StaticTiledMapTile(partialFog));
                         fogLayer.setCell(Xpos, Ypos, partialCell);
+                        break;
+                    case PartialPartial:
+//                        TiledMapTileLayer.Cell partialPartialCell = new TiledMapTileLayer.Cell();
+//                        partialPartialCell.setTile(new StaticTiledMapTile(partialPartialFog));
+//                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
+                    case Partial:
                         break;
                     case Visible:
                 }

@@ -45,7 +45,7 @@ public class Unit {
     public Vector<IndividualUnit> deleteUnits;
     public Map<GameDataTypes.EPlayerColor, Vector<IndividualUnit>> unitMap;
     public int selectedUnitIndex;
-
+    public Vector<IndividualUnit> allUnits = new Vector<IndividualUnit>();
     private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures;
 
     public Unit() {
@@ -162,7 +162,7 @@ public class Unit {
 
         @Override
         public void draw (Batch batch, float parentAlpha) {
-            if (inProgressBuilding == null && !hidden ) {
+            if (inProgressBuilding == null && !hidden && isVisible) {
                 batch.draw(curTexture, getX(), getY());
             }
         }
@@ -619,6 +619,7 @@ public class Unit {
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
+                    System.out.println("Unit attacking target at " + (int)tar.getMidX() + " " + (int)tar.getMidY());
                     // TODO: make this use the projectiles
 
                 } else {
@@ -828,13 +829,11 @@ public class Unit {
     }
 
     public Vector<IndividualUnit> GetAllUnits() {
-        Vector<IndividualUnit> unitVector = new Vector<IndividualUnit>();
+        allUnits.clear();
         for (GameDataTypes.EPlayerColor color : GameDataTypes.EPlayerColor.values()) {
-            for (IndividualUnit cur : unitMap.get(color)) {
-                unitVector.add(cur);
-            }
+            allUnits.addAll(unitMap.get(color));
         }
-        return unitVector;
+        return allUnits;
     }
 
 }
