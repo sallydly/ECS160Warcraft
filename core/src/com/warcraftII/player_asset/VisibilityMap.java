@@ -130,13 +130,12 @@ public class VisibilityMap {
 
         for(StaticAsset CurAsset : assets) {
             if(CurAsset != null) {
-                //System.out.println("Altering VisibilityMap with StaticAsset");
+                System.out.println("Altering VisibilityMap with StaticAsset");
                 TilePosition Anchor = CurAsset.tilePosition();
                 int Sight = CurAsset.EffectiveSight() + CurAsset.Size()/2;
                 int SightSquared = Sight * Sight;
-                //System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());
-                //System.out.println("Sight: " + Sight + " SightSquared " + SightSquared);
-                //System.out.println("MaxVisibility: " + maxVisibility);
+
+                System.out.println("Static is Anchored at: " + Anchor.X() + " " + Anchor.Y());
                 int oldX = Anchor.X();
                 int oldY = Anchor.Y();
                 Anchor.X(Anchor.X() + CurAsset.Size()/2);
@@ -155,6 +154,7 @@ public class VisibilityMap {
 
                         if((XSquared + YSquared) < SightSquared) {
                             // Visible
+                            System.out.println("Setting Visible");
                             if(Anchor.Y() - Y >= 0 && Anchor.X() - X >= 0) {
                                 gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Visible);
                                 gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
@@ -162,6 +162,7 @@ public class VisibilityMap {
                                 gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
                             }
                         } else if((XSquared1 + YSquared1) < SightSquared){
+                            System.out.println("Setting Partial");
                             // Partial
                             if(Anchor.Y() - Y >= 0 && Anchor.X() - X >= 0) {
                                 ETileVisibility CurVis = gameMap.get(Anchor.Y() - Y + maxVisibility).get(Anchor.X() - X + maxVisibility);
@@ -213,22 +214,11 @@ public class VisibilityMap {
     }
 
     public void updateUnits(List<Unit.IndividualUnit> individualUnitList) {
-        for(int i = 0; i < gameMap.size(); ++i) {
-            for(int j = 0; j < gameMap.get(i).size(); ++j) {
-                ETileVisibility currentTile = gameMap.get(i).get(j);
-                if ((ETileVisibility.Visible == currentTile) || (ETileVisibility.Partial == currentTile)) {
-                    gameMap.get(i).set(j, ETileVisibility.Seen);
-                } else if (ETileVisibility.PartialPartial == currentTile) {
-                    gameMap.get(i).set(j, ETileVisibility.SeenPartial);
-                }
-            }
-        }
-
         for(Unit.IndividualUnit unit : individualUnitList) {
             if(unit != null) {
                 //System.out.println("Altering VisibilityMap with IndividualUnit");
                 TilePosition Anchor = new TilePosition(new UnitPosition((int)(unit.getMidX()), (int)(unit.getMidY())));
-                System.out.println("UnitAnchor at: " + Anchor.X() + " " + Anchor.Y());
+//                System.out.println("UnitAnchor at: " + Anchor.X() + " " + Anchor.Y());
                 int Sight = unit.sight;
                 int SightSquared = Sight * Sight;
                 //System.out.println("Anchor: " + Anchor.X() + " " + Anchor.Y());

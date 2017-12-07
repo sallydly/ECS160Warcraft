@@ -107,10 +107,10 @@ public class GameData {
             }
         }
 
-        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
-
         TiledMapTileLayer tileLayerBase = mapRenderer.DrawMap();
         layers.add(tileLayerBase);
+
+        TiledMapTileLayer fogLayer = fogRenderer.createFogLayer(map, currentPlayer, currentPlayerUnits);
 
         TiledMapTileLayer staticAssetsLayer = staticAssetRenderer.addStaticAssets(map, playerData);
         if (null != staticAssetsLayer){
