@@ -50,6 +50,7 @@ import com.warcraftII.terrain_map.TileTypes;
 import com.warcraftII.units.Unit;
 import com.warcraftII.units.UnitActionRenderer;
 
+import java.util.Random;
 import java.util.Vector;
 
 
@@ -147,6 +148,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     //For wall building:
      private boolean wallStarted = false;
 
+    Random rando = new Random();
 
     SinglePlayer(com.warcraftII.Warcraft game) {
         this.game = game;
@@ -164,7 +166,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         Gdx.graphics.setContinuousRendering(true);
 
         //randomly play one of 5 game.mp3 files
-        int musicNum = (int) (Math.random() * 5) + 1;
+        int musicNum = rando.nextInt(4) + 1;
         assert musicNum >=1 && musicNum <= 5;
         this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/game" + musicNum + ".mp3"));
         this.music.setVolume( (Volume.getMusicVolume() / 100));
@@ -537,6 +539,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                                 sUnit.currentxmove = round(position.x);
                                 sUnit.currentymove = round(position.y);
                             }
+
+                            if(selectedUnits.size() == 1) {
+                                int soundNum = rando.nextInt(3);
+                                selectedUnits.get(0).ackSounds[soundNum].play(Volume.getFxVolume() / 100);
+                            }
                         }
 
                         gameData.staticAssetRenderer.DestroyShadowAsset(gameData.tiledMap, gameData.map);
@@ -558,6 +565,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                                     sUnit.currentxmove = round(position.x);
                                     sUnit.currentymove = round(position.y);
 
+                                }
+                                if(selectedUnits.size() == 1) {
+                                    int soundNum = rando.nextInt(3);
+                                    selectedUnits.get(0).ackSounds[soundNum].play(Volume.getFxVolume() / 100);
                                 }
                             }
                         }
@@ -1068,6 +1079,11 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         }
 
         if (newSelection){
+            if(selectedUnits.size() == 1) {
+                int soundNum = rando.nextInt(3);
+                selectedUnits.get(0).selSounds[soundNum].play(Volume.getFxVolume() / 100);
+            }
+
             buildSimpleButtonIsPressed = false;
             buildAdvancedButtonIsPressed = false;
         }
@@ -1088,7 +1104,6 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     }
 
     private boolean singleSelectUpdate() {
-
         for (Unit.IndividualUnit cur : allUnits.GetAllUnits()) {
             // Second element in PlayerData is assumed to be the human player on this device (looks like it's blue)
             if (cur.touched) {
@@ -1257,6 +1272,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 }
             }
             if (usedCount > 0) {
+                if(selectedUnits.size() == 1) {
+                    int soundNum = rando.nextInt(3);
+                    selectedUnits.get(0).ackSounds[soundNum].play(Volume.getFxVolume() / 100);
+                }
                 return false;
             } else {
                 return true;

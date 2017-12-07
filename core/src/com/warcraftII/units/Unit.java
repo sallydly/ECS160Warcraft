@@ -6,6 +6,7 @@ package com.warcraftII.units;
  */
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.warcraftII.GameData;
 import com.warcraftII.GameDataTypes;
+import com.warcraftII.Volume;
 import com.warcraftII.player_asset.PlayerAssetType;
 import com.warcraftII.player_asset.PlayerData;
 import com.warcraftII.player_asset.StaticAsset;
@@ -48,6 +50,23 @@ public class Unit {
     public Vector<IndividualUnit> allUnits = new Vector<IndividualUnit>();
     private Map<GameDataTypes.EUnitType, TextureAtlas> unitTextures;
 
+    protected Sound[] peasantAckSounds = new Sound[4];
+    protected Sound[] knightAckSounds = new Sound[4];
+    protected Sound[] archerAckSounds = new Sound[4];
+
+    protected Sound[] peasantSelSounds = new Sound[4];
+    protected Sound[] knightSelSounds = new Sound[4];
+    protected Sound[] archerSelSounds = new Sound[4];
+
+    protected Sound[] swordSounds = new Sound[3];
+    protected Sound[] bowSounds = new Sound[2];
+
+    protected Sound[] treeSounds = new Sound[4];
+    protected Sound[] stoneSounds = new Sound[4];
+
+
+    protected Random rando = new Random();
+
     public Unit() {
         //unitVector = new Vector<IndividualUnit>(50);
         unitMap = new HashMap<GameDataTypes.EPlayerColor, Vector<IndividualUnit>>();
@@ -63,6 +82,28 @@ public class Unit {
         unitTextures.put(GameDataTypes.EUnitType.Peasant, new TextureAtlas(Gdx.files.internal("atlas/Peasant.atlas")));
         unitTextures.put(GameDataTypes.EUnitType.Ranger, new TextureAtlas(Gdx.files.internal("atlas/Ranger.atlas")));
         unitTextures.put(GameDataTypes.EUnitType.Knight, new TextureAtlas(Gdx.files.internal("atlas/Knight.atlas")));
+
+        for(int i = 0; i < 4; i++){
+            peasantAckSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/peasant/acknowledge"+String.valueOf(i+1)+".wav"));
+            knightAckSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/knight/acknowledge"+String.valueOf(i+1)+".wav"));
+            archerAckSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/archer/acknowledge"+String.valueOf(i+1)+".wav"));
+            peasantSelSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/peasant/selected"+String.valueOf(i+1)+".wav"));
+            knightSelSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/knight/selected"+String.valueOf(i+1)+".wav"));
+            archerSelSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/archer/selected"+String.valueOf(i+1)+".wav"));
+
+            treeSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/misc/tree"+String.valueOf(i+1)+".wav"));
+            stoneSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/misc/stone"+String.valueOf(i+1)+".wav"));
+
+            if (i < 3){
+                swordSounds[i] = Gdx.audio.newSound(Gdx.files.internal("snd/misc/sword"+String.valueOf(i+1)+".wav"));
+            }
+        }
+
+        bowSounds[0] = Gdx.audio.newSound(Gdx.files.internal("snd/misc/bowfire.wav"));
+        bowSounds[1] = Gdx.audio.newSound(Gdx.files.internal("snd/misc/bowhit.wav"));
+
+
+
     }
 
     public class IndividualUnit extends Actor {
@@ -89,6 +130,10 @@ public class Unit {
         // Or we can include it as requirements for addUnit, but that makes init harder
         public int foodConsumed = 1;
         public boolean hidden = false;
+
+        public Sound[] ackSounds;
+        public Sound[] selSounds;
+        public Sound[] attackSounds;
 
         //public boolean selected = false;
         public boolean touched = false;
@@ -218,6 +263,9 @@ public class Unit {
                 newUnit.piercingDamage = 2;
                 newUnit.range = 1;
                 newUnit.foodConsumed = 1;
+                newUnit.ackSounds = peasantAckSounds;
+                newUnit.selSounds = peasantSelSounds;
+                newUnit.attackSounds = treeSounds;
                 break;
             case Footman:
                 newUnit.abilities.add(Patrol);
@@ -233,6 +281,9 @@ public class Unit {
                 newUnit.piercingDamage = 3;
                 newUnit.range = 1;
                 newUnit.foodConsumed = 1;
+                newUnit.ackSounds = knightAckSounds;
+                newUnit.selSounds = knightSelSounds;
+                newUnit.attackSounds = swordSounds;
                 break;
             case Archer:
                 newUnit.abilities.add(Patrol);
@@ -248,6 +299,9 @@ public class Unit {
                 newUnit.piercingDamage = 6;
                 newUnit.range = 4;
                 newUnit.foodConsumed = 1;
+                newUnit.ackSounds = archerAckSounds;
+                newUnit.selSounds = archerSelSounds;
+                newUnit.attackSounds = bowSounds;
                 break;
             case Ranger:
                 newUnit.abilities.add(Patrol);
@@ -264,6 +318,9 @@ public class Unit {
                 newUnit.piercingDamage = 6;
                 newUnit.range = 4;
                 newUnit.foodConsumed = 1;
+                newUnit.ackSounds = archerAckSounds;
+                newUnit.selSounds = archerSelSounds;
+                newUnit.attackSounds = bowSounds;
                 break;
             case Knight:
                 newUnit.abilities.add(Patrol);
@@ -279,6 +336,9 @@ public class Unit {
                 newUnit.piercingDamage = 4;
                 newUnit.range = 1;
                 newUnit.foodConsumed = 1;
+                newUnit.ackSounds = knightAckSounds;
+                newUnit.selSounds = knightSelSounds;
+                newUnit.attackSounds = swordSounds;
                 break;
             default:
                 newUnit.unitClass = GameDataTypes.EUnitType.Peasant;
@@ -392,7 +452,7 @@ public class Unit {
         toDelete.removeAllElements();
     }
     private void UnitReturnStoneState(IndividualUnit cur, float totalTime, GameData gData) {
-        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)*Position.tileWidth(),gData)) {
+        if (InRange(cur, new UnitPosition(cur.currentxmove, cur.currentymove), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Blacksmith)*Position.tileWidth(),gData)) {
             cur.stopMovement();
             gData.playerData.get(GameDataTypes.to_underlying(cur.color)).IncrementStone(cur.resourceAmount);
             cur.resourceAmount = 0;
@@ -403,7 +463,7 @@ public class Unit {
             cur.currentymove = temp.Y();//+(Position.tileHeight()/2);
         } else {
             cur.curTexture = cur.curAnim.getKeyFrame(totalTime, true);
-            UnitMove(cur, "stone", totalTime, gData);
+            UnitMove(cur, "gold", totalTime, gData);
         }
     }
 
@@ -452,7 +512,7 @@ public class Unit {
                 cur.abilities.add(CarryingGold);
                 cur.curAnim = GenerateAnimation(cur, "gold");
                 cur.attackEnd = true;
-                if (SetReturnDest(cur, totalTime, gData)) {
+                if (SetReturnDest(cur,CarryingGold, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnMine;
                 } else {
                     System.out.println("No where to drop off resources, going Idle");
@@ -469,11 +529,15 @@ public class Unit {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
             gData.RemoveLumber(cur.selectedTilePosition, new TilePosition(new UnitPosition(round(cur.getMidX()), round(cur.getMidY()))), 100);
             cur.resourceAmount += 100;
+
+            int SoundToPlay = rando.nextInt(treeSounds.length - 1);
+            treeSounds[SoundToPlay].play(Volume.getFxVolume()/100);
+
             if (gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.Forest || gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.ForestPartial) {
                 cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
                 cur.curAnim = GenerateAnimation(cur, "lumber");
                 cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
-                if (SetReturnDest(cur, totalTime, gData)) {
+                if (SetReturnDest(cur,CarryingLumber, totalTime, gData)) {
                     cur.curState = GameDataTypes.EUnitState.ReturnLumber;
                 } else {
                     System.out.println("No where to drop off resources, going Idle");
@@ -491,16 +555,24 @@ public class Unit {
 
     private void UnitStoneState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.RemoveStone(cur.selectedTilePosition, cur.selectedTilePosition, 10);
+            gData.RemoveStone(cur.selectedTilePosition, cur.selectedTilePosition, 100);//TODO change back to 10
             cur.resourceAmount += 10;
-            cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingStone);
-            cur.curAnim = GenerateAnimation(cur, "stone");
-            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
-            if (SetReturnDest(cur, totalTime, gData)) {
-                cur.curState = GameDataTypes.EUnitState.ReturnStone;
+
+            int SoundToPlay = rando.nextInt(stoneSounds.length - 1);
+            stoneSounds[SoundToPlay].play(Volume.getFxVolume()/100);
+
+            if (gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.Rock || gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.RockPartial) {
+                cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingStone);
+                cur.curAnim = GenerateAnimation(cur, "gold");
+                cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
+                if (SetReturnDest(cur,CarryingStone, totalTime, gData)) {
+                    cur.curState = GameDataTypes.EUnitState.ReturnStone;
+                } else {
+                    System.out.println("No where to drop off resources, going Idle");
+                    cur.curState = GameDataTypes.EUnitState.Idle;
+                    cur.stopMovement();
+                }
             } else {
-                System.out.println("No where to drop off resources, going Idle");
-                cur.curState = GameDataTypes.EUnitState.Idle;
                 cur.stopMovement();
             }
 
@@ -509,40 +581,76 @@ public class Unit {
         }
     }
 
-    private boolean SetReturnDest(IndividualUnit cur, float totalTime, GameData gData) {
+
+    //changes based on what is being carried.
+    private boolean SetReturnDest(IndividualUnit cur, GameDataTypes.EAssetCapabilityType carryType, float totalTime, GameData gData){
         UnitPosition upos = new UnitPosition(cur.selectedTilePosition);
-        StaticAsset nearestKeep = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Keep);
-        StaticAsset nearestTownHall = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.TownHall);
-        if (nearestKeep != null && nearestTownHall != null) {
-            if (distanceBetweenCoords((nearestKeep.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
-                    (nearestKeep.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
-                    round(cur.getMidX()),
-                    round(cur.getMidY()))
-                    >=
-                    distanceBetweenCoords((nearestTownHall.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
-                            (nearestTownHall.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
-                            round(cur.getMidX()),
-                            round(cur.getMidY()))) {
-                UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
-                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
-                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
-            } else {
-                UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
-                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
-                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
-            }
-        } else if (nearestKeep != null) {
-            UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
-            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
-            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
-        } else if (nearestTownHall != null) {
-            UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
-            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
-            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
-        } else {
+        switch(carryType){
+
+            case CarryingGold:
+                StaticAsset nearestKeep = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Keep);
+                if(SetReturnDest(cur,nearestKeep,totalTime,gData)){
+                    return SetReturnDest(cur,nearestKeep,totalTime,gData);
+                }
+                else {
+                    StaticAsset nearestTownHall = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.TownHall);
+                    return SetReturnDest(cur,nearestTownHall,totalTime,gData);
+
+                }
+            case CarryingLumber:
+                StaticAsset nearestLumberMill = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.LumberMill);
+                return SetReturnDest(cur,nearestLumberMill,totalTime,gData);
+            case CarryingStone:
+                StaticAsset nearestBlacksmith = gData.map.FindNearestStaticAsset(upos, cur.color, GameDataTypes.EStaticAssetType.Blacksmith);
+                return SetReturnDest(cur,nearestBlacksmith,totalTime,gData);
+            default:
+                return false;
+        }
+    }
+
+    private boolean SetReturnDest(IndividualUnit cur, StaticAsset nearestAsset, float totalTime, GameData gData) {
+
+       // UnitPosition upos = new UnitPosition(cur.selectedTilePosition);
+//
+//        if (nearestKeep != null && nearestTownHall != null) {
+//            if (distanceBetweenCoords((nearestKeep.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
+//                    (nearestKeep.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2),
+//                    round(cur.getMidX()),
+//                    round(cur.getMidY()))
+//                    >=
+//                    distanceBetweenCoords((nearestTownHall.positionX()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
+//                            (nearestTownHall.positionY()+PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2),
+//                            round(cur.getMidX()),
+//                            round(cur.getMidY()))) {
+//                UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
+//                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+//                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+//            } else {
+//                UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
+//                cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+//                cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+//            }
+//        } else if (nearestKeep != null) {
+//            UnitPosition temp = new UnitPosition(nearestKeep.tilePosition());
+//            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+//            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.Keep)/2*Position.tileWidth());
+//        } else if (nearestTownHall != null) {
+//            UnitPosition temp = new UnitPosition(nearestTownHall.tilePosition());
+//            cur.currentxmove = temp.X()+(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+//            cur.currentymove = temp.Y()-(PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.TownHall)/2*Position.tileWidth());
+//        } else {
+//            return false;
+//        }
+//        return true;
+        if (nearestAsset != null){
+            UnitPosition temp = new UnitPosition(nearestAsset.tilePosition());
+            cur.currentxmove = temp.X()+(nearestAsset.Size()/2*Position.tileWidth());
+            cur.currentymove = temp.Y()-(nearestAsset.Size()/2*Position.tileWidth());
+            return true;
+        }
+        else{
             return false;
         }
-        return true;
     }
 
     private boolean InRange(IndividualUnit cur, UnitPosition target, GameData gData) {
@@ -604,12 +712,16 @@ public class Unit {
         if (tar.curHP > 0) { // maybe set this if to be if tar is not dead
             // check if tar within cur.range of cur
             if (InRange(cur, tar, gData)) {
+
                 if (cur.attackEnd) {
                     cur.curAnim = GenerateAnimation(cur, "attack");
                     cur.attackEnd = false;
                     cur.animStart = totalTime;
                 }
                 if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
+                    int SoundToPlay = rando.nextInt(cur.attackSounds.length - 1);
+                    cur.attackSounds[SoundToPlay].play(Volume.getFxVolume()/100);
+
                     tar.curHP -= cur.attackDamage;
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+tar.curHP+" health"));
@@ -643,14 +755,21 @@ public class Unit {
         }
 
        if (target.hitPoints() > 0) { // maybe set this if to be if tar is not dead
+
+
             // check if tar within cur.range of cur
             if (InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)),gData)){
+
                 if (cur.attackEnd) {
                     cur.curAnim = GenerateAnimation(cur, "attack");
                     cur.attackEnd = false;
                     cur.animStart = totalTime;
                 }
                 if (cur.curAnim.isAnimationFinished(totalTime-cur.animStart)) {
+
+                    int SoundToPlay = rando.nextInt(cur.attackSounds.length - 1);
+                    cur.attackSounds[SoundToPlay].play(Volume.getFxVolume()/100);
+
                     target.decrementHitPoints(cur.attackDamage);
                     cur.attackEnd = true;
                     System.out.println(String.format("Current Unit did "+cur.attackDamage+" damage to Target, Target now has "+String.valueOf(target.hitPoints()) +" health"));
