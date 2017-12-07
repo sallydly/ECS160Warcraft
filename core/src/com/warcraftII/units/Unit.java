@@ -478,16 +478,20 @@ public class Unit {
 
     private void UnitLumberState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.RemoveLumber(cur.selectedTilePosition, cur.selectedTilePosition, 100);
+            gData.RemoveLumber(cur.selectedTilePosition, new TilePosition(new UnitPosition(round(cur.getMidX()), round(cur.getMidY()))), 100);
             cur.resourceAmount += 100;
-            cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
-            cur.curAnim = GenerateAnimation(cur, "lumber");
-            cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
-            if (SetReturnDest(cur, totalTime, gData)) {
-                cur.curState = GameDataTypes.EUnitState.ReturnLumber;
+            if (gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.Forest || gData.map.TerrainTileType(cur.selectedTilePosition) == TileTypes.ETerrainTileType.ForestPartial) {
+                cur.abilities.add(GameDataTypes.EAssetCapabilityType.CarryingLumber);
+                cur.curAnim = GenerateAnimation(cur, "lumber");
+                cur.curTexture = cur.curAnim.getKeyFrame(totalTime, false);
+                if (SetReturnDest(cur, totalTime, gData)) {
+                    cur.curState = GameDataTypes.EUnitState.ReturnLumber;
+                } else {
+                    System.out.println("No where to drop off resources, going Idle");
+                    cur.curState = GameDataTypes.EUnitState.Idle;
+                    cur.stopMovement();
+                }
             } else {
-                System.out.println("No where to drop off resources, going Idle");
-                cur.curState = GameDataTypes.EUnitState.Idle;
                 cur.stopMovement();
             }
 

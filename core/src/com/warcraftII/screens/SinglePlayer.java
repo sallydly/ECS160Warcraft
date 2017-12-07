@@ -134,7 +134,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
     UnitActionRenderer unitActionRenderer;
     private Vector<GameDataTypes.EAssetCapabilityType> capabilities;
 
-    private GameDataTypes.EStaticAssetType assetToBuild;
+    private GameDataTypes.EStaticAssetType assetToBuild = GameDataTypes.EStaticAssetType.TownHall;
     private GameDataTypes.EUnitType unitToBuild;
 
 
