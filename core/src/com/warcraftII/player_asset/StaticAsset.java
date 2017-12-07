@@ -20,7 +20,7 @@ public class StaticAsset extends PlayerAsset{
     private PlayerAssetType DType;
     private TilePosition DPosition;
     private Vector<SAssetCommand> DCommands;
-    private int DStep;
+    public int DStep;
 
     private EPlayerColor DOwner;
 

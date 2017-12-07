@@ -965,6 +965,92 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.end();
         }
 
+        drawHealthBars();
+    }
+
+    public void drawHealthBars() {
+        shapeRenderer.setProjectionMatrix(mapCamera.combined);
+        int barHeight = 5;
+        for (Unit.IndividualUnit sel : allUnits.GetAllUnits()) {
+            // yes sel is usually used for selected, sue me
+            TilePosition temp = new TilePosition(new UnitPosition(round(sel.getMidX()), round(sel.getMidY())));
+            if (gameData.fogRenderer.visibilityMap.TileType(temp.X(), temp.Y()) == VisibilityMap.ETileVisibility.Visible && !sel.hidden) {
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+                float barWidth = sel.getWidth();
+                float progress = sel.curHP/sel.maxHP;
+
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(sel.getX(), sel.getY(), barWidth, barHeight);
+                shapeRenderer.setColor(0, 1, 0, 1);
+                shapeRenderer.rect(sel.getX(), sel.getY(), progress*barWidth, barHeight);
+                shapeRenderer.end();
+            }
+        }
+
+        for (StaticAsset sasset : gameData.map.StaticAssets()) {
+            if (gameData.fogRenderer.visibilityMap.TileType(sasset.tilePositionX(), sasset.tilePositionY()) == VisibilityMap.ETileVisibility.Visible) {
+
+                // draws health bars
+
+                int size = sasset.Size();
+                int xPos = sasset.positionX();
+                int yPos = gameData.map.Height() - sasset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
+                int barWidth = size * gameData.TILE_HEIGHT;
+                int curMod = sasset.hitPoints()/sasset.assetType().HitPoints();
+
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, barWidth, barHeight);
+                shapeRenderer.setColor(0, 1, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, curMod * barWidth, barHeight);
+                shapeRenderer.end();
+                /*
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                UnitPosition temp = new UnitPosition(sasset.tilePosition());
+
+                float barWidth = sasset.Size()*gameData.TILE_WIDTH;
+                float progress = sasset.hitPoints()/sasset.assetType().HitPoints();
+
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(temp.X(), temp.Y()-(sasset.Size()*gameData.TILE_HEIGHT), barWidth, barHeight);
+                shapeRenderer.setColor(0, 1, 0, 1);
+                shapeRenderer.rect(temp.X(), temp.Y()-(sasset.Size()*gameData.TILE_HEIGHT), progress*barWidth, barHeight);
+                shapeRenderer.end();
+                */
+            } else if (GameDataTypes.EAssetAction.Construct == sasset.Action()) {
+
+                // should draw the building progress
+
+                int size = sasset.Size();
+                int xPos = sasset.positionX();
+                int yPos = gameData.map.Height() - sasset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
+                int barWidth = size * gameData.TILE_HEIGHT;
+                int curMod = sasset.Step()/(sasset.assetType().BuildTime()*gameData.staticAssetRenderer.UpdateFrequency());
+
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, barWidth, barHeight);
+                shapeRenderer.setColor(0, 1, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, curMod * barWidth, barHeight);
+                shapeRenderer.end();
+
+                /*
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+                UnitPosition temp = new UnitPosition(sasset.tilePosition());
+                float barWidth = sasset.Size()*Position.tileWidth();
+                float progress = sasset.DStep/(sasset.assetType().BuildTime() * gameData.staticAssetRenderer.UpdateFrequency());
+
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(temp.X(), temp.Y(), barWidth, barHeight);
+                shapeRenderer.setColor(0, 1, 0, 1);
+                shapeRenderer.rect(temp.X(), temp.Y(), progress*barWidth, barHeight);
+                shapeRenderer.end();
+                */
+            }
+        }
+
     }
 
     @Override

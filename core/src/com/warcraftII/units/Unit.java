@@ -901,7 +901,7 @@ public class Unit {
             // If unit is in range of the building
 
             if (cur.inProgressBuilding == null) {
-
+                cur.hidden = true;
                 if (cur.toBuild  == GameDataTypes.EStaticAssetType.Wall){
                     //special case for wall
                     StaticAsset buildySAsset = gData.map.StaticAssetAt(cur.buildPos);
@@ -920,7 +920,7 @@ public class Unit {
                 UnitPosition building = new UnitPosition(cur.inProgressBuilding.tilePosition());
                 cur.setX(building.X());
                 cur.setY(building.Y());
-
+                cur.hidden = false;
                 cur.inProgressBuilding = null;
                 //gData.staticAssetRenderer.CreateShadowAsset(GameDataTypes.EStaticAssetType.ScoutTower, cur.color, cur.buildPos, gData.tiledMap, gData.map);
                 cur.stopMovement();
