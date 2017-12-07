@@ -953,6 +953,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             shapeRenderer.rect(sel.getX(), sel.getY(), sel.getWidth(), sel.getHeight());
             shapeRenderer.end();
         }
+
     }
 
     @Override
@@ -1095,10 +1096,13 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 } else if ((!selectedUnits.isEmpty()) && selectedUnits.firstElement().color != cur.color) {
                     //TODO: ADD visible check
                     for (Unit.IndividualUnit sel : selectedUnits) {
+                        TilePosition Anchor = new TilePosition(new UnitPosition((int)(sel.getMidX()), (int)(sel.getMidY())));
+                        if(gameData.fogRenderer.visibilityMap.TileType(Anchor.X(), Anchor.Y()) != VisibilityMap.ETileVisibility.None) {
                             sel.target = cur;
                             sel.currentxmove = cur.getMidX();
                             sel.currentymove = cur.getMidY();
                             sel.curState = GameDataTypes.EUnitState.Attack;
+                        }
                     }
                     cur.touched = false;
                 } else if (cur.color == gameData.playerData.get(1).Color()){

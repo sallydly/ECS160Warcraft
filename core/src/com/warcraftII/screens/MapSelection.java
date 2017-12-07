@@ -199,7 +199,7 @@ public class MapSelection implements Screen {
 
     @Override
     public void resume() {
-        music.play();
+//        music.play();
     }
 
     @Override
