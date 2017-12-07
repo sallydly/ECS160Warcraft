@@ -978,12 +978,12 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
                 float barWidth = sel.getWidth();
-                float progress = sel.curHP/sel.maxHP;
+                float curMod = sel.curHP/sel.maxHP;
 
                 shapeRenderer.setColor(1, 0, 0, 1);
-                shapeRenderer.rect(sel.getX(), sel.getY(), barWidth, barHeight);
+                shapeRenderer.rect(sel.getX()+curMod * barWidth , sel.getY(), (1 - curMod)*barWidth, barHeight);
                 shapeRenderer.setColor(0, 1, 0, 1);
-                shapeRenderer.rect(sel.getX(), sel.getY(), progress*barWidth, barHeight);
+                shapeRenderer.rect(sel.getX(), sel.getY(), curMod*barWidth, barHeight);
                 shapeRenderer.end();
             }
         }
@@ -997,20 +997,21 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 int xPos = sasset.positionX();
                 int yPos = gameData.map.Height() - sasset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
                 int barWidth = size * gameData.TILE_HEIGHT;
-                int curMod = sasset.hitPoints()/sasset.assetType().HitPoints();
+                float curMod = sasset.hitPoints()/sasset.assetType().HitPoints();
 
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
                 shapeRenderer.setColor(1, 0, 0, 1);
-                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, barWidth, barHeight);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT + curMod * barWidth , yPos * gameData.TILE_HEIGHT, (1 - curMod) * barWidth, barHeight);
                 shapeRenderer.setColor(0, 1, 0, 1);
                 shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, curMod * barWidth, barHeight);
                 shapeRenderer.end();
-                /*
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                UnitPosition temp = new UnitPosition(sasset.tilePosition());
 
-                float barWidth = sasset.Size()*gameData.TILE_WIDTH;
-                float progress = sasset.hitPoints()/sasset.assetType().HitPoints();
+                //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+                //UnitPosition temp = new UnitPosition(sasset.tilePosition());
+
+                //float barWidth = sasset.Size()*gameData.TILE_WIDTH;
+                /*float progress = sasset.hitPoints()/sasset.assetType().HitPoints();
 
                 shapeRenderer.setColor(1, 0, 0, 1);
                 shapeRenderer.rect(temp.X(), temp.Y()-(sasset.Size()*gameData.TILE_HEIGHT), barWidth, barHeight);
@@ -1018,36 +1019,59 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                 shapeRenderer.rect(temp.X(), temp.Y()-(sasset.Size()*gameData.TILE_HEIGHT), progress*barWidth, barHeight);
                 shapeRenderer.end();
                 */
-            } else if (GameDataTypes.EAssetAction.Construct == sasset.Action()) {
-
+            }
+            if (sasset.owner() == gameData.playerData.get(1).Color() && GameDataTypes.EAssetAction.Construct == sasset.Action()) {
                 // should draw the building progress
 
                 int size = sasset.Size();
                 int xPos = sasset.positionX();
                 int yPos = gameData.map.Height() - sasset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
                 int barWidth = size * gameData.TILE_HEIGHT;
-                int curMod = sasset.Step()/(sasset.assetType().BuildTime()*gameData.staticAssetRenderer.UpdateFrequency());
+
+                // should draw the unit's progress
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+                UnitPosition temp = new UnitPosition(sasset.tilePosition());
+
+                //float barWidth = sasset.Size()*gameData.TILE_WIDTH;
+                float progress = sasset.Step() / (sasset.assetType().BuildTime() * gameData.staticAssetRenderer.UpdateFrequency());
+
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT + progress*barWidth, (yPos + sasset.Size())*gameData.TILE_HEIGHT + barHeight, (1-progress)*barWidth, barHeight);
+                shapeRenderer.setColor(0, 0, 1, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , (yPos + sasset.Size())*gameData.TILE_HEIGHT + barHeight, progress*barWidth, barHeight);
+                shapeRenderer.end();
+            }
+
+            else if(sasset.owner() == gameData.playerData.get(1).Color() && GameDataTypes.EAssetAction.Capability == sasset.Action()){
+                // draws health bars
+
+                int size = sasset.Size();
+                int xPos = sasset.positionX();
+                int yPos = gameData.map.Height() - sasset.positionY() - size; //we want bottom left -> -1 for 0 index; -1 for size of box
+                int barWidth = size * gameData.TILE_HEIGHT;
+               /* int curMod = sasset.hitPoints()/sasset.assetType().HitPoints();
 
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
                 shapeRenderer.setColor(1, 0, 0, 1);
                 shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, barWidth, barHeight);
                 shapeRenderer.setColor(0, 1, 0, 1);
-                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT, curMod * barWidth, barHeight);
-                shapeRenderer.end();
-
-                /*
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-                UnitPosition temp = new UnitPosition(sasset.tilePosition());
-                float barWidth = sasset.Size()*Position.tileWidth();
-                float progress = sasset.DStep/(sasset.assetType().BuildTime() * gameData.staticAssetRenderer.UpdateFrequency());
-
-                shapeRenderer.setColor(1, 0, 0, 1);
-                shapeRenderer.rect(temp.X(), temp.Y(), barWidth, barHeight);
-                shapeRenderer.setColor(0, 1, 0, 1);
-                shapeRenderer.rect(temp.X(), temp.Y(), progress*barWidth, barHeight);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , yPos * gameData.TILE_HEIGHT,curMod * barWidth, barHeight);
                 shapeRenderer.end();
                 */
+
+                // should draw the unit's progress
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+
+                //float barWidth = sasset.Size()*gameData.TILE_WIDTH;
+                float progress = sasset.Step() / (sasset.DUnitConstructionTime * gameData.staticAssetRenderer.UpdateFrequency());
+
+                shapeRenderer.setColor(1, 0, 0, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT + progress*barWidth, (yPos + sasset.Size())*gameData.TILE_HEIGHT + barHeight, (1-progress)*barWidth, barHeight);
+                shapeRenderer.setColor(0, 0, 1, 1);
+                shapeRenderer.rect(xPos * gameData.TILE_HEIGHT , (yPos + sasset.Size())*gameData.TILE_HEIGHT + barHeight, progress*barWidth, barHeight);
+                shapeRenderer.end();
             }
         }
 
@@ -1143,14 +1167,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             StaticAsset targetStatAsset = gameData.map.StaticAssetAt(tpos);
             if (targetStatAsset != null){
                 for (Unit.IndividualUnit sUnit : selectedUnits) {
-                    if(sUnit.color != targetStatAsset.owner()) {
+                 //   if(sUnit.color != targetStatAsset.owner()) {
                         System.out.println(sUnit.color.toString() + " is attacking" + targetStatAsset.owner().toString());
                         sUnit.curState = GameDataTypes.EUnitState.AttackBuilding;
                         sUnit.targetBuilding = targetStatAsset;
 
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
-                    }
+                 //   }
                 }
             }
         }
