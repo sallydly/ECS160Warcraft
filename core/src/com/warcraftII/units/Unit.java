@@ -78,7 +78,6 @@ public class Unit {
         public int sight = 0;
         public int attackTime = 10;
         public int reloadTime = 10;
-        public boolean isMoving = false;
         public boolean isVisible = true;
         // Gold Cost
         // Lumber Cost
@@ -338,38 +337,29 @@ public class Unit {
             for (IndividualUnit cur : unitMap.get(color)) {
                 switch (cur.curState) {
                     case Idle:
-                        cur.isMoving = false;
                         break;
                     case Move:
-                        cur.isMoving = true;
                         UnitMoveState(cur, elapsedTime, gData);
                         break;
                     case Attack:
-                        cur.isMoving = true;
                         UnitAttackState(cur, cur.target, elapsedTime, gData);
                         break;
                     case AttackBuilding:
-                        cur.isMoving = true;
                         UnitAttackBuildingState(cur, cur.targetBuilding, elapsedTime, gData);
                         break;
                     case Patrol:
-                        cur.isMoving = true;
                         UnitPatrolState(cur, elapsedTime, gData);
                         break;
                     case Mine:
-                        cur.isMoving = false;
                         UnitMineState(cur, elapsedTime, gData);
                         break;
                     case Lumber:
-                        cur.isMoving = false;
                         UnitLumberState(cur, elapsedTime, gData);
                         break;
                     case ReturnLumber:
-                        cur.isMoving = false;
                         UnitReturnLumberState(cur, elapsedTime, gData);
                         break;
                     case ReturnMine:
-                        cur.isMoving = true;
                         UnitReturnMineState(cur, elapsedTime, gData);
                         break;
                     case Stone:
@@ -379,12 +369,10 @@ public class Unit {
                         UnitReturnStoneState(cur, elapsedTime, gData);
                         break;
                     case Repair:
-                        cur.isMoving = false;
                         UnitRepairState(cur, elapsedTime, gData);
                         break;
                     case Dead:
                         if (UnitDeadState(cur, elapsedTime, gData)) {
-                            cur.isMoving = true;
                             cur.isVisible = false;
                             toDelete.add(cur);
                         }
@@ -679,8 +667,6 @@ public class Unit {
             // if not, move closer, setting currentxmove and currentymove as needed
         }
     }
-
-
 
     private boolean UnitDeadState(IndividualUnit cur, float totalTime, GameData gData) {
         if (cur.curHP <= 0 && cur.curHP >= -100) {

@@ -130,12 +130,12 @@ public class VisibilityMap {
 
         for(StaticAsset CurAsset : assets) {
             if(CurAsset != null) {
-                System.out.println("Altering VisibilityMap with StaticAsset");
+//                System.out.println("Altering VisibilityMap with StaticAsset");
                 TilePosition Anchor = CurAsset.tilePosition();
                 int Sight = CurAsset.EffectiveSight() + CurAsset.Size()/2;
                 int SightSquared = Sight * Sight;
 
-                System.out.println("Static is Anchored at: " + Anchor.X() + " " + Anchor.Y());
+//                System.out.println("Static is Anchored at: " + Anchor.X() + " " + Anchor.Y());
                 int oldX = Anchor.X();
                 int oldY = Anchor.Y();
                 Anchor.X(Anchor.X() + CurAsset.Size()/2);
@@ -154,7 +154,7 @@ public class VisibilityMap {
 
                         if((XSquared + YSquared) < SightSquared) {
                             // Visible
-                            System.out.println("Setting Visible");
+//                            System.out.println("Setting Visible");
                             if(Anchor.Y() - Y >= 0 && Anchor.X() - X >= 0) {
                                 gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() - X + maxVisibility, ETileVisibility.Visible);
                                 gameMap.get(Anchor.Y() - Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
@@ -162,7 +162,7 @@ public class VisibilityMap {
                                 gameMap.get(Anchor.Y() + Y + maxVisibility).set(Anchor.X() + X + maxVisibility, ETileVisibility.Visible);
                             }
                         } else if((XSquared1 + YSquared1) < SightSquared){
-                            System.out.println("Setting Partial");
+//                            System.out.println("Setting Partial");
                             // Partial
                             if(Anchor.Y() - Y >= 0 && Anchor.X() - X >= 0) {
                                 ETileVisibility CurVis = gameMap.get(Anchor.Y() - Y + maxVisibility).get(Anchor.X() - X + maxVisibility);

@@ -248,7 +248,7 @@ public class StaticAssetRenderer {
     }
 
     public boolean UpdateStaticAssets(TiledMap tmap, AssetDecoratedMap map, Vector<PlayerData> playerData) {
-        boolean assetDeath = false;
+        boolean assetUpdate = false;
         TiledMapTileLayer assetLayer = (TiledMapTileLayer) tmap.getLayers().get("StaticAssets");
 
         for (PlayerData player : playerData) {
@@ -391,7 +391,6 @@ public class StaticAssetRenderer {
                             int TotalSteps = StatAsset.assetType().BuildTime() * UpdateFrequency();
                             int CurrentStep = StatAsset.Step() * ActionSteps / TotalSteps;
 
-
                             //log.debug( StatAsset.assetType().Name() +" Current step: " + String.valueOf(CurrentStep));
                             //log.debug( String.valueOf(StatAsset.Step())+ "/" + String.valueOf(TotalSteps));
 
@@ -420,8 +419,8 @@ public class StaticAssetRenderer {
 
                             GraphicTileset.DrawTile(textures, assetLayer, XPos, YPos, tileName);
                         }
+                        assetUpdate = true;
                         break;
-
                     case Death:
                         if (StatAsset.staticAssetType() == EStaticAssetType.Wall) {
                             stateName = "destroyed_";
@@ -449,14 +448,14 @@ public class StaticAssetRenderer {
                             DeathRowBuildings.add(StatAsset);
                             itr.remove();
                             map.RemoveStaticAsset(StatAsset);
-                            assetDeath = true;
+                            assetUpdate = true;
                         }
                         break;
 
                 }
             }
         }
-        return assetDeath;
+        return assetUpdate;
     }
 
     protected class BuildingEffect {
