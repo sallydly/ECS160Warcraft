@@ -555,7 +555,7 @@ public class Unit {
 
     private void UnitStoneState(IndividualUnit cur, float totalTime, GameData gData) {
         if ((InRange(cur, new UnitPosition(round(cur.currentxmove), round(cur.currentymove)), PlayerAssetType.StaticAssetSize(GameDataTypes.EStaticAssetType.GoldMine)*Position.tileWidth(), gData))) {
-            gData.RemoveStone(cur.selectedTilePosition, cur.selectedTilePosition, 100);//TODO change back to 10
+            gData.RemoveStone(cur.selectedTilePosition, cur.selectedTilePosition, 10);
             cur.resourceAmount += 10;
 
             int SoundToPlay = rando.nextInt(stoneSounds.length - 1);
