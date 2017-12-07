@@ -30,34 +30,6 @@ public class FogRenderer {
 
     }
 
-//    public TiledMapTileLayer renderAssetsFog(AssetDecoratedMap assetDecoratedMap,
-//                                             Vector<PlayerData> playerDataVector) {
-//        System.out.println("Rendering Assets Fog");
-//        VisibilityMap visibilityMap = assetDecoratedMap.CreateVisibilityMap();
-//
-//        for(PlayerData playerData : playerDataVector) {
-//            visibilityMap.updateAssets(playerData.StaticAssets());
-//        }
-//
-//        return createFogLayer(assetDecoratedMap, visibilityMap);
-//    }
-
-    public TiledMapTileLayer createBlackLayer(AssetDecoratedMap assetDecoratedMap) {
-        TiledMapTileLayer blackLayer = new TiledMapTileLayer(assetDecoratedMap.Width(), assetDecoratedMap.Height(), 32, 32);
-        blackLayer.setName("Fog");
-
-        for(int xIndex = 0 ; xIndex < assetDecoratedMap.Height(); ++xIndex) {
-            for (int yIndex = 0; yIndex < assetDecoratedMap.Width(); ++yIndex) {
-                int Xpos = xIndex;
-                int Ypos = assetDecoratedMap.Height() - yIndex - 1;
-                TiledMapTileLayer.Cell blackCell = new TiledMapTileLayer.Cell();
-                blackCell.setTile(new StaticTiledMapTile(allBlackFog));
-                blackLayer.setCell(Xpos, Ypos, blackCell);
-            }
-        }
-        return blackLayer;
-    }
-
     public TiledMapTileLayer createFogLayer(AssetDecoratedMap assetDecoratedMap,
                                        PlayerData currentPlayer,
                                        List<Unit.IndividualUnit> currentPlayerUnitList) {
@@ -67,8 +39,8 @@ public class FogRenderer {
         visibilityMap.updateAssets(currentPlayer.StaticAssets());
         visibilityMap.updateUnits(currentPlayerUnitList);
 
-        for(int xIndex = 0 ; xIndex < assetDecoratedMap.Height(); ++xIndex) {
-            for(int yIndex = 0; yIndex < assetDecoratedMap.Width(); ++yIndex) {
+        for(int yIndex = 0 ; yIndex < assetDecoratedMap.Height(); ++yIndex) {
+            for(int xIndex = 0; xIndex < assetDecoratedMap.Width(); ++xIndex) {
                 int Xpos =  xIndex;
                 int Ypos = assetDecoratedMap.Height() - yIndex - 1;
                 final VisibilityMap.ETileVisibility CURRENT_TILE = visibilityMap.TileType(xIndex, yIndex);
@@ -81,16 +53,15 @@ public class FogRenderer {
                         break;
                     case SeenPartial:
                     case Seen:
+                        TiledMapTileLayer.Cell partialPartialCell = new TiledMapTileLayer.Cell();
+                        partialPartialCell.setTile(new StaticTiledMapTile(partialPartialFog));
+                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
+                        break;
+                    case Partial:
+                    case PartialPartial:
                         TiledMapTileLayer.Cell partialCell = new TiledMapTileLayer.Cell();
                         partialCell.setTile(new StaticTiledMapTile(partialFog));
                         fogLayer.setCell(Xpos, Ypos, partialCell);
-                        break;
-                    case PartialPartial:
-//                        TiledMapTileLayer.Cell partialPartialCell = new TiledMapTileLayer.Cell();
-//                        partialPartialCell.setTile(new StaticTiledMapTile(partialPartialFog));
-//                        fogLayer.setCell(Xpos, Ypos, partialPartialCell);
-                    case Partial:
-                        break;
                     case Visible:
                 }
             }
