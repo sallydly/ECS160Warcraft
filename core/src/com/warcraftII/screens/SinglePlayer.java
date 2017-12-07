@@ -1167,14 +1167,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             StaticAsset targetStatAsset = gameData.map.StaticAssetAt(tpos);
             if (targetStatAsset != null){
                 for (Unit.IndividualUnit sUnit : selectedUnits) {
-                 //   if(sUnit.color != targetStatAsset.owner()) {
+                   if(sUnit.color != targetStatAsset.owner()) { // remove this line and the other to be able to attack your own buildings
                         System.out.println(sUnit.color.toString() + " is attacking" + targetStatAsset.owner().toString());
                         sUnit.curState = GameDataTypes.EUnitState.AttackBuilding;
                         sUnit.targetBuilding = targetStatAsset;
 
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
-                 //   }
+                    }// remove this line and the other to be able to attack your own buildings
                 }
             }
         }
