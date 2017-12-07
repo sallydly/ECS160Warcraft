@@ -1195,14 +1195,14 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
                         sUnit.selectedTilePosition = tilePos;
                         usedCount += 1;
                     }
-                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Forest) {
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Forest || gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.ForestPartial) {
                         sUnit.curState = GameDataTypes.EUnitState.Lumber;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
                         sUnit.selectedTilePosition = tilePos;
                         usedCount += 1;
                     }
-                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Rock) {
+                    else if (gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.Rock || gameData.map.TerrainTileType(tilePos) == TileTypes.ETerrainTileType.RockPartial) {
                         sUnit.curState = GameDataTypes.EUnitState.Stone;
                         sUnit.currentxmove = round(position.x);
                         sUnit.currentymove = round(position.y);
