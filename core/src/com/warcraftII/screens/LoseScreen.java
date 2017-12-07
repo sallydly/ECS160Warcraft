@@ -31,9 +31,15 @@ public class LoseScreen implements Screen {
     //  get time time when splash starts
     private float currentDuration = 0;
 
+
+
     public LoseScreen(Warcraft game) {
         // disable continuous rendering to improve performance
-        //Gdx.graphics.setContinuousRendering(false);
+        Gdx.graphics.setContinuousRendering(false);
+
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/lose.mp3"));
+        this.music.setVolume( (Volume.getMusicVolume() / 100));
+        this.music.setLooping(true);
 
         this.game = game;
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");

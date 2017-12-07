@@ -983,6 +983,7 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
         sidebarStage.dispose();
         orthomaprenderer.dispose();
         shapeRenderer.dispose();
+        music.dispose();
     }
 
     @Override
@@ -1414,8 +1415,10 @@ public class SinglePlayer implements Screen, GestureDetector.GestureListener{
             }
         }
         if(redLost) {
+            music.stop();
             game.setScreen(new LoseScreen(game));
         } else if(otherLost) {
+            music.stop();
             game.setScreen(new WinScreen(game));
         }
     }

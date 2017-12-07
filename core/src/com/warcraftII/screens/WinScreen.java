@@ -35,6 +35,10 @@ public class WinScreen implements Screen {
         // disable continuous rendering to improve performance
         Gdx.graphics.setContinuousRendering(false);
 
+        this.music = Gdx.audio.newMusic(Gdx.files.internal("data/snd/music/win.mp3"));
+        this.music.setVolume( (Volume.getMusicVolume() / 100));
+        this.music.setLooping(true);
+
         this.game = game;
         this.atlas = new TextureAtlas("skin/craftacular-ui.atlas");
         this.skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"), atlas);
